@@ -198,9 +198,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\SystemStorage.csproj">
-      <Project>{7007762F-B654-4FCD-8DFF-D136A914F091}</Project>
-      <Name>SystemStorage</Name>
+    <ProjectReference Include="..\SystemLocalStore\SystemLocalStore.csproj">
+      <Project>{494836da-d213-4f5d-9046-583e36702589}</Project>
+      <Name>SystemLocalStore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

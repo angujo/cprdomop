@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SystemStorage.models
+namespace SystemLocalStore.models
 {
     public class WorkLoad : AbsTable
     {

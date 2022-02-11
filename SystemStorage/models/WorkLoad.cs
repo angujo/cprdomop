@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace SystemStorage.models
 {
-    public class WorkLoad
+    public class WorkLoad : AbsTable
     {
-        public int Id { get; set; }
         public string Name { get; set; }
-        public DateOnly ReleaseDate { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public bool FilesLocked { get; set; }
+        public bool SourceProcessed { get; set; }
+
+        public WorkLoad() { ReleaseDate = DateTime.Now; }
     }
 }

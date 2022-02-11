@@ -6,11 +6,13 @@ using System.Runtime.Remoting;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SystemStorage.models
+namespace SystemLocalStore.models
 {
     public abstract class AbsTable : INotifyPropertyChanged
     {
+        // Hold the ID here
         private Int64 _id = 0;
+
         private Dictionary<string, dynamic> _values = new Dictionary<string, dynamic>();
 
         public event PropertyChangedEventHandler PropertyChanged;

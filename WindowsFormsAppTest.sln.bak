@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemInterface", "WindowsFormsAppTest\SystemInterface.csproj", "{CD15C968-E309-4242-9BC5-F059EF59CDC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemLocalStore", "SystemLocalStore\SystemLocalStore.csproj", "{494836DA-D213-4F5D-9046-583E36702589}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemStorage", "ClassLibrary1\SystemStorage.csproj", "{7007762F-B654-4FCD-8DFF-D136A914F091}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{CD15C968-E309-4242-9BC5-F059EF59CDC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD15C968-E309-4242-9BC5-F059EF59CDC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD15C968-E309-4242-9BC5-F059EF59CDC2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{494836DA-D213-4F5D-9046-583E36702589}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{494836DA-D213-4F5D-9046-583E36702589}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{494836DA-D213-4F5D-9046-583E36702589}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{494836DA-D213-4F5D-9046-583E36702589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7007762F-B654-4FCD-8DFF-D136A914F091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7007762F-B654-4FCD-8DFF-D136A914F091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7007762F-B654-4FCD-8DFF-D136A914F091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7007762F-B654-4FCD-8DFF-D136A914F091}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows;
-using SystemStorage;
-using SystemStorage.models;
+using SystemLocalStore;
+using SystemLocalStore.models;
 
 namespace WindowsFormsAppTest
 {
@@ -97,7 +90,7 @@ namespace WindowsFormsAppTest
 
         private void mnNewWorkLoad_Click(object sender, EventArgs e)
         {
-            var nw = new SystemStorage.models.WorkLoad();
+            var nw = new WorkLoad();
             if (DialogResult.Yes == (new WorkLoadForm(nw)).ShowDialog())
             {
                 doLoad(nw);
