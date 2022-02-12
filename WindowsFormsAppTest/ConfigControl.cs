@@ -189,7 +189,7 @@ namespace WindowsFormsAppTest
                     DataAccess.CleanSourceFiles(workLoad);
                     foreach (var sf in sourceFiles.processedFiles(workLoad.Id))
                     {
-                        DataAccess.InsertOrUpdate(sf);
+                        sf.InsertOrUpdate();
                     }
                 });
                 MessageBox.Show(null, "It is recommended to lock the files before processing can be initiated.\nEnsure all file paths are as expected!", "Source File Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);

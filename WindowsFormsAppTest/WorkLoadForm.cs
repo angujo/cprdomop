@@ -20,7 +20,7 @@ namespace WindowsFormsAppTest
         private void Save()
         {
             workLoad.FilesLocked = workLoad.SourceProcessed;
-            Int64 Id = DataAccess.InsertOrUpdate(workLoad);
+            Int64 Id = workLoad.InsertOrUpdate();
             if (0 >= workLoad.Id) workLoad.Id = Id;
         }
 

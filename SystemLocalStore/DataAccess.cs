@@ -67,6 +67,14 @@ namespace SystemLocalStore
             }
         }
 
+        public static bool Delete(AbsTable absTable)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(connectionString()))
+            {
+                return 0 < cnn.Execute($"DELETE FROM {absTable.TableName()} WHERE Id = @Id", absTable);
+            }
+        }
+
         public static void LockWorkLoad(WorkLoad workLoad)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))

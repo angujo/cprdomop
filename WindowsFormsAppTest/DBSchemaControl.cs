@@ -1,7 +1,10 @@
-﻿using System;
+﻿using DatabaseProcessor;
+using System;
+using System.Drawing;
 using System.Windows.Forms;
 using SystemLocalStore;
 using SystemLocalStore.models;
+using WindowsFormsAppTest.extensions;
 
 namespace WindowsFormsAppTest
 {
@@ -13,15 +16,21 @@ namespace WindowsFormsAppTest
             InitializeComponent();
         }
 
-        public async void loadSchema(string s_type, WorkLoad workLoad)
+        public void loadSchema(string s_type, WorkLoad workLoad)
         {
             //pbProgress.Visible = true;
-            /* await Task.Run(() =>
-              {
-              });*/
+
             schema = DataAccess.loadSchema(workLoad, s_type.ToLower()) ?? new DBSchema();
             schema.SchemaType = s_type;
             schema.WorkLoadId = workLoad.Id;
+            schema.changeEvent = propName =>
+            {
+                btnSave.Enabled = true;
+                btnTest.Enabled = false;
+                lbSave.ForeColor = Color.Red;
+                lbSave.Text = "Save Required!";
+            };
+            btnTest.Enabled = !schema.TestSuccess;
             //pbProgress.Visible = false;
             DoBindings();
         }
@@ -48,13 +57,38 @@ namespace WindowsFormsAppTest
             pbProgress.Visible = true;
             try
             {
-                Console.WriteLine("Schema Save Clicked");
-                DataAccess.InsertOrUpdate(schema);
+                schema.InsertOrUpdate();
+                btnSave.Enabled = false;
+                btnTest.Enabled = true;
+                lbSave.ForeColor = Color.Green;
+                lbSave.Text = "All Save!";
             }
             catch (Exception ex) { throw ex; }
             finally
             {
                 pbProgress.Visible = false;
+            }
+        }
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            pbProgress.Visible = true;
+            var retry = false;
+            try
+            {
+                if (DBMSystem.GetDBMSystem(schema).TestConnection()) MessageBox.Show(null, "Connection Successful!", "Connection Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                schema.TestSuccess = true;
+                schema.InsertOrUpdate();
+                btnTest.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                retry = (MessageBox.Show(null, $"{ex.Message}\n{ex.StackTrace}".Truncate(400), "Connection Test", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry);
+            }
+            finally
+            {
+                pbProgress.Visible = false;
+                if (retry) btnTest_Click(sender, e);
             }
         }
     }

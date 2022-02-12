@@ -298,7 +298,7 @@ namespace WindowsFormsAppTest.models
                 yield return new SourceFile
                 {
                     WorkLoadId = workLoadId,
-                    TableName = hash,
+                    TableName = hash.ToSnakeCase(),
                     FileName = path,
                     FilePath = path,
                     FileHash = "[NO HASHING]", // path.ToFileMD5Hash(), // We will relook this later in future. Fails now

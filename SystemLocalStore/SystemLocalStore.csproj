@@ -55,9 +55,13 @@
     <Compile Include="DataAccess.cs" />
     <Compile Include="models\AbsTable.cs" />
     <Compile Include="models\DBSchema.cs" />
+    <Compile Include="models\Queue.cs" />
     <Compile Include="models\SourceFile.cs" />
     <Compile Include="models\WorkLoad.cs" />
+    <Compile Include="models\WorkQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QAction.cs" />
+    <Compile Include="Status.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

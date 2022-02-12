@@ -14,6 +14,13 @@ namespace WindowsFormsAppTest.extensions
     {
         private const UInt64 gbBytes = 1073741824;
 
+        public static string Truncate(this string value, int maxLength=200, string truncationSuffix = "…")
+        {
+            return String.IsNullOrEmpty(value) || value.Length <= maxLength
+                ? value
+                : value.Substring(0, maxLength) + truncationSuffix;
+        }
+
         public static string ToCamelCase(this string str)
         {
             return str.ToPascalCase().FirstCharToLower();
@@ -21,7 +28,7 @@ namespace WindowsFormsAppTest.extensions
 
         public static string ToSnakeCase(this string str)
         {
-            return Regex.Replace(str.ToLower(), "[^0-9a-zA-Z]+", "_");
+            return Regex.Replace(Regex.Replace(str, "(.*)([A-Z])", "$1_$2").ToLower(), "[^0-9a-zA-Z]+", "_");
         }
 
         public static string FirstCharWord(this string str)
@@ -31,7 +38,7 @@ namespace WindowsFormsAppTest.extensions
 
         public static string ToKebabCase(this string str)
         {
-            return Regex.Replace(str.ToLower(), "[^0-9a-zA-Z]+", "-");
+            return Regex.Replace(str.ToSnakeCase(), "[^0-9a-zA-Z]+", "-");
         }
 
         public static string ToPascalCase(this string str)
@@ -95,7 +102,7 @@ namespace WindowsFormsAppTest.extensions
                     string file = files[i];
                     if (exceedsMD5((ulong)new FileInfo(file).Length))
                     {
-                        hasckedHash(md5, file, i, files.Count, Encoding.ASCII.GetBytes(file)); 
+                        hasckedHash(md5, file, i, files.Count, Encoding.ASCII.GetBytes(file));
                         continue;
                     }
 
@@ -123,7 +130,7 @@ namespace WindowsFormsAppTest.extensions
 
         private static bool exceedsMD5(ulong bytes)
         {
-            return bytes >(2 * gbBytes);
+            return bytes > (2 * gbBytes);
         }
     }
 }
