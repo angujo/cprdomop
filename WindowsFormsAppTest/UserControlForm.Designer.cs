@@ -34,17 +34,20 @@
             this.tabConf = new System.Windows.Forms.TabPage();
             this.pnConf = new System.Windows.Forms.Panel();
             this.tabSource = new System.Windows.Forms.TabPage();
+            this.pnSource = new System.Windows.Forms.Panel();
+            this.tabSchemas = new System.Windows.Forms.TabPage();
+            this.pnDB = new System.Windows.Forms.Panel();
             this.tabCdm = new System.Windows.Forms.TabPage();
             this.label3 = new System.Windows.Forms.Label();
             this.tabRuntime = new System.Windows.Forms.TabPage();
             this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.loadTitle = new System.Windows.Forms.Label();
-            this.pnDB = new System.Windows.Forms.Panel();
             this.tabControl1.SuspendLayout();
             this.tabSummary.SuspendLayout();
             this.tabConf.SuspendLayout();
             this.tabSource.SuspendLayout();
+            this.tabSchemas.SuspendLayout();
             this.tabCdm.SuspendLayout();
             this.tabRuntime.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -57,6 +60,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabSummary);
             this.tabControl1.Controls.Add(this.tabConf);
+            this.tabControl1.Controls.Add(this.tabSchemas);
             this.tabControl1.Controls.Add(this.tabSource);
             this.tabControl1.Controls.Add(this.tabCdm);
             this.tabControl1.Controls.Add(this.tabRuntime);
@@ -113,13 +117,44 @@
             // tabSource
             // 
             this.tabSource.BackColor = System.Drawing.SystemColors.Window;
-            this.tabSource.Controls.Add(this.pnDB);
+            this.tabSource.Controls.Add(this.pnSource);
             this.tabSource.Location = new System.Drawing.Point(4, 38);
             this.tabSource.Name = "tabSource";
             this.tabSource.Padding = new System.Windows.Forms.Padding(3);
             this.tabSource.Size = new System.Drawing.Size(1149, 517);
-            this.tabSource.TabIndex = 2;
+            this.tabSource.TabIndex = 5;
             this.tabSource.Text = "Source";
+            // 
+            // pnSource
+            // 
+            this.pnSource.AutoScroll = true;
+            this.pnSource.BackColor = System.Drawing.SystemColors.Window;
+            this.pnSource.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnSource.Location = new System.Drawing.Point(3, 3);
+            this.pnSource.Name = "pnSource";
+            this.pnSource.Size = new System.Drawing.Size(1143, 511);
+            this.pnSource.TabIndex = 0;
+            // 
+            // tabSchemas
+            // 
+            this.tabSchemas.BackColor = System.Drawing.SystemColors.Window;
+            this.tabSchemas.Controls.Add(this.pnDB);
+            this.tabSchemas.Location = new System.Drawing.Point(4, 38);
+            this.tabSchemas.Name = "tabSchemas";
+            this.tabSchemas.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSchemas.Size = new System.Drawing.Size(1149, 517);
+            this.tabSchemas.TabIndex = 2;
+            this.tabSchemas.Text = "Schema Connections";
+            // 
+            // pnDB
+            // 
+            this.pnDB.AutoScroll = true;
+            this.pnDB.BackColor = System.Drawing.SystemColors.Window;
+            this.pnDB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnDB.Location = new System.Drawing.Point(3, 3);
+            this.pnDB.Name = "pnDB";
+            this.pnDB.Size = new System.Drawing.Size(1143, 511);
+            this.pnDB.TabIndex = 0;
             // 
             // tabCdm
             // 
@@ -183,16 +218,6 @@
             this.loadTitle.TabIndex = 0;
             this.loadTitle.Text = "This is the name of Loaded Entry";
             // 
-            // pnDB
-            // 
-            this.pnDB.AutoScroll = true;
-            this.pnDB.BackColor = System.Drawing.SystemColors.Window;
-            this.pnDB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnDB.Location = new System.Drawing.Point(3, 3);
-            this.pnDB.Name = "pnDB";
-            this.pnDB.Size = new System.Drawing.Size(1143, 511);
-            this.pnDB.TabIndex = 0;
-            // 
             // UserControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -206,6 +231,7 @@
             this.tabSummary.PerformLayout();
             this.tabConf.ResumeLayout(false);
             this.tabSource.ResumeLayout(false);
+            this.tabSchemas.ResumeLayout(false);
             this.tabCdm.ResumeLayout(false);
             this.tabCdm.PerformLayout();
             this.tabRuntime.ResumeLayout(false);
@@ -224,12 +250,14 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label loadTitle;
-        private System.Windows.Forms.TabPage tabSource;
+        private System.Windows.Forms.TabPage tabSchemas;
         private System.Windows.Forms.TabPage tabRuntime;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TabPage tabCdm;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel pnConf;
         private System.Windows.Forms.Panel pnDB;
+        private System.Windows.Forms.TabPage tabSource;
+        private System.Windows.Forms.Panel pnSource;
     }
 }

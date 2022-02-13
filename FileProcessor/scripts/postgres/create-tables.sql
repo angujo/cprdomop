@@ -220,12 +220,11 @@ CREATE TABLE IF NOT EXISTS {sc}.immunisation (
 -- DROP TABLE {sc}.lookup;
 
 CREATE TABLE IF NOT EXISTS {sc}.lookup (
-	id bigserial NOT NULL,
-	lookup_id serial4 NOT NULL,
-	lookup_type_id int2 NOT NULL,
+	lookup_id serial8 NOT NULL,
+	lookup_type_id int8 NULL,
 	code int2 NOT NULL,
 	"text" varchar(100) NULL DEFAULT NULL::character varying,
-	CONSTRAINT lookup_pkey PRIMARY KEY (id)
+	CONSTRAINT lookup_pkey PRIMARY KEY (lookup_id)
 );
 
 -- {sc}.lookuptype definition
@@ -235,11 +234,10 @@ CREATE TABLE IF NOT EXISTS {sc}.lookup (
 -- DROP TABLE {sc}.lookuptype;
 
 CREATE TABLE IF NOT EXISTS {sc}.lookuptype (
-	id bigserial NOT NULL,
-	lookup_type_id int2 NOT NULL,
+	lookup_type_id bigserial NOT NULL,
 	"name" varchar(3) NOT NULL,
 	description varchar(3) NOT NULL,
-	CONSTRAINT lookuptype_pkey PRIMARY KEY (id)
+	CONSTRAINT lookuptype_pkey PRIMARY KEY (lookup_type_id)
 );
 
 
@@ -368,7 +366,7 @@ CREATE TABLE IF NOT EXISTS {sc}.referral (
 
 -- DROP TABLE {sc}.scoringmethod;
 
-CREATE TABLE IF NOT EXISTS {sc}.scoringmethod (
+CREATE TABLE IF NOT EXISTS {sc}.scoremethod (
 	id bigserial NOT NULL,
 	code int4 NOT NULL,
 	scoringmethod varchar(20) NULL DEFAULT NULL::character varying,

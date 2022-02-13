@@ -53,16 +53,36 @@ namespace SystemLocalStore.models
             OnPropertyChanged(key);
         }
 
-        public long InsertOrUpdate()
+        public long? InsertOrUpdate()
         {
             return DataAccess.InsertOrUpdate(this);
         }
 
-        public bool Delete()
+        public static void InsertOrUpdate<T>(List<T> items)
         {
-            return DataAccess.Delete(this);
+            foreach (var item in items) DataAccess.InsertOrUpdate(item);
+        }
+
+        public AbsTable InsertOrUpdate(bool returnObject) { InsertOrUpdate(); return this; }
+
+        public bool Delete(Object parameters = null)
+        {
+            return DataAccess.Delete(this.GetType().Name, null == parameters ? this : parameters);
+        }
+        public static bool Delete<T>(Object parameters = null)
+        {
+            return DataAccess.Delete(typeof(T).Name, parameters);
         }
 
         public AbsTable ShallowCopy() { return (AbsTable)this.MemberwiseClone(); }
+
+        public static T Load<T>(Object parameters = null)
+        {
+            return DataAccess.Load<T>(typeof(T).Name, parameters);
+        }
+        public static List<T> List<T>(Object parameters = null)
+        {
+            return DataAccess.LoadList<T>(typeof(T).Name, parameters);
+        }
     }
 }

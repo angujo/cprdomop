@@ -22,6 +22,7 @@ namespace WindowsFormsAppTest
             Task.Run(() =>
             {
                 addTabPage(pnDB, new SchemaHolderControl(workl));
+                addTabPage(pnSource, new SourceProcessControl(workl));
             });
         }
 

@@ -6,7 +6,7 @@ namespace SystemLocalStore.models
     {
         public Int64 WorkQueueId { get; set; }
         public int? TaskIndex { get; set; }
-        public int? ParalellIndex { get; set; }
+        public int? ParallelIndex { get; set; }
         public string FilePath { get; set; }
         public string FileContent { get; set; }
         public DateTime StartTime { get; set; }

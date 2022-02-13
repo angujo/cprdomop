@@ -34,7 +34,7 @@ namespace WindowsFormsAppTest
 
         private void example2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var loads = DataAccess.loadWorkLoads();
+            var loads = WorkLoad.List<WorkLoad>();// DataAccess.loadWorkLoads();
             if (loads.Count <= 0)
             {
                 MessageBox.Show(this, "There are no Workloads entered!", "Work Load Selection", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileProcessor.cprd", "FileP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseProcessor", "DatabaseProcessor\DatabaseProcessor.csproj", "{1D1CA331-DA5C-4464-8A15-E0838F57091E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemService", "SystemService\SystemService.csproj", "{6797D753-0885-4A0D-B91D-C64CE7FB011B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1D1CA331-DA5C-4464-8A15-E0838F57091E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D1CA331-DA5C-4464-8A15-E0838F57091E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D1CA331-DA5C-4464-8A15-E0838F57091E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6797D753-0885-4A0D-B91D-C64CE7FB011B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6797D753-0885-4A0D-B91D-C64CE7FB011B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6797D753-0885-4A0D-B91D-C64CE7FB011B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6797D753-0885-4A0D-B91D-C64CE7FB011B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

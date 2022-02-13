@@ -44,7 +44,7 @@ namespace WindowsFormsAppTest
             if (workLoad.FilesLocked)
             {
                 workLocked();
-                sourceFiles.populatePaths(DataAccess.loadSourceFiles(workLoad));
+                sourceFiles.populatePaths(SourceFile.List<SourceFile>(new { WorkLoadId = workLoad.Id }));//  DataAccess.loadSourceFiles(workLoad));
             }
         }
 
@@ -64,7 +64,7 @@ namespace WindowsFormsAppTest
                     var _loader = (Button)loader;
                     if (isFileBased)
                     {
-                        var lbl = inputControls.Find(cntr => cntr.Name.Equals($"lb{rootName}Path"));
+                        var lbl = Util.containerControls(pnLoaders).Find(cntr => cntr.Name.Equals($"lb{rootName}Path"));
                         if (null != lbl) ((Label)lbl).DataBindings.Add("Text", sourceFiles, propertyName);
                     }
                     (_loader).Click += new EventHandler((oSender, eArgs) =>

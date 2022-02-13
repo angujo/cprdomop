@@ -30,16 +30,18 @@
         {
             this.grpFiles = new System.Windows.Forms.GroupBox();
             this.pnLoaders = new System.Windows.Forms.Panel();
+            this.pbSaving = new System.Windows.Forms.ProgressBar();
             this.lbLogInfo = new System.Windows.Forms.Label();
             this.panel22 = new System.Windows.Forms.Panel();
+            this.btnLock = new System.Windows.Forms.Button();
             this.btnSaveFiles = new System.Windows.Forms.Button();
             this.btnAnalyse = new System.Windows.Forms.Button();
             this.tbLogger = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel15 = new System.Windows.Forms.Panel();
             this.panel20 = new System.Windows.Forms.Panel();
-            this.lbScoreMethodPath = new System.Windows.Forms.Label();
-            this.btnScoreMethodFile = new System.Windows.Forms.Button();
+            this.lbScoremethodPath = new System.Windows.Forms.Label();
+            this.btnScoremethodFile = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
             this.panel19 = new System.Windows.Forms.Panel();
             this.lbProductPath = new System.Windows.Forms.Label();
@@ -54,16 +56,16 @@
             this.btnEntityFile = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
             this.panel16 = new System.Windows.Forms.Panel();
-            this.lbCommonDosagesPath = new System.Windows.Forms.Label();
-            this.btnCommonDosagesFile = new System.Windows.Forms.Button();
+            this.lbCommondosagesPath = new System.Windows.Forms.Label();
+            this.btnCommondosagesFile = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.panel14 = new System.Windows.Forms.Panel();
             this.btnVocabularyBrowse = new System.Windows.Forms.Button();
             this.tbVocabularyDir = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.panel13 = new System.Windows.Forms.Panel();
-            this.btnLookupTypesBrowse = new System.Windows.Forms.Button();
-            this.tbLookupTypesDir = new System.Windows.Forms.TextBox();
+            this.btnLookuptypeBrowse = new System.Windows.Forms.Button();
+            this.tbLookuptypeDir = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.pnHolder = new System.Windows.Forms.Panel();
@@ -119,8 +121,6 @@
             this.btnRootBrowse = new System.Windows.Forms.Button();
             this.tbRootDir = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
-            this.pbSaving = new System.Windows.Forms.ProgressBar();
-            this.btnLock = new System.Windows.Forms.Button();
             this.grpFiles.SuspendLayout();
             this.pnLoaders.SuspendLayout();
             this.panel22.SuspendLayout();
@@ -180,6 +180,19 @@
             this.pnLoaders.Size = new System.Drawing.Size(1282, 786);
             this.pnLoaders.TabIndex = 1;
             // 
+            // pbSaving
+            // 
+            this.pbSaving.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pbSaving.Location = new System.Drawing.Point(11, 762);
+            this.pbSaving.MarqueeAnimationSpeed = 10;
+            this.pbSaving.Name = "pbSaving";
+            this.pbSaving.Size = new System.Drawing.Size(1259, 13);
+            this.pbSaving.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.pbSaving.TabIndex = 25;
+            this.pbSaving.UseWaitCursor = true;
+            this.pbSaving.Visible = false;
+            // 
             // lbLogInfo
             // 
             this.lbLogInfo.AutoSize = true;
@@ -198,6 +211,17 @@
             this.panel22.Name = "panel22";
             this.panel22.Size = new System.Drawing.Size(513, 57);
             this.panel22.TabIndex = 23;
+            // 
+            // btnLock
+            // 
+            this.btnLock.Enabled = false;
+            this.btnLock.Location = new System.Drawing.Point(410, 14);
+            this.btnLock.Name = "btnLock";
+            this.btnLock.Size = new System.Drawing.Size(90, 33);
+            this.btnLock.TabIndex = 2;
+            this.btnLock.Text = "Lock Files";
+            this.btnLock.UseVisualStyleBackColor = true;
+            this.btnLock.Click += new System.EventHandler(this.btnLock_Click);
             // 
             // btnSaveFiles
             // 
@@ -258,32 +282,32 @@
             // 
             // panel20
             // 
-            this.panel20.Controls.Add(this.lbScoreMethodPath);
-            this.panel20.Controls.Add(this.btnScoreMethodFile);
+            this.panel20.Controls.Add(this.lbScoremethodPath);
+            this.panel20.Controls.Add(this.btnScoremethodFile);
             this.panel20.Controls.Add(this.label24);
             this.panel20.Location = new System.Drawing.Point(8, 218);
             this.panel20.Name = "panel20";
             this.panel20.Size = new System.Drawing.Size(477, 52);
             this.panel20.TabIndex = 5;
             // 
-            // lbScoreMethodPath
+            // lbScoremethodPath
             // 
-            this.lbScoreMethodPath.AutoSize = true;
-            this.lbScoreMethodPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbScoreMethodPath.Location = new System.Drawing.Point(6, 31);
-            this.lbScoreMethodPath.Name = "lbScoreMethodPath";
-            this.lbScoreMethodPath.Size = new System.Drawing.Size(41, 13);
-            this.lbScoreMethodPath.TabIndex = 2;
-            this.lbScoreMethodPath.Text = "label17";
+            this.lbScoremethodPath.AutoSize = true;
+            this.lbScoremethodPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbScoremethodPath.Location = new System.Drawing.Point(6, 31);
+            this.lbScoremethodPath.Name = "lbScoremethodPath";
+            this.lbScoremethodPath.Size = new System.Drawing.Size(41, 13);
+            this.lbScoremethodPath.TabIndex = 2;
+            this.lbScoremethodPath.Text = "label17";
             // 
-            // btnScoreMethodFile
+            // btnScoremethodFile
             // 
-            this.btnScoreMethodFile.Location = new System.Drawing.Point(330, 6);
-            this.btnScoreMethodFile.Name = "btnScoreMethodFile";
-            this.btnScoreMethodFile.Size = new System.Drawing.Size(126, 38);
-            this.btnScoreMethodFile.TabIndex = 1;
-            this.btnScoreMethodFile.Text = "Browse";
-            this.btnScoreMethodFile.UseVisualStyleBackColor = true;
+            this.btnScoremethodFile.Location = new System.Drawing.Point(330, 6);
+            this.btnScoremethodFile.Name = "btnScoremethodFile";
+            this.btnScoremethodFile.Size = new System.Drawing.Size(126, 38);
+            this.btnScoremethodFile.TabIndex = 1;
+            this.btnScoremethodFile.Text = "Browse";
+            this.btnScoremethodFile.UseVisualStyleBackColor = true;
             // 
             // label24
             // 
@@ -410,32 +434,32 @@
             // 
             // panel16
             // 
-            this.panel16.Controls.Add(this.lbCommonDosagesPath);
-            this.panel16.Controls.Add(this.btnCommonDosagesFile);
+            this.panel16.Controls.Add(this.lbCommondosagesPath);
+            this.panel16.Controls.Add(this.btnCommondosagesFile);
             this.panel16.Controls.Add(this.label16);
             this.panel16.Location = new System.Drawing.Point(8, 3);
             this.panel16.Name = "panel16";
             this.panel16.Size = new System.Drawing.Size(477, 46);
             this.panel16.TabIndex = 1;
             // 
-            // lbCommonDosagesPath
+            // lbCommondosagesPath
             // 
-            this.lbCommonDosagesPath.AutoSize = true;
-            this.lbCommonDosagesPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbCommonDosagesPath.Location = new System.Drawing.Point(6, 31);
-            this.lbCommonDosagesPath.Name = "lbCommonDosagesPath";
-            this.lbCommonDosagesPath.Size = new System.Drawing.Size(41, 13);
-            this.lbCommonDosagesPath.TabIndex = 2;
-            this.lbCommonDosagesPath.Text = "label17";
+            this.lbCommondosagesPath.AutoSize = true;
+            this.lbCommondosagesPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbCommondosagesPath.Location = new System.Drawing.Point(6, 31);
+            this.lbCommondosagesPath.Name = "lbCommondosagesPath";
+            this.lbCommondosagesPath.Size = new System.Drawing.Size(41, 13);
+            this.lbCommondosagesPath.TabIndex = 2;
+            this.lbCommondosagesPath.Text = "label17";
             // 
-            // btnCommonDosagesFile
+            // btnCommondosagesFile
             // 
-            this.btnCommonDosagesFile.Location = new System.Drawing.Point(330, 6);
-            this.btnCommonDosagesFile.Name = "btnCommonDosagesFile";
-            this.btnCommonDosagesFile.Size = new System.Drawing.Size(126, 38);
-            this.btnCommonDosagesFile.TabIndex = 1;
-            this.btnCommonDosagesFile.Text = "Browse";
-            this.btnCommonDosagesFile.UseVisualStyleBackColor = true;
+            this.btnCommondosagesFile.Location = new System.Drawing.Point(330, 6);
+            this.btnCommondosagesFile.Name = "btnCommondosagesFile";
+            this.btnCommondosagesFile.Size = new System.Drawing.Size(126, 38);
+            this.btnCommondosagesFile.TabIndex = 1;
+            this.btnCommondosagesFile.Text = "Browse";
+            this.btnCommondosagesFile.UseVisualStyleBackColor = true;
             // 
             // label16
             // 
@@ -488,31 +512,31 @@
             // 
             // panel13
             // 
-            this.panel13.Controls.Add(this.btnLookupTypesBrowse);
-            this.panel13.Controls.Add(this.tbLookupTypesDir);
+            this.panel13.Controls.Add(this.btnLookuptypeBrowse);
+            this.panel13.Controls.Add(this.tbLookuptypeDir);
             this.panel13.Controls.Add(this.label14);
             this.panel13.Location = new System.Drawing.Point(3, 177);
             this.panel13.Name = "panel13";
             this.panel13.Size = new System.Drawing.Size(745, 52);
             this.panel13.TabIndex = 19;
             // 
-            // btnLookupTypesBrowse
+            // btnLookuptypeBrowse
             // 
-            this.btnLookupTypesBrowse.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnLookupTypesBrowse.Location = new System.Drawing.Point(683, 5);
-            this.btnLookupTypesBrowse.Name = "btnLookupTypesBrowse";
-            this.btnLookupTypesBrowse.Size = new System.Drawing.Size(55, 33);
-            this.btnLookupTypesBrowse.TabIndex = 2;
-            this.btnLookupTypesBrowse.Text = "...";
-            this.btnLookupTypesBrowse.UseVisualStyleBackColor = true;
+            this.btnLookuptypeBrowse.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnLookuptypeBrowse.Location = new System.Drawing.Point(683, 5);
+            this.btnLookuptypeBrowse.Name = "btnLookuptypeBrowse";
+            this.btnLookuptypeBrowse.Size = new System.Drawing.Size(55, 33);
+            this.btnLookuptypeBrowse.TabIndex = 2;
+            this.btnLookuptypeBrowse.Text = "...";
+            this.btnLookuptypeBrowse.UseVisualStyleBackColor = true;
             // 
-            // tbLookupTypesDir
+            // tbLookuptypeDir
             // 
-            this.tbLookupTypesDir.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.tbLookupTypesDir.Location = new System.Drawing.Point(191, 8);
-            this.tbLookupTypesDir.Name = "tbLookupTypesDir";
-            this.tbLookupTypesDir.Size = new System.Drawing.Size(486, 26);
-            this.tbLookupTypesDir.TabIndex = 1;
+            this.tbLookuptypeDir.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.tbLookuptypeDir.Location = new System.Drawing.Point(191, 8);
+            this.tbLookuptypeDir.Name = "tbLookuptypeDir";
+            this.tbLookuptypeDir.Size = new System.Drawing.Size(486, 26);
+            this.tbLookuptypeDir.TabIndex = 1;
             // 
             // label14
             // 
@@ -1074,30 +1098,6 @@
             this.label11.TabIndex = 0;
             this.label11.Text = "Root Directory";
             // 
-            // pbSaving
-            // 
-            this.pbSaving.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbSaving.Location = new System.Drawing.Point(11, 762);
-            this.pbSaving.MarqueeAnimationSpeed = 10;
-            this.pbSaving.Name = "pbSaving";
-            this.pbSaving.Size = new System.Drawing.Size(1259, 13);
-            this.pbSaving.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.pbSaving.TabIndex = 25;
-            this.pbSaving.UseWaitCursor = true;
-            this.pbSaving.Visible = false;
-            // 
-            // btnLock
-            // 
-            this.btnLock.Enabled = false;
-            this.btnLock.Location = new System.Drawing.Point(410, 14);
-            this.btnLock.Name = "btnLock";
-            this.btnLock.Size = new System.Drawing.Size(90, 33);
-            this.btnLock.TabIndex = 2;
-            this.btnLock.Text = "Lock Files";
-            this.btnLock.UseVisualStyleBackColor = true;
-            this.btnLock.Click += new System.EventHandler(this.btnLock_Click);
-            // 
             // ConfigControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -1217,8 +1217,8 @@
         private System.Windows.Forms.TextBox tbClinicalDir;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Panel panel13;
-        private System.Windows.Forms.Button btnLookupTypesBrowse;
-        private System.Windows.Forms.TextBox tbLookupTypesDir;
+        private System.Windows.Forms.Button btnLookuptypeBrowse;
+        private System.Windows.Forms.TextBox tbLookuptypeDir;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Panel panel14;
         private System.Windows.Forms.Button btnVocabularyBrowse;
@@ -1227,8 +1227,8 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Panel panel15;
         private System.Windows.Forms.Panel panel20;
-        private System.Windows.Forms.Label lbScoreMethodPath;
-        private System.Windows.Forms.Button btnScoreMethodFile;
+        private System.Windows.Forms.Label lbScoremethodPath;
+        private System.Windows.Forms.Button btnScoremethodFile;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Panel panel19;
         private System.Windows.Forms.Label lbProductPath;
@@ -1243,8 +1243,8 @@
         private System.Windows.Forms.Button btnEntityFile;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Panel panel16;
-        private System.Windows.Forms.Label lbCommonDosagesPath;
-        private System.Windows.Forms.Button btnCommonDosagesFile;
+        private System.Windows.Forms.Label lbCommondosagesPath;
+        private System.Windows.Forms.Button btnCommondosagesFile;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Panel panel22;
         private System.Windows.Forms.Button btnAnalyse;

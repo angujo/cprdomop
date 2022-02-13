@@ -8,7 +8,6 @@ namespace WindowsFormsAppTest
         public SchemaHolderControl(WorkLoad workLoad)
         {
             InitializeComponent();
-            sourceProcessControl.SetWorkLoad(workLoad);
             dsSource.loadSchema("source", workLoad);
             dsVocabulary.loadSchema("vocabulary", workLoad);
             dsTarget.loadSchema("target", workLoad);

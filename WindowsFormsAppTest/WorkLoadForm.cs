@@ -19,8 +19,7 @@ namespace WindowsFormsAppTest
         private void Save()
         {
             workLoad.FilesLocked = workLoad.SourceProcessed;
-            Int64 Id = workLoad.InsertOrUpdate();
-            if (0 >= workLoad.Id) workLoad.Id = Id;
+            workLoad.InsertOrUpdate();
         }
 
         private void button1_Click(object sender, EventArgs e)

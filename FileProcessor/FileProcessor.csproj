@@ -56,6 +56,10 @@
     <Folder Include="scripts\postgres\precopy-vocabulary-updates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="scripts\postgres\lookup-merge.sql" />
+    <Content Include="scripts\postgres\insert-row.sql" />
+    <Content Include="scripts\postgres\drop-table-column.sql" />
+    <Content Include="scripts\postgres\add-table-column.sql" />
     <Content Include="scripts\postgres\create-vocabulary-indexes.sql" />
     <Content Include="scripts\postgres\create-indexes.sql" />
     <Content Include="scripts\postgres\copy-file.sql" />

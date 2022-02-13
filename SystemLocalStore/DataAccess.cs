@@ -18,6 +18,7 @@ namespace SystemLocalStore
                 return cnn.Query<SourceFile>("select * from SourceFile where WorkLoadId = @Id", workLoad).ToList();
             }
         }
+
         public static List<DBSchema> loadSchemas(WorkLoad workLoad)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
@@ -25,6 +26,7 @@ namespace SystemLocalStore
                 return cnn.Query<DBSchema>("select * from DBSchema where WorkLoadId = @Id", workLoad).ToList();
             }
         }
+
         public static DBSchema loadSchema(WorkLoad workLoad, string s_type)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
@@ -33,19 +35,34 @@ namespace SystemLocalStore
             }
         }
 
-        public static List<WorkLoad> loadWorkLoads()
+        public static T Load<T>(string table_name, Object parameters = null)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
-                return cnn.Query<WorkLoad>("select * from WorkLoad", new DynamicParameters()).ToList();
+                parameters = null == parameters ? new DynamicParameters() : parameters;
+                var wheres = string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
+                return cnn.QuerySingleOrDefault<T>($"select * from {table_name} {(wheres.Length > 0 ? ("WHERE " + wheres) : string.Empty)} LIMIT 1", parameters);
             }
         }
 
-        public static Int64 InsertOrUpdate(AbsTable absTable, bool loadInsertId = true)
+        public static List<T> LoadList<T>(string table_name, Object parameters = null)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
+                var empty = null == parameters;
+                parameters = empty ? new DynamicParameters() : parameters;
+                var wheres = empty ? string.Empty : string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
+                return cnn.Query<T>($"select * from {table_name} {(wheres.Length > 0 ? ("WHERE " + wheres) : string.Empty)}", parameters).ToList();
+            }
+        }
+
+        public static Int64? InsertOrUpdate(Object tblObject, bool loadInsertId = true)
+        {
+            if (!tblObject.GetType().IsSubclassOf(typeof(AbsTable))) return null;
+            using (IDbConnection cnn = new SQLiteConnection(connectionString()))
+            {
                 var sql = "";
+               var absTable = (AbsTable)tblObject;
                 var columns = absTable.FillableColumns().ToArray();
 
                 if (absTable.Exists()) sql = $"UPDATE {absTable.TableName()} SET {string.Join(", ", columns.Select(c => $"{c} = @{c}").ToArray())} WHERE Id = @Id;";
@@ -71,11 +88,15 @@ namespace SystemLocalStore
             }
         }
 
-        public static bool Delete(AbsTable absTable)
+        public static bool Delete(string table_name, object parameters = null)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
-                return 0 < cnn.Execute($"DELETE FROM {absTable.TableName()} WHERE Id = @Id", absTable);
+                if (parameters.GetType().IsSubclassOf(typeof(AbsTable))) { parameters = new { Id = ((AbsTable)parameters).Id }; }
+                var empty = null == parameters;
+                parameters = empty ? new DynamicParameters() : parameters;
+                var wheres = empty ? string.Empty : string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
+                return 0 < cnn.Execute($"DELETE FROM {table_name} {(wheres.Length > 0 ? ("WHERE " + wheres) : string.Empty)}", parameters);
             }
         }
 

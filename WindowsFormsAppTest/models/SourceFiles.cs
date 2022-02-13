@@ -100,10 +100,10 @@ namespace WindowsFormsAppTest.models
             set { lookupsDir = value; OnChangeEvent("LookupsDir"); }
         }
         string lookupTypesDir;
-        public string LookupTypesDir
+        public string LookuptypeDir
         {
             get { return lookupTypesDir ?? (!string.IsNullOrEmpty(LookupsDir) ? Path.Combine(LookupsDir, "TXTFiles") : String.Empty); }
-            set { lookupTypesDir = value; OnChangeEvent("LookupTypesDir"); }
+            set { lookupTypesDir = value; OnChangeEvent("LookuptypeDir"); }
         }
         //Vocabulary Dir
         string vocabularyDir;
@@ -128,14 +128,14 @@ namespace WindowsFormsAppTest.models
         List<string> staffFiles = new List<string>();
         List<string> testFiles = new List<string>();
         List<string> therapyFiles = new List<string>();
-        List<string> lookupTypesFiles = new List<string>();
+        List<string> lookuptypeFiles = new List<string>();
 
         //Lookup Files
         string commonDosagesFile;
-        public string CommonDosagesFile
+        public string CommondosagesFile
         {
             get { return commonDosagesFile ?? (!string.IsNullOrEmpty(LookupsDir) ? Path.Combine(LookupsDir, "processed", "common_dosages.txt") : String.Empty); }
-            set { commonDosagesFile = value; OnChangeEvent("CommonDosagesFile"); }
+            set { commonDosagesFile = value; OnChangeEvent("CommondosagesFile"); }
         }
         string entityFile;
         public string EntityFile
@@ -156,10 +156,10 @@ namespace WindowsFormsAppTest.models
             set { productFile = value; OnChangeEvent("ProductFile"); }
         }
         string scoreMethodFile;
-        public string ScoreMethodFile
+        public string ScoremethodFile
         {
             get { return scoreMethodFile ?? (!string.IsNullOrEmpty(LookupsDir) ? Path.Combine(LookupsDir, "processed", "scoremethod.txt") : String.Empty); }
-            set { scoreMethodFile = value; OnChangeEvent("ScoreMethodFile"); }
+            set { scoreMethodFile = value; OnChangeEvent("ScoremethodFile"); }
         }
 
         //Vocabulary Files

@@ -1,3 +1,3 @@
 ALTER TABLE {sc}.{tb} SET UNLOGGED;
-COPY {sc}.{tb} {cls} FROM '{fp}' WITH HEADER {dl};
+INSERT INTO {sc}.{tb} ({clms}) VALUES ({vals});
 ALTER TABLE {sc}.{tb} SET LOGGED;
