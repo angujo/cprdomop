@@ -21,8 +21,12 @@ namespace WindowsFormsAppTest
             //pbProgress.Visible = true;
 
             schema = DataAccess.loadSchema(workLoad, s_type.ToLower()) ?? new DBSchema();
-            schema.SchemaType = s_type;
-            schema.WorkLoadId = workLoad.Id;
+            if (!schema.Exists())
+            {
+                schema.SchemaType = s_type;
+                schema.WorkLoadId = workLoad.Id;
+            }
+
             schema.changeEvent = propName =>
             {
                 btnSave.Enabled = true;
@@ -38,16 +42,22 @@ namespace WindowsFormsAppTest
         private void DoBindings()
         {
             gbSchemaHolder.Text = $"{schema.SchemaType} Schema";
+
             tbServer.Name = $"{tbServer.Name}_{schema.SchemaType}";
             tbServer.DataBindings.Add("Text", schema, "Server");
+
             tbPort.Name = $"{tbPort.Name}_{schema.SchemaType}";
             tbPort.DataBindings.Add("Value", schema, "Port");
+
             tbDatabase.Name = $"{tbDatabase.Name}_{schema.SchemaType}";
             tbDatabase.DataBindings.Add("Text", schema, "DBName");
+
             tbSchema.Name = $"{tbSchema.Name}_{schema.SchemaType}";
             tbSchema.DataBindings.Add("Text", schema, "SchemaName");
+
             tbUsername.Name = $"{tbUsername.Name}_{schema.SchemaType}";
             tbUsername.DataBindings.Add("Text", schema, "Username");
+
             tbPassword.Name = $"{tbPassword.Name}_{schema.SchemaType}";
             tbPassword.DataBindings.Add("Text", schema, "Password");
         }
@@ -57,6 +67,7 @@ namespace WindowsFormsAppTest
             pbProgress.Visible = true;
             try
             {
+                schema.TestSuccess = false;
                 schema.InsertOrUpdate();
                 btnSave.Enabled = false;
                 btnTest.Enabled = true;

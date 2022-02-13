@@ -6,15 +6,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SystemLocalStore;
 using SystemLocalStore.models;
-using WindowsFormsAppTest.config.ui;
 using WindowsFormsAppTest.extensions;
-using WindowsFormsAppTest.localdb;
 using WindowsFormsAppTest.models;
 using WindowsFormsAppTest.utils;
 

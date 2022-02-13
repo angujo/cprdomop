@@ -41,9 +41,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbsDBMSProcessor.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="FileDBProcessor.cs" />
+    <Compile Include="PlaceHolder.cs" />
+    <Compile Include="postgres\PostgreProcessor.cs" />
     <Compile Include="ProcessorType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="scripts\postgres\postcopy-updates\" />
+    <Folder Include="scripts\postgres\postcopy-vocabulary-updates\" />
+    <Folder Include="scripts\postgres\precopy-updates\" />
+    <Folder Include="scripts\postgres\precopy-vocabulary-updates\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="scripts\postgres\create-vocabulary-indexes.sql" />
+    <Content Include="scripts\postgres\create-indexes.sql" />
+    <Content Include="scripts\postgres\copy-file.sql" />
+    <Content Include="scripts\postgres\create-vocabulary-tables.sql" />
+    <Content Include="scripts\postgres\get-columns.sql" />
+    <Content Include="scripts\postgres\create-tables.sql" />
+    <Content Include="scripts\postgres\create-schema.sql" />
+    <Content Include="scripts\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseProcessor\DatabaseProcessor.csproj">
+      <Project>{1D1CA331-DA5C-4464-8A15-E0838F57091E}</Project>
+      <Name>DatabaseProcessor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SystemLocalStore\SystemLocalStore.csproj">
+      <Project>{494836DA-D213-4F5D-9046-583E36702589}</Project>
+      <Name>SystemLocalStore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SystemLocalStore
+﻿namespace SystemLocalStore
 {
     public enum QAction
     {
         SOURCE_FILE,
-        OMOP_MAP
+        OMOP_MAP,
+        PRECOPY,
+        POSTCOPY,
+        COPY,
     }
 }

@@ -291,19 +291,21 @@ namespace WindowsFormsAppTest.models
 
         public IEnumerable<SourceFile> processedFiles(Int64 workLoadId)
         {
-            foreach (var property in holderProperties)
+            string[] ignoredDirs = { "rootdir", "vocabularydir","datadir", "lookupsdir" };
+            foreach (var property in holderProperties.Where(pi=>!ignoredDirs.Contains(pi.Name.ToLower())))
             {
                 var path = (string)property.GetValue(this);
                 var hash = Regex.Replace(property.Name, @"(File|Dir)$", "");
+                var IsFile = File.Exists(path);
                 yield return new SourceFile
                 {
                     WorkLoadId = workLoadId,
                     TableName = hash.ToSnakeCase(),
-                    FileName = path,
+                    FileName = IsFile ? Path.GetFileNameWithoutExtension(path) : (new DirectoryInfo(path)).Name,
                     FilePath = path,
                     FileHash = "[NO HASHING]", // path.ToFileMD5Hash(), // We will relook this later in future. Fails now
                     Code = hash,
-                    IsFile = File.Exists(path),
+                    IsFile = IsFile,
                     Processed = false
                 };
             }

@@ -5,8 +5,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SystemLocalStore.models;
 
 namespace SystemLocalStore
@@ -31,7 +29,7 @@ namespace SystemLocalStore
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
-                return cnn.QuerySingleOrDefault<DBSchema>("select * from DBSchema where WorkLoadId = @Id AND SchemaType = @SchemaType", new { Id = workLoad.Id, SchemaType = s_type });
+                return cnn.QuerySingleOrDefault<DBSchema>("select * from DBSchema where WorkLoadId = @Id AND SchemaType = @SchemaType LIMIT 1", new { Id = workLoad.Id, SchemaType = s_type });
             }
         }
 
@@ -43,18 +41,24 @@ namespace SystemLocalStore
             }
         }
 
-        public static Int64 InsertOrUpdate(AbsTable absTable)
+        public static Int64 InsertOrUpdate(AbsTable absTable, bool loadInsertId = true)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
                 var sql = "";
                 var columns = absTable.FillableColumns().ToArray();
-                if (0 < absTable.Id) sql = $"UPDATE {absTable.TableName()} SET {string.Join(", ", columns.Select(c => $"{c} = @{c}").ToArray())} WHERE Id = @Id";
-                else sql = $"insert into {absTable.TableName()} ({string.Join(", ", columns)}) values({string.Join(", ", columns.Select(c => $"@{c}"))})";
-                Console.WriteLine(sql);
+
+                if (absTable.Exists()) sql = $"UPDATE {absTable.TableName()} SET {string.Join(", ", columns.Select(c => $"{c} = @{c}").ToArray())} WHERE Id = @Id;";
+                else sql = $"insert into {absTable.TableName()} ({string.Join(", ", columns)}) values({string.Join(", ", columns.Select(c => $"@{c}"))});";
+
                 var r = cnn.Execute(sql, absTable);
-                if (0 >= absTable.Id) absTable.Id = r;
-                return absTable.Id;
+                if (loadInsertId && !absTable.Exists())
+                {
+                    r = cnn.QuerySingle<int>($"SELECT seq FROM sqlite_sequence WHERE name = @Name", new { Name = absTable.TableName() });
+                    absTable.Id = r;
+                }
+
+                return r;
             }
         }
 

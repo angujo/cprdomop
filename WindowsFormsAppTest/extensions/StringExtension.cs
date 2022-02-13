@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using WindowsFormsAppTest.errors;
 
 namespace WindowsFormsAppTest.extensions
@@ -28,7 +26,7 @@ namespace WindowsFormsAppTest.extensions
 
         public static string ToSnakeCase(this string str)
         {
-            return Regex.Replace(Regex.Replace(str, "(.*)([A-Z])", "$1_$2").ToLower(), "[^0-9a-zA-Z]+", "_");
+            return Regex.Replace(Regex.Replace(str.FirstCharToLower(), "(.*)([A-Z])", "$1_$2").ToLower(), "[^0-9a-zA-Z]+", "_");
         }
 
         public static string FirstCharWord(this string str)

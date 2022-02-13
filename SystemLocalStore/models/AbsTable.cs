@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Remoting;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SystemLocalStore.models
 {
@@ -22,6 +19,11 @@ namespace SystemLocalStore.models
         private string[] ignoreColumns = { "id", "propertychanged", "_values" };
 
         public Int64 Id { get { return _id; } set { _id = value; } }
+
+        public bool Exists()
+        {
+            return Id != null && default(Int64) != Id && 0 < Id;
+        }
 
         public string TableName()
         {
@@ -60,5 +62,7 @@ namespace SystemLocalStore.models
         {
             return DataAccess.Delete(this);
         }
+
+        public AbsTable ShallowCopy() { return (AbsTable)this.MemberwiseClone(); }
     }
 }

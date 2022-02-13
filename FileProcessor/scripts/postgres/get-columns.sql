@@ -1,0 +1,1 @@
+SELECT column_name FROM information_schema.COLUMNS WHERE table_schema='{sc}' AND table_name = '{tb}';

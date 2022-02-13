@@ -113,6 +113,12 @@
     <Compile Include="SchemaHolderControl.Designer.cs">
       <DependentUpon>SchemaHolderControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SourceProcessControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SourceProcessControl.Designer.cs">
+      <DependentUpon>SourceProcessControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControlForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -155,6 +161,9 @@
     </Compile>
     <EmbeddedResource Include="SchemaHolderControl.resx">
       <DependentUpon>SchemaHolderControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SourceProcessControl.resx">
+      <DependentUpon>SourceProcessControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControlForm.resx">
       <DependentUpon>UserControlForm.cs</DependentUpon>
@@ -205,6 +214,10 @@
       <Project>{1D1CA331-DA5C-4464-8A15-E0838F57091E}</Project>
       <Name>DatabaseProcessor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FileProcessor\FileProcessor.csproj">
+      <Project>{0F059105-A83E-4BF0-8D81-DDF121DE88CC}</Project>
+      <Name>FileProcessor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SystemLocalStore\SystemLocalStore.csproj">
       <Project>{494836da-d213-4f5d-9046-583e36702589}</Project>
       <Name>SystemLocalStore</Name>
@@ -218,4 +231,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(SolutionDir)FileProcessor\scripts $(TargetDir)filescripts\ /E /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
