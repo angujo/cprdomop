@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 
 namespace SystemService
 {
-    public partial class Service1 : ServiceBase
+    public partial class OMOPService : ServiceBase
     {
-        public Service1()
+        public OMOPService()
         {
             InitializeComponent();
+
         }
 
         protected override void OnStart(string[] args)

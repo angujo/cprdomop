@@ -17,7 +17,7 @@ namespace SystemService
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                new Service1()
+                new OMOPService()
             };
             ServiceBase.Run(ServicesToRun);
         }
