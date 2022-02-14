@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS {sc}.additional (
 	data10 varchar(20) NULL DEFAULT NULL::character varying,
 	data11 varchar(20) NULL DEFAULT NULL::character varying,
 	data12 varchar(20) NULL DEFAULT NULL::character varying,
+	data13 varchar(20) NULL DEFAULT NULL::character varying,
+	data14 varchar(20) NULL DEFAULT NULL::character varying,
 	CONSTRAINT additional_pkey PRIMARY KEY (id)
 );
 
@@ -222,7 +224,7 @@ CREATE TABLE IF NOT EXISTS {sc}.immunisation (
 CREATE TABLE IF NOT EXISTS {sc}.lookup (
 	lookup_id serial8 NOT NULL,
 	lookup_type_id int8 NULL,
-	code int2 NOT NULL,
+	code int2 NULL,
 	"text" varchar(100) NULL DEFAULT NULL::character varying,
 	CONSTRAINT lookup_pkey PRIMARY KEY (lookup_id)
 );
@@ -235,8 +237,8 @@ CREATE TABLE IF NOT EXISTS {sc}.lookup (
 
 CREATE TABLE IF NOT EXISTS {sc}.lookuptype (
 	lookup_type_id bigserial NOT NULL,
-	"name" varchar(3) NOT NULL,
-	description varchar(3) NOT NULL,
+	"name" varchar(4) NOT NULL,
+	description varchar(260) NOT NULL,
 	CONSTRAINT lookuptype_pkey PRIMARY KEY (lookup_type_id)
 );
 

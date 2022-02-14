@@ -184,7 +184,7 @@ namespace WindowsFormsAppTest
                 await Task.Run(() =>
                 {
                     DataAccess.CleanSourceFiles(workLoad);
-                    foreach (var sf in sourceFiles.processedFiles(workLoad.Id))
+                    foreach (var sf in sourceFiles.processedFiles((long)workLoad.Id))
                     {
                         sf.InsertOrUpdate();
                     }

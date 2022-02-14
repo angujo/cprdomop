@@ -45,14 +45,15 @@ namespace SystemLocalStore
             }
         }
 
-        public static List<T> LoadList<T>(string table_name, Object parameters = null)
+        public static List<T> LoadList<T>(string table_name, Object parameters = null, int? limit = null, int? offset = null)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
                 var empty = null == parameters;
                 parameters = empty ? new DynamicParameters() : parameters;
                 var wheres = empty ? string.Empty : string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
-                return cnn.Query<T>($"select * from {table_name} {(wheres.Length > 0 ? ("WHERE " + wheres) : string.Empty)}", parameters).ToList();
+                var _limit = (null != limit ? $"LIMIT {limit}" : string.Empty) + (null != offset ? $"OFFSET {offset}" : string.Empty);
+                return cnn.Query<T>($"select * from {table_name} {(wheres.Length > 0 ? ("WHERE " + wheres) : string.Empty)} {_limit}", parameters).ToList();
             }
         }
 
@@ -62,7 +63,7 @@ namespace SystemLocalStore
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
                 var sql = "";
-               var absTable = (AbsTable)tblObject;
+                var absTable = (AbsTable)tblObject;
                 var columns = absTable.FillableColumns().ToArray();
 
                 if (absTable.Exists()) sql = $"UPDATE {absTable.TableName()} SET {string.Join(", ", columns.Select(c => $"{c} = @{c}").ToArray())} WHERE Id = @Id;";
@@ -105,6 +106,13 @@ namespace SystemLocalStore
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
                 cnn.Execute("UPDATE WorkLoad SET FilesLocked = 1  WHERE Id = @Id", workLoad);
+            }
+        }
+        public static WorkQueue ForQueues()
+        {
+            using (IDbConnection cnn = new SQLiteConnection(connectionString()))
+            {
+                return cnn.QuerySingleOrDefault<WorkQueue>("select * from WorkQueue where Status IN @Stats ORDER BY Id ASC", new { Stats = new int[] { (int)Status.PAUSED, (int)Status.STOPPED, (int)Status.QUEUED } });
             }
         }
 

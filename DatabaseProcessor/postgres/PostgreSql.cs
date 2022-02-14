@@ -18,6 +18,9 @@ namespace DatabaseProcessor.postgres
                 @"User Id="+ schema.Username,
                 @"Password="+ schema.Password,
                 @"Database="+ schema.DBName,
+                @"ApplicationName=OMOPBuilder",
+                @"Pooling=false",
+                @"CommandTimeout=36000"
             });
         }
 
@@ -31,9 +34,27 @@ namespace DatabaseProcessor.postgres
             throw new NotImplementedException();
         }
 
-        public override void RunQuery(string sql)
+        public override async void RunQuery(string sql)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    conn.Open();
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = sql;
+                        cmd.ExecuteNonQuery();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(sql);
+                Console.WriteLine(ex.ToString());
+                throw ex;
+            }
         }
 
         public override void RunQueue(Queue queue)

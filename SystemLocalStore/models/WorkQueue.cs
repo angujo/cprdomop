@@ -11,5 +11,7 @@ namespace SystemLocalStore.models
         public DateTime EndTime { get; set; }
         public Status Status { get; set; }
         public int? ProgressPercent { get; set; }
+
+        public static WorkQueue NextAvailable() { return DataAccess.ForQueues(); }
     }
 }

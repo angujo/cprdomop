@@ -39,73 +39,125 @@ namespace FileProcessor
             return queue;
         }
 
-        protected dynamic GetScriptContent(string file_name)
+        protected T GetScriptContent<T>(string file_name)
         {
             var filePath = File.Exists(file_name) || Directory.Exists(file_name) ? file_name : Path.Combine(Environment.CurrentDirectory, "filescripts", DBMSName, file_name);
             if (File.Exists(filePath))
             {
-                return File.ReadAllText(filePath);
+                return (T)Convert.ChangeType(File.ReadAllText(filePath), typeof(T));
             }
             if (Directory.Exists(filePath))
             {
-                return Directory.GetFiles(filePath, "*.sql", SearchOption.AllDirectories).OrderBy(f => Path.GetFileNameWithoutExtension(f))
-                    .Select(p => (string)GetScriptContent(p)).ToArray();
+                var v = Directory.GetFiles(filePath, "*.sql", SearchOption.AllDirectories).OrderBy(f => Path.GetFileNameWithoutExtension(f))
+                    .Select(p => GetScriptContent<string>(p)).ToArray();
+                return (T)Convert.ChangeType(v, typeof(T));
             }
-            return string.Empty;
+            return default(T);
         }
 
         private Queue createSourceSchema()
         {
-            Queue queue = new Queue();
-            queue.TaskIndex = Index++;
-            queue.FilePath = "[Source Schema Creator]";
-            queue.FileContent = ((string)GetScriptContent("create-schema.sql")).ReplaceSchema(sourceSchema).ClearHolders();
-            return queue;
+            return new Queue
+            {
+                TaskIndex = Index++,
+                ParallelIndex = 0,
+                Ordinal = 0,
+                DBSchemaId = (long)sourceSchema.Id,
+                FilePath = "[Source Schema Creator]",
+                FileContent = (GetScriptContent<string>("create-schema.sql")).ReplaceSchema(sourceSchema).ClearHolders()
+            };
+        }
+
+        private Queue dropSourceTables()
+        {
+            return new Queue
+            {
+                TaskIndex = Index++,
+                ParallelIndex = 0,
+                Ordinal = 0,
+                DBSchemaId = (long)sourceSchema.Id,
+                FilePath = "[Source Schema Clean Tables]",
+                FileContent = (GetScriptContent<string>("drop-tables.sql")).ReplaceSchema(sourceSchema).ClearHolders()
+            };
         }
 
         private Queue createSourceTables()
         {
-            Queue queue = new Queue();
-            queue.TaskIndex = Index++;
-            queue.FilePath = "[Source Tables Creator]";
-            queue.FileContent = ((string)GetScriptContent("create-tables.sql")).ReplaceSchema(sourceSchema).ClearHolders();
-            return queue;
+            return new Queue
+            {
+                TaskIndex = Index++,
+                ParallelIndex = 0,
+                Ordinal = 0,
+                DBSchemaId = (long)sourceSchema.Id,
+                FilePath = "[Source Tables Creator]",
+                FileContent = (GetScriptContent<string>("create-tables.sql")).ReplaceSchema(sourceSchema).ClearHolders()
+            };
         }
 
         private Queue createSourceIndexes()
         {
-            Queue queue = new Queue();
-            queue.TaskIndex = Index++;
-            queue.FilePath = "[Source Indexes Creator]";
-            queue.FileContent = ((string)GetScriptContent("create-indexes.sql")).ReplaceSchema(sourceSchema).ClearHolders();
+            Queue queue = new Queue
+            {
+                TaskIndex = Index++,
+                ParallelIndex = 0,
+                Ordinal = 0,
+                DBSchemaId = (long)sourceSchema.Id,
+                FilePath = "[Source Indexes Creator]",
+                FileContent = (GetScriptContent<string>("create-indexes.sql")).ReplaceSchema(sourceSchema).ClearHolders()
+            };
             return queue;
         }
 
         private Queue createVocabularySchema()
         {
-            Queue queue = new Queue();
-            queue.TaskIndex = Index++;
-            queue.FilePath = "[Vocabulary Schema Creator]";
-            queue.FileContent = ((string)GetScriptContent("create-schema.sql")).ReplaceSchema(vocabularySchema).ClearHolders();
-            return queue;
+            return new Queue
+            {
+                TaskIndex = Index++,
+                ParallelIndex = 0,
+                Ordinal = 0,
+                DBSchemaId = (long)vocabularySchema.Id,
+                FilePath = "[Vocabulary Schema Creator]",
+                FileContent = (GetScriptContent<string>("create-schema.sql")).ReplaceSchema(vocabularySchema).ClearHolders()
+            };
+        }
+
+        private Queue dropVocabularyTables()
+        {
+            return new Queue
+            {
+                TaskIndex = Index++,
+                ParallelIndex = 0,
+                Ordinal = 0,
+                DBSchemaId = (long)vocabularySchema.Id,
+                FilePath = "[Vocabulary Schema Clean Tables]",
+                FileContent = (GetScriptContent<string>("drop-vocabulary-tables.sql")).ReplaceSchema(vocabularySchema).ClearHolders()
+            };
         }
 
         private Queue createVocabularyTables()
         {
-            Queue queue = new Queue();
-            queue.TaskIndex = Index++;
-            queue.FilePath = "[Vocabulary Tables Creator]";
-            queue.FileContent = ((string)GetScriptContent("create-vocabulary-tables.sql")).ReplaceSchema(vocabularySchema).ClearHolders();
-            return queue;
+            return new Queue
+            {
+                TaskIndex = Index++,
+                ParallelIndex = 0,
+                Ordinal = 0,
+                DBSchemaId = (long)vocabularySchema.Id,
+                FilePath = "[Vocabulary Tables Creator]",
+                FileContent = (GetScriptContent<string>("create-vocabulary-tables.sql")).ReplaceSchema(vocabularySchema).ClearHolders()
+            };
         }
 
         private Queue createVocabularyIndexes()
         {
-            Queue queue = new Queue();
-            queue.TaskIndex = Index++;
-            queue.FilePath = "[Vocabulary Indexes Creator]";
-            queue.FileContent = ((string)GetScriptContent("create-vocabulary-indexes.sql")).ReplaceSchema(vocabularySchema).ClearHolders();
-            return queue;
+            return new Queue
+            {
+                TaskIndex = Index++,
+                ParallelIndex = 0,
+                Ordinal = 0,
+                DBSchemaId = (long)vocabularySchema.Id,
+                FilePath = "[Vocabulary Indexes Creator]",
+                FileContent = (GetScriptContent<string>("create-vocabulary-indexes.sql")).ReplaceSchema(vocabularySchema).ClearHolders()
+            };
         }
 
         private Queue[] createCopies()
@@ -200,41 +252,49 @@ namespace FileProcessor
 
         private Queue mergeLookupTables(int tIndex, int pIndex, int ordinal)
         {
-            Queue queue = new Queue();
-            queue.TaskIndex = tIndex;
-            queue.ParallelIndex = pIndex;
-            queue.Ordinal = ordinal;
-            queue.FilePath = "[Merge Lookup Tables]";
-            queue.FileContent = ((string)GetScriptContent("lookup-merge.sql")).ReplaceSchema(sourceSchema)
-                .ClearHolders();
-            return queue;
+            return new Queue
+            {
+                TaskIndex = tIndex,
+                ParallelIndex = pIndex,
+                Ordinal = ordinal,
+                FilePath = "[Merge Lookup Tables]",
+                DBSchemaId = (long)sourceSchema.Id,
+                FileContent = (GetScriptContent<string>("lookup-merge.sql")).ReplaceSchema(sourceSchema)
+                .ClearHolders()
+            };
         }
 
         private Queue modifyLookupTable(string file_name, SourceFile sourceFile, int tIndex, int pIndex, int ordinal, string name)
         {
-            Queue queue = new Queue();
-            queue.TaskIndex = tIndex;
-            queue.ParallelIndex = pIndex;
-            queue.Ordinal = ordinal;
-            queue.FilePath = name;
-            queue.FileContent = ((string)GetScriptContent(file_name)).ReplaceSchema(sourceSchema)
-                .ReplaceTable(sourceFile)
+            Queue queue = new Queue
+            {
+                TaskIndex = tIndex,
+                ParallelIndex = pIndex,
+                Ordinal = ordinal,
+                FilePath = name,
+                DBSchemaId = (long)sourceSchema.Id,
+                FileContent = (GetScriptContent<string>(file_name)).ReplaceSchema(sourceSchema)
+                .Replace("{tb}", "lookup")
                 .Replace("{clm}", "temp_file_name")
                 .Replace("{dtype}", "VARCHAR(240) NOT NULL")
-                .ClearHolders();
+                .ClearHolders()
+            };
             return queue;
         }
 
         private Queue[] createUpdates(string file_name, DBSchema schema)
         {
-            return ((string[])GetScriptContent(file_name)).Select(c =>
-            {
-                Queue queue = new Queue();
-                queue.ParallelIndex = Index++;
-                queue.FilePath = $"[{file_name}]";
-                queue.FileContent = c.ReplaceSchema(schema).ClearHolders();
-                return queue;
-            }).ToArray();
+            return (GetScriptContent<string[]>(file_name) ?? new string[] { }).Select(c =>
+              {
+                  Queue queue = new Queue
+                  {
+                      ParallelIndex = Index++,
+                      FilePath = $"[{file_name}]",
+                      DBSchemaId = (long)schema.Id,
+                      FileContent = c.ReplaceSchema(schema).ClearHolders()
+                  };
+                  return queue;
+              }).ToArray();
         }
 
         private Queue[] createPostSourceUpdates() { return createUpdates("postcopy-updates", sourceSchema); }
@@ -244,15 +304,17 @@ namespace FileProcessor
 
         private Queue createCopy(SourceFile sourceFile, int tIndex, int pIndex, int ord = 0)
         {
-            Queue q = new Queue();
-            q.TaskIndex = tIndex;
-            q.ParallelIndex = pIndex;
-            q.Ordinal = ord;
-            q.FilePath = sourceFile.FilePath;
             var isVocab = vocabularyTables.Contains(sourceFile.TableName);
             var schema = isVocab ? vocabularySchema : sourceSchema;
-            q.FileContent = ((string)GetScriptContent("copy-file.sql")).Replace("{cls}", fileColumns(sourceFile)).ReplaceAllHolders(schema, sourceFile);
-            return q;
+            return new Queue
+            {
+                TaskIndex = tIndex,
+                ParallelIndex = pIndex,
+                Ordinal = ord,
+                DBSchemaId = (long)schema.Id,
+                FilePath = sourceFile.FilePath,
+                FileContent = GetScriptContent<string>("copy-file.sql").Replace("{cls}", fileColumns(sourceFile)).ReplaceAllHolders(schema, sourceFile)
+            };
         }
 
         private string fileColumns(SourceFile source, bool isCSV = false)
@@ -262,7 +324,7 @@ namespace FileProcessor
             {
                 string line = reader.ReadLine();
                 var cols = isCSV ? (new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))")).Split(line) : line.Split('\t');
-                return cols.Length > 0 ? "(" + string.Join(", ", cols) + ")" : string.Empty;
+                return cols.Length > 0 ? "(" + string.Join(", ", cols.Select(c=>$"\"{c}\"")) + ")" : string.Empty;
             }
         }
 
@@ -289,6 +351,8 @@ namespace FileProcessor
             {
                 createSourceSchema(),
                 createVocabularySchema(),
+                dropSourceTables(),
+                dropVocabularyTables(),
                 createSourceTables(),
                 createVocabularyTables(),
             };

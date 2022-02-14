@@ -16,11 +16,9 @@ CREATE INDEX additional_data7_idx ON {sc}.additional USING btree (data7);
 
 CREATE INDEX additional_patid_idx ON {sc}.additional USING btree (patid);
 
-CREATE UNIQUE INDEX additional_pkey ON {sc}.additional USING btree (id);
+CREATE UNIQUE INDEX additional_idx_pkey ON {sc}.additional USING btree (id);
 
 CREATE INDEX idx_add_enttype ON {sc}.additional USING btree (enttype);
-
-CREATE INDEX chunkid_idx ON {sc}._chunks USING btree (chunkid);
 
 CREATE INDEX clinical_adid_idx ON {sc}.clinical USING btree (adid);
 
@@ -32,13 +30,13 @@ CREATE INDEX clinical_patid_adid_idx ON {sc}.clinical USING btree (patid, adid);
 
 CREATE INDEX clinical_patid_idx ON {sc}.clinical USING btree (patid);
 
-CREATE UNIQUE INDEX clinical_pkey ON {sc}.clinical USING btree (id);
+CREATE UNIQUE INDEX clinical_idx_pkey ON {sc}.clinical USING btree (id);
 
 CREATE INDEX clinical_staffid_idx ON {sc}.clinical USING btree (staffid);
 
 CREATE INDEX idx_clin_medcode ON {sc}.clinical USING btree (medcode);
 
-CREATE UNIQUE INDEX commondosages_pkey ON {sc}.commondosages USING btree (dosageid);
+CREATE UNIQUE INDEX commondosages_idx_pkey ON {sc}.commondosages USING btree (dosageid);
 
 CREATE INDEX idx_cdosage ON {sc}.commondosages USING btree (dosageid, daily_dose);
 
@@ -52,7 +50,7 @@ CREATE INDEX consultation_patid_consid_idx ON {sc}.consultation USING btree (pat
 
 CREATE INDEX consultation_patid_idx ON {sc}.consultation USING btree (patid);
 
-CREATE UNIQUE INDEX consultation_pkey ON {sc}.consultation USING btree (id);
+CREATE UNIQUE INDEX consultation_idx_pkey ON {sc}.consultation USING btree (id);
 
 CREATE INDEX consultation_staffid_idx ON {sc}.consultation USING btree (staffid);
 
@@ -88,7 +86,7 @@ CREATE INDEX entity_data9_lkup_idx ON {sc}.entity USING btree (data9_lkup);
 
 CREATE INDEX entity_enttype_idx ON {sc}.entity USING btree (enttype);
 
-CREATE UNIQUE INDEX entity_pkey ON {sc}.entity USING btree (enttype, filetype, data_fields);
+CREATE UNIQUE INDEX entity_idx_pkey ON {sc}.entity USING btree (enttype, filetype, data_fields);
 
 CREATE INDEX idx_imm_medcode ON {sc}.immunisation USING btree (medcode);
 
@@ -96,7 +94,7 @@ CREATE INDEX immunisation_consid_idx ON {sc}.immunisation USING btree (consid);
 
 CREATE INDEX immunisation_patid_idx ON {sc}.immunisation USING btree (patid);
 
-CREATE UNIQUE INDEX immunisation_pkey ON {sc}.immunisation USING btree (id);
+CREATE UNIQUE INDEX immunisation_idx_pkey ON {sc}.immunisation USING btree (id);
 
 CREATE INDEX immunisation_staffid_idx ON {sc}.immunisation USING btree (staffid);
 
@@ -106,21 +104,21 @@ CREATE INDEX lookup_code_idx ON {sc}.lookup USING btree (code);
 
 CREATE UNIQUE INDEX lookup_lookup_id_idx ON {sc}.lookup USING btree (lookup_id);
 
-CREATE UNIQUE INDEX lookup_pkey ON {sc}.lookup USING btree (lookup_id, lookup_type_id, code);
+CREATE UNIQUE INDEX lookup_idx_pkey ON {sc}.lookup USING btree (lookup_id, lookup_type_id, code);
 
-CREATE INDEX idx_med_medcode ON {sc}.medical USING btree (medcode, read_code);
+CREATE INDEX idx_med_medcode ON {sc}.medical USING btree (medcode, readcode);
 
 CREATE UNIQUE INDEX medical_medcode_idx ON {sc}.medical USING btree (medcode);
 
-CREATE UNIQUE INDEX medical_pkey ON {sc}.medical USING btree (medcode);
+CREATE UNIQUE INDEX medical_idx_pkey ON {sc}.medical USING btree (medcode);
 
-CREATE UNIQUE INDEX medical_read_code_idx ON {sc}.medical USING btree (read_code);
+CREATE UNIQUE INDEX medical_read_code_idx ON {sc}.medical USING btree (readcode);
 
 CREATE INDEX idx_pat_frd ON {sc}.patient USING btree (patid, frd);
 
 CREATE UNIQUE INDEX patient_patid_idx ON {sc}.patient USING btree (patid);
 
-CREATE UNIQUE INDEX patient_pkey ON {sc}.patient USING btree (patid, gender, yob);
+CREATE UNIQUE INDEX patient_idx_pkey ON {sc}.patient USING btree (patid, gender, yob);
 
 CREATE INDEX patient_pracid_idx ON {sc}.patient USING btree (pracid);
 
@@ -130,7 +128,7 @@ CREATE INDEX referral_consid_idx ON {sc}.referral USING btree (consid);
 
 CREATE INDEX referral_patid_idx ON {sc}.referral USING btree (patid);
 
-CREATE UNIQUE INDEX referral_pkey ON {sc}.referral USING btree (id);
+CREATE UNIQUE INDEX referral_idx_pkey ON {sc}.referral USING btree (id);
 
 CREATE INDEX referral_staffid_idx ON {sc}.referral USING btree (staffid);
 
@@ -158,7 +156,7 @@ CREATE INDEX test_enttype_idx ON {sc}.test USING btree (enttype);
 
 CREATE INDEX test_patid_idx ON {sc}.test USING btree (patid);
 
-CREATE UNIQUE INDEX test_pkey ON {sc}.test USING btree (id);
+CREATE UNIQUE INDEX test_idx_pkey ON {sc}.test USING btree (id);
 
 CREATE INDEX test_staffid_idx ON {sc}.test USING btree (staffid);
 
@@ -172,7 +170,7 @@ CREATE INDEX therapy_packtype_idx ON {sc}.therapy USING btree (packtype);
 
 CREATE INDEX therapy_patid_idx ON {sc}.therapy USING btree (patid);
 
-CREATE UNIQUE INDEX therapy_pkey ON {sc}.therapy USING btree (id);
+CREATE UNIQUE INDEX therapy_idx_pkey ON {sc}.therapy USING btree (id);
 
 CREATE INDEX therapy_prodcode_idx ON {sc}.therapy USING btree (prodcode);
 
@@ -182,9 +180,9 @@ CREATE UNIQUE INDEX lookuptype_lookup_type_id_idx ON {sc}.lookuptype USING btree
 
 CREATE INDEX lookuptype_name_idx ON {sc}.lookuptype USING btree (name);
 
-CREATE UNIQUE INDEX lookuptype_pkey ON {sc}.lookuptype USING btree (lookup_type_id, name);
+CREATE UNIQUE INDEX lookuptype_idx_pkey ON {sc}.lookuptype USING btree (lookup_type_id, name);
 
-CREATE UNIQUE INDEX practice_pkey ON {sc}.practice USING btree (pracid, region);
+CREATE UNIQUE INDEX practice_idx_pkey ON {sc}.practice USING btree (pracid, region);
 
 CREATE INDEX practice_pracid_idx ON {sc}.practice USING btree (pracid);
 
@@ -194,10 +192,10 @@ CREATE INDEX product_dmdcode_idx ON {sc}.product USING btree (dmdcode);
 
 CREATE INDEX product_gemscriptcode_idx ON {sc}.product USING btree (gemscriptcode);
 
-CREATE UNIQUE INDEX product_pkey ON {sc}.product USING btree (prodcode);
+CREATE UNIQUE INDEX product_idx_pkey ON {sc}.product USING btree (prodcode);
 
-CREATE UNIQUE INDEX scoringmethod_pkey ON {sc}.scoringmethod USING btree (code);
+CREATE UNIQUE INDEX scoringmethod_idx_pkey ON {sc}.scoremethod USING btree (code);
 
-CREATE UNIQUE INDEX staff_pkey ON {sc}.staff USING btree (staffid, role);
+CREATE UNIQUE INDEX staff_idx_pkey ON {sc}.staff USING btree (staffid, role);
 
 CREATE INDEX staff_staffid_idx ON {sc}.staff USING btree (staffid);

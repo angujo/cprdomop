@@ -56,6 +56,8 @@
     <Folder Include="scripts\postgres\precopy-vocabulary-updates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="scripts\postgres\drop-vocabulary-tables.sql" />
+    <Content Include="scripts\postgres\drop-tables.sql" />
     <Content Include="scripts\postgres\lookup-merge.sql" />
     <Content Include="scripts\postgres\insert-row.sql" />
     <Content Include="scripts\postgres\drop-table-column.sql" />
@@ -67,6 +69,7 @@
     <Content Include="scripts\postgres\get-columns.sql" />
     <Content Include="scripts\postgres\create-tables.sql" />
     <Content Include="scripts\postgres\create-schema.sql" />
+    <Content Include="scripts\TODO.txt" />
     <Content Include="scripts\README.txt" />
   </ItemGroup>
   <ItemGroup>
