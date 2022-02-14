@@ -226,6 +226,10 @@
       <Project>{494836da-d213-4f5d-9046-583e36702589}</Project>
       <Name>SystemLocalStore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SystemService\SystemService.csproj">
+      <Project>{6797D753-0885-4A0D-B91D-C64CE7FB011B}</Project>
+      <Name>SystemService</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />

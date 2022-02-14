@@ -33,7 +33,7 @@
             // 
             // OMOPService
             // 
-            this.ServiceName = "Service1";
+            this.ServiceName = "OMOPService";
             ((System.ComponentModel.ISupportInitialize)(this.eventLog)).EndInit();
 
         }

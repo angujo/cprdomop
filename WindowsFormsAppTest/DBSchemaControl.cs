@@ -24,7 +24,7 @@ namespace WindowsFormsAppTest
             if (!schema.Exists())
             {
                 schema.SchemaType = s_type;
-                schema.WorkLoadId = workLoad.Id;
+                schema.WorkLoadId = (long)workLoad.Id;
             }
 
             schema.changeEvent = propName =>

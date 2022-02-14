@@ -33,11 +33,14 @@
             // 
             // serviceProcessInstaller1
             // 
+            this.serviceProcessInstaller1.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
             this.serviceProcessInstaller1.Password = null;
             this.serviceProcessInstaller1.Username = null;
             // 
             // serviceInstaller1
             // 
+            this.serviceInstaller1.Description = "Service that runs queues for the OMOP CDM Builder for CPRD Based Data(Oxford)";
+            this.serviceInstaller1.DisplayName = "OMOPService";
             this.serviceInstaller1.ServiceName = "OMOPService";
             // 
             // ProjectInstaller

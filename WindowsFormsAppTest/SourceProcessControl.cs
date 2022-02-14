@@ -1,11 +1,13 @@
 ﻿using FileProcessor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SystemLocalStore;
 using SystemLocalStore.models;
+using SystemService;
 
 namespace WindowsFormsAppTest
 {
@@ -37,7 +39,7 @@ namespace WindowsFormsAppTest
                 lvQueue.Items.Clear();
                 foreach (var q in queues)
                 {
-                    ListViewItem listViewItem = new ListViewItem($"{q.TaskIndex}-{q.ParallelIndex}-{q.Ordinal ?? 0}", 0);
+                    ListViewItem listViewItem = new ListViewItem($"{q.TaskIndex}-{q.ParallelIndex}-{q.Ordinal}", 0);
                     listViewItem.SubItems.Add(q.FilePath);
                     listViewItem.SubItems.Add("0%");
                     lvQueue.Items.Add(listViewItem);
@@ -46,15 +48,14 @@ namespace WindowsFormsAppTest
             catch (Exception ex)
             {
                 MessageBox.Show(null, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine(ex.ToString());
             }
             finally
             {
                 btnQueue.Enabled = true;
                 btnLoad.Enabled = true;
                 pbProgress.Visible = false;
-
             }
-
         }
 
         private void loadQueues(bool force = false)
@@ -80,16 +81,20 @@ namespace WindowsFormsAppTest
                     var wq = WorkQueue.Load<WorkQueue>(new { WorkLoadId = workLoad.Id, QueueType = QAction.SOURCE_FILE }) ??
                     (new WorkQueue
                     {
-                        WorkLoadId = workLoad.Id,
+                        WorkLoadId = (long)workLoad.Id,
                         Name = Guid.NewGuid().ToString(),
+                        QueueType = QAction.SOURCE_FILE,
+                        Status = Status.QUEUED
                     }).InsertOrUpdate(true);
                     Queue.Delete<Queue>(new { WorkQueueId = wq.Id });
-                    Queue.InsertOrUpdate<Queue>(queues.Select(q => { q.WorkQueueId = wq.Id; return q; }).ToList());
+                    Queue.InsertOrUpdate<Queue>(queues.Select(q => { q.WorkQueueId = (long)wq.Id; return q; }).ToList());
                 });
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show(null, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine(ex.ToString());
             }
             finally
             {
@@ -98,6 +103,11 @@ namespace WindowsFormsAppTest
                 pbProgress.Visible = false;
 
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            QueueRun.DoRun();
         }
     }
 }

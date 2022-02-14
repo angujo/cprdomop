@@ -8,7 +8,7 @@ namespace SystemLocalStore.models
     public abstract class AbsTable : INotifyPropertyChanged
     {
         // Hold the ID here
-        private Int64 _id = 0;
+        private Int64? _id;
 
         public Action<string> changeEvent;
 
@@ -18,7 +18,7 @@ namespace SystemLocalStore.models
 
         private string[] ignoreColumns = { "id", "propertychanged", "_values" };
 
-        public Int64 Id { get { return _id; } set { _id = value; } }
+        public Int64? Id { get { return _id; } set { _id = value; } }
 
         public bool Exists()
         {
@@ -80,6 +80,13 @@ namespace SystemLocalStore.models
         {
             return DataAccess.Load<T>(typeof(T).Name, parameters);
         }
+
+        public static T LoadOrNew<T>(Object parameters = null)
+        {
+            var ld = Load<T>(parameters);
+            return null == ld ? (T)Activator.CreateInstance(typeof(T), new Object { }) : ld;
+        }
+
         public static List<T> List<T>(Object parameters = null)
         {
             return DataAccess.LoadList<T>(typeof(T).Name, parameters);

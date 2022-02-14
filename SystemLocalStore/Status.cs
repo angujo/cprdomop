@@ -6,6 +6,9 @@
         RUNNING,
         PAUSED,
         STOPPED,
-        ERROR
+        ERROR,
+        SHUTDOWN,
+        QUEUED,
+        ERROR_EXIT,
     }
 }
