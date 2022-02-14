@@ -49,6 +49,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ndorms.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
@@ -138,6 +141,7 @@
     <Compile Include="WorkLoadList.Designer.cs">
       <DependentUpon>WorkLoadList.cs</DependentUpon>
     </Compile>
+    <Content Include="ndorms.ico" />
     <EmbeddedResource Include="config.ui\ConfFileAdvanced.resx">
       <DependentUpon>ConfFileAdvanced.cs</DependentUpon>
     </EmbeddedResource>
