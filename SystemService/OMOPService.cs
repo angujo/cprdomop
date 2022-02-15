@@ -49,12 +49,14 @@ namespace SystemService
         protected override void OnPause()
         {
             base.OnPause();
+            Current.requestStatus = Status.STOPPED;
             changeStatus(Status.PAUSED);
         }
 
         protected override void OnShutdown()
         {
             base.OnShutdown();
+            Current.requestStatus = Status.STOPPED;
             changeStatus(Status.SHUTDOWN);
         }
 

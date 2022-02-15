@@ -15,5 +15,10 @@ namespace SystemService
         {
             InitializeComponent();
         }
+
+        private void ProjectInstaller_BeforeInstall(object sender, InstallEventArgs e)
+        {
+
+        }
     }
 }
