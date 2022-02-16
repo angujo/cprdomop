@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace WindowsFormsAppTest.utils
+namespace Util
 {
-    internal static class Util
+    public static class ObjectExtension
     {
         public static List<Control> containerControls(object container)
         {

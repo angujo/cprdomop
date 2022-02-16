@@ -28,13 +28,13 @@ namespace OMOPProcessor
                 {
                     Task.Run(() => // Populate visit_occurrence
                     {
-                        dBMSystem.RunQuery(script.VisitDetail(chunkId));
-                        dBMSystem.RunQuery(script.VisitOccurrence(chunkId));
+                        script.VisitDetail(chunkId);
+                        script.VisitOccurrence(chunkId);
                     });
-                    Task.Run(() => dBMSystem.RunQuery(script.AddIn(chunkId)));
-                    Task.Run(() => dBMSystem.RunQuery(script.TestInt(chunkId)));
+                    Task.Run(() => script.AddIn(chunkId));
+                    Task.Run(() => script.TestInt(chunkId));
                 });
-                dBMSystem.RunQuery(script.StemTable(chunkId));
+                script.StemTable(chunkId);
             });
 
         }

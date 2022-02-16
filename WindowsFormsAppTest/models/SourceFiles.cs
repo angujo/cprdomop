@@ -6,8 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using SystemLocalStore.models;
+using Util;
 using WindowsFormsAppTest.errors;
-using WindowsFormsAppTest.extensions;
 
 namespace WindowsFormsAppTest.models
 {

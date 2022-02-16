@@ -98,7 +98,6 @@
     <Compile Include="errors\GeneralException.cs" />
     <Compile Include="errors\InvalidDirectoryException.cs" />
     <Compile Include="errors\InvalidFileException.cs" />
-    <Compile Include="extensions\ObjectExtension.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,7 +126,6 @@
     <Compile Include="UserControlForm.Designer.cs">
       <DependentUpon>UserControlForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="utils\Util.cs" />
     <Compile Include="WorkLoadForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -195,6 +193,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="extensions\" />
     <Folder Include="resources\" />
   </ItemGroup>
   <ItemGroup>

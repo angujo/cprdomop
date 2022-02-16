@@ -11,9 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SystemLocalStore;
 using SystemLocalStore.models;
-using WindowsFormsAppTest.extensions;
+using Util;
 using WindowsFormsAppTest.models;
-using WindowsFormsAppTest.utils;
 
 namespace WindowsFormsAppTest
 {
@@ -39,7 +38,7 @@ namespace WindowsFormsAppTest
                 btnSaveFiles.Enabled = false;
                 btnLock.Enabled = false;
             };
-            inputControls = Util.containerControls(pnLoaders).Where(cnt => Regex.Match(cnt.Name, inputRegex, RegexOptions.IgnoreCase).Success).ToList();
+            inputControls = ObjectExtension.containerControls(pnLoaders).Where(cnt => Regex.Match(cnt.Name, inputRegex, RegexOptions.IgnoreCase).Success).ToList();
             loaderEvents();
             if (workLoad.FilesLocked)
             {
@@ -64,7 +63,7 @@ namespace WindowsFormsAppTest
                     var _loader = (Button)loader;
                     if (isFileBased)
                     {
-                        var lbl = Util.containerControls(pnLoaders).Find(cntr => cntr.Name.Equals($"lb{rootName}Path"));
+                        var lbl = ObjectExtension.containerControls(pnLoaders).Find(cntr => cntr.Name.Equals($"lb{rootName}Path"));
                         if (null != lbl) ((Label)lbl).DataBindings.Add("Text", sourceFiles, propertyName);
                     }
                     (_loader).Click += new EventHandler((oSender, eArgs) =>
@@ -148,7 +147,7 @@ namespace WindowsFormsAppTest
 
         private void btnSurceFileAnalysis(object sender, EventArgs e)
         {
-            tbLogger.Text = Util.LogLine(null);
+            tbLogger.Text = ObjectExtension.LogLine(null);
             var err = false;
             foreach (Exception ex in sourceFiles.validationErrors())
             {
@@ -157,14 +156,14 @@ namespace WindowsFormsAppTest
                     err = true;
                     tbLogger.ForeColor = err ? Color.Red : Color.Black;
                 }
-                tbLogger.AppendText(Util.LogLine(ex.Message));
+                tbLogger.AppendText(ObjectExtension.LogLine(ex.Message));
             }
             if (err) return;
             sourceFiles.isValidated = true;
             tbLogger.ForeColor = Color.Green;
             foreach (var dtl in sourceFiles.analysisDetails())
             {
-                tbLogger.AppendText(Util.LogLine($"{dtl.Key}\t{dtl.Value}"));
+                tbLogger.AppendText(ObjectExtension.LogLine($"{dtl.Key}\t{dtl.Value}"));
             }
             btnSaveFiles.Enabled = true;
         }

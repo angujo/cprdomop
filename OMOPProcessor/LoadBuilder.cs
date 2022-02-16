@@ -25,17 +25,17 @@ namespace OMOPProcessor
             {
                 List<Action> actions = new List<Action>
                 {
-                    () => dBMSystem.RunQuery(script.CareSite()),
-                    () => dBMSystem.RunQuery(script.CohortDefinition()),
-                    () => dBMSystem.RunQuery(script.Location()),
-                    () => dBMSystem.RunQuery(script.Provider()),
-                    () => dBMSystem.RunQuery(script.SourceToSource()),
-                    () => dBMSystem.RunQuery(script.SourceToStandard()),
+                    () => script.CareSite(),
+                    () => script.CohortDefinition(),
+                    () => script.Location(),
+                    () => script.Provider(),
+                    () => script.SourceToSource(),
+                    () => script.SourceToStandard(),
                 };
                 Parallel.ForEach(actions, action => action());
             });
         }
 
-        public Task Create() { return Task.Run(() => dBMSystem.RunQuery(script.CreateTables())); }
+        public Task Create() { return Task.Run(() => script.CreateTables()); }
     }
 }

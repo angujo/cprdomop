@@ -23,7 +23,7 @@ namespace WindowsFormsAppTest.config.ui
         private void loadControlEvents()
         {
             var regexStr = @"(btn|tb)(\w+)(Browse|Dir)";
-            utils.Util.containerControls(pnHolder, cntr =>
+            ObjectExtension.containerControls(pnHolder, cntr =>
             {
                 if (!Regex.Match(cntr.Name, regexStr, RegexOptions.IgnoreCase).Success) return;
                 var keyName = Regex.Replace(cntr.Name, regexStr, "$2").ToLower().FirstCharToUpper() + "Dir";
