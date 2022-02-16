@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDMBuilder.cs" />
     <Compile Include="ChunkBuilder.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="LoadBuilder.cs" />
@@ -91,6 +92,9 @@
     <Content Include="scripts\postgres\test-int.sql" />
     <Content Include="scripts\postgres\visit-detail.sql" />
     <Content Include="scripts\postgres\visit-occurance.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

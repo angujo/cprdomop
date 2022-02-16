@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using WindowsFormsAppTest.extensions;
+using Util;
 using WindowsFormsAppTest.models;
 
 namespace WindowsFormsAppTest.config.ui
