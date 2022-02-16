@@ -1,12 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using WindowsFormsAppTest.errors;
 
-namespace WindowsFormsAppTest.extensions
+namespace Helper
 {
     public static class StringExtension
     {

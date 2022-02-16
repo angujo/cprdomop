@@ -3,7 +3,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using SystemLocalStore.models;
-using WindowsFormsAppTest.extensions;
+using Helper;
 
 namespace WindowsFormsAppTest
 {
@@ -93,7 +93,7 @@ namespace WindowsFormsAppTest
             }
             catch (Exception ex)
             {
-                retry = (MessageBox.Show(null, $"{ex.Message}\n{ex.StackTrace}".Truncate(400), "Connection Test", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry);
+                retry = MessageBox.Show(null, $"{ex.Message}\n{ex.StackTrace}".Truncate(400), "Connection Test", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry;
             }
             finally
             {

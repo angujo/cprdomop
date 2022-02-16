@@ -41,13 +41,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChunkBuilder.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="LoadBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Script.cs" />
+    <Compile Include="StemTableBuilder.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseProcessor\DatabaseProcessor.csproj">
+      <Project>{1d1ca331-da5c-4464-8a15-e0838f57091e}</Project>
+      <Name>DatabaseProcessor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SystemLocalStore\SystemLocalStore.csproj">
+      <Project>{494836da-d213-4f5d-9046-583e36702589}</Project>
+      <Name>SystemLocalStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Util\Util.csproj">
+      <Project>{7f044264-b01b-4299-8e88-9f76ea0a4984}</Project>
+      <Name>Util</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="scripts\postgres\add-in.sql" />
+    <Content Include="scripts\postgres\chunk-load.sql" />
     <Content Include="scripts\postgres\create-tables.sql" />
+    <Content Include="scripts\postgres\chunk-setup.sql" />
     <Content Include="scripts\postgres\specimen.sql" />
     <Content Include="scripts\postgres\observation.sql" />
     <Content Include="scripts\postgres\procedure-exposure.sql" />

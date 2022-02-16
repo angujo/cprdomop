@@ -99,7 +99,6 @@
     <Compile Include="errors\InvalidDirectoryException.cs" />
     <Compile Include="errors\InvalidFileException.cs" />
     <Compile Include="extensions\ObjectExtension.cs" />
-    <Compile Include="extensions\StringExtension.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -240,6 +239,7 @@
     <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(SolutionDir)FileProcessor\scripts $(TargetDir)filescripts\ /E /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy $(SolutionDir)FileProcessor\scripts $(TargetDir)filescripts\ /E /Y
+xcopy $(SolutionDir)OMOPProcessor\scripts $(TargetDir)omopscripts\ /E /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

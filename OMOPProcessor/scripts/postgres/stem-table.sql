@@ -1,4 +1,4 @@
-WITH voccur AS (SELECT person_id, visit_start_date, visit_occurrence_id FROM {sc}.visit_occurrence join _chunk on patient_id = person_id and ordinal = {ch}),
+WITH voccur AS (SELECT person_id, visit_start_date, visit_occurrence_id FROM {sc}._chunk join {sc}.visit_occurrence on patient_id = person_id where ordinal = {ch}),
 	ssource AS (SELECT source_concept_id, source_code FROM {sc}.source_to_source WHERE source_vocabulary_id in ('Read','gemscript','Gemscript')),
 	sstandard AS (SELECT source_concept_id, source_code, source_vocabulary_id FROM {sc}.source_to_standard WHERE source_vocabulary_id in ('Read', 'JNJ_CPRD_TEST_ENT', 'JNJ_CPRD_ADD_ENTTYPE','gemscript','Gemscript', 'LOINC') AND target_standard_concept = 'S' and target_invalid_reason is NULL),
 	concs AS (SELECT concept_id, domain_id, concept_name FROM {vs}.concept WHERE standard_concept = 'S' and invalid_reason is NULL and (domain_id IN ('Meas Value','Meas Value Operator') OR vocabulary_id IN ('UCUM')) GROUP BY concept_code),
