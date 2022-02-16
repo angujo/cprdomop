@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS {sc}.source_to_concept_map;
 DROP TABLE IF EXISTS {sc}.additional;
 DROP TABLE IF EXISTS {sc}.clinical;
 DROP TABLE IF EXISTS {sc}.commondosages;

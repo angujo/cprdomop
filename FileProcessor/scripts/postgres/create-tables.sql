@@ -1,3 +1,21 @@
+-- public.source_to_concept_map definition
+
+-- Drop table
+
+-- DROP TABLE public.source_to_concept_map;
+
+CREATE TABLE IF NOT EXTISTS {sc}.source_to_concept_map (
+	source_code varchar(255) NOT NULL,
+	source_concept_id int4 NOT NULL,
+	source_vocabulary_id varchar(20) NOT NULL,
+	source_code_description varchar(255) NULL,
+	target_concept_id int4 NOT NULL,
+	target_vocabulary_id varchar(20) NULL,
+	valid_start_date date NOT NULL,
+	valid_end_date date NOT NULL,
+	invalid_reason varchar(1) NULL
+);
+
 -- {sc}.additional definition
 
 -- Drop table

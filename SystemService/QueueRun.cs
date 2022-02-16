@@ -12,21 +12,38 @@ namespace SystemService
 {
     public class QueueRun
     {
-        private ConcurrentBag<AbsTable> updates = new ConcurrentBag<AbsTable>();
-        private Dictionary<int, AbsDBMSystem> db = new Dictionary<int, AbsDBMSystem>();
+        private ConcurrentDictionary<int, AbsTable> updates = new ConcurrentDictionary<int, AbsTable>();
+        private Dictionary<Int64, AbsDBMSystem> db = new Dictionary<Int64, AbsDBMSystem>();
         public static void DoRun()
         {
             if (Current.IsRunning() || Current.StopRequested()) return;
             Current.workQueue = WorkQueue.NextAvailable();
             if (Current.workQueue == null || !Current.workQueue.Exists()) return;
-            Current.status = Status.RUNNING;
-            Task.Run(() => { (new QueueRun()).SetTasks(); Current.status = Status.STOPPED; });
+            Task.Run(() =>
+            {
+                Current.status = Status.RUNNING;
+                (new QueueRun()).SetTasks();
+                Current.status = Status.STOPPED;
+            });
         }
 
         public void SetTasks()
         {
-            Debug.WriteLine("Am Just testing!");
             workStarted();
+            Task.Run(async () =>
+            {
+                while (Status.RUNNING == Current.status)
+                {
+                    await Task.Delay(200);
+                    if (updates.Count > 0)
+                    {
+                        var keys = updates.Keys.ToArray();
+                        if (!updates.TryRemove(keys[(new Random()).Next(keys.Length)], out AbsTable queue)) return;
+                        queue.InsertOrUpdate();
+                        Console.WriteLine($"RUN ABS[{queue.Id}]...{DateTime.Now}");
+                    }
+                }
+            });
             Queue[] queues = Queue.List<Queue>(new { WorkQueueId = Current.workQueue.Id }).ToArray();
             if (queues.Length <= 0) return;
             List<int?> taskIndexes = (queues.Select(q => q.TaskIndex).ToArray() ?? (new int?[] { })).Distinct().ToList();
@@ -36,7 +53,6 @@ namespace SystemService
                 if (Current.StopRequested()) break;
                 TaskIndexRun(queues.Where(q => taskIndex == q.TaskIndex).ToList());
             }
-            runConcurrents();
             workStopped();
         }
 
@@ -97,17 +113,29 @@ namespace SystemService
 
         private void queueStarted(Queue queue)
         {
-            queue.StartTime = DateTime.Now;
-            queue.Status = Status.RUNNING;
+            Task.Run(() =>
+            {
+                updates.AddOrUpdate((int)queue.Id, queue, (i, a) =>
+                {
+                    var q = (Queue)a;
+                    q.StartTime = DateTime.Now;
+                    q.Status = Status.RUNNING;
+                    return q;
+                });
+            });
         }
 
         private void queueStopped(Queue queue)
         {
             Task.Run(() =>
             {
-                queue.EndTime = DateTime.Now;
-                if (queue.Status == Status.RUNNING || queue.Status == Status.STARTED) queue.Status = Status.STOPPED;
-                updates.Add(queue);
+                updates.AddOrUpdate((int)queue.Id, queue, (i, a) =>
+                {
+                    var q = (Queue)a;
+                    q.EndTime = DateTime.Now;
+                    if (q.Status == Status.RUNNING || q.Status == Status.STARTED) q.Status = Status.STOPPED;
+                    return q;
+                });
             });
         }
 
@@ -122,12 +150,6 @@ namespace SystemService
             }
             Console.WriteLine($"CONTENT: [{queue.FileContent}]");
             db[scId].RunQuery(queue.FileContent);
-        }
-
-        private void runConcurrents()
-        {
-            foreach (var queue in updates) queue.InsertOrUpdate();
-            updates = new ConcurrentBag<AbsTable>();
         }
     }
 }

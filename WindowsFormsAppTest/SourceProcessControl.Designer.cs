@@ -179,7 +179,7 @@
             this.btnLoad.TabIndex = 0;
             this.btnLoad.Text = "Load Process";
             this.btnLoad.UseVisualStyleBackColor = true;
-            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            this.btnLoad.Click += new System.EventHandler(this.btnLoad_ClickAsync);
             // 
             // button1
             // 

@@ -39,9 +39,10 @@ namespace SystemLocalStore
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
+                var wheres=string.Empty;
+                if(parameters != null)wheres = "WHERE " + string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
                 parameters = null == parameters ? new DynamicParameters() : parameters;
-                var wheres = string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
-                return cnn.QuerySingleOrDefault<T>($"select * from {table_name} {(wheres.Length > 0 ? ("WHERE " + wheres) : string.Empty)} LIMIT 1", parameters);
+                return cnn.QuerySingleOrDefault<T>($"select * from {table_name} {wheres} LIMIT 1", parameters);
             }
         }
 

@@ -84,7 +84,7 @@ namespace SystemLocalStore.models
         public static T LoadOrNew<T>(Object parameters = null)
         {
             var ld = Load<T>(parameters);
-            return null == ld ? (T)Activator.CreateInstance(typeof(T), new Object { }) : ld;
+            return null == ld ? (T)Activator.CreateInstance(typeof(T)) : ld;
         }
 
         public static List<T> List<T>(Object parameters = null)

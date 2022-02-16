@@ -56,6 +56,8 @@
     <Folder Include="scripts\postgres\precopy-vocabulary-updates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="scripts\postgres\daysupply-decodes - Copy.sql" />
+    <Content Include="scripts\postgres\daysupply-modes.sql" />
     <Content Include="scripts\postgres\drop-vocabulary-tables.sql" />
     <Content Include="scripts\postgres\drop-tables.sql" />
     <Content Include="scripts\postgres\lookup-merge.sql" />
@@ -81,6 +83,9 @@
       <Project>{494836DA-D213-4F5D-9046-583E36702589}</Project>
       <Name>SystemLocalStore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="scripts\postgres\source-to-concept\JNJ_CPRD.csv" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

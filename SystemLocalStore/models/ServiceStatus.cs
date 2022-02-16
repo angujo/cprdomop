@@ -8,5 +8,7 @@ namespace SystemLocalStore.models
         public string ServiceDescription { get; set; }
         public Status Status { get; set; }
         public DateTime LastRun { get; set; }
+
+        public ServiceStatus() { }
     }
 }
