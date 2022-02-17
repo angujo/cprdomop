@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Util;
 
 namespace SystemLocalStore.models
 {
@@ -84,7 +85,8 @@ namespace SystemLocalStore.models
         public static T LoadOrNew<T>(Object parameters = null)
         {
             var ld = Load<T>(parameters);
-            return null == ld ? (T)Activator.CreateInstance(typeof(T)) : ld;
+            if(null!=ld) return ld;
+            return (T)(Activator.CreateInstance(typeof(T))).SetProperties(parameters);
         }
 
         public static List<T> List<T>(Object parameters = null)

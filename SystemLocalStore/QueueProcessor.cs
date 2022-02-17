@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SystemLocalStore.models;
+using Util;
 
 namespace SystemLocalStore
 {
@@ -32,7 +33,7 @@ namespace SystemLocalStore
 
         public QueueProcessor AddOrUpdate<T>(dynamic id, Object parameters)
         {
-            object f(dynamic i, object oV) { return populateObject(i, oV); }
+            object f(dynamic i, object oV) { return oV.SetProperties(parameters); }
 
             theList.AddOrUpdate(id, createObject<T>(id, parameters), (Func<dynamic, object, object>)f);
 
@@ -42,19 +43,7 @@ namespace SystemLocalStore
         private Object createObject<T>(dynamic key, Object parameters)
         {
             var obj = (T)(null == creator ? Activator.CreateInstance(typeof(T)) : creator(key));
-            return populateObject(obj, parameters);
-        }
-
-        private Object populateObject(Object obj, Object parameters)
-        {
-            var properties = parameters.GetType().GetProperties();
-            foreach (var property in properties)
-            {
-                PropertyInfo propInfo = obj.GetType().GetProperty(property.Name);
-                if (null == propInfo) continue;
-                propInfo.SetValue(obj, property.GetValue(parameters, null), null);
-            }
-            return obj;
+            return obj.SetProperties(parameters);// populateObject(obj, parameters);
         }
 
         public Task Open()
@@ -77,6 +66,14 @@ namespace SystemLocalStore
             return getMe<T>().AddOrUpdate<T>(id, parameters);
         }
 
+        public static QueueProcessor Timed<T>(dynamic id, Action act, Object parameters = null)
+        {
+            Add<T>(id, parameters);
+            Add<T>(id, new { StartTime = DateTime.Now });
+            act();
+            return Add<T>(id, new { EndTime = DateTime.Now });
+        }
+
         public static void CloseInstance<T>() { getMe<T>().Close(); }
 
         private static QueueProcessor getMe<T>()
@@ -88,6 +85,11 @@ namespace SystemLocalStore
                 process.Open();
             }
             return process;
+        }
+
+        public static void SetCreator<T>(Func<dynamic, Object> creator)
+        {
+            getMe<T>().creator = creator;
         }
     }
 }

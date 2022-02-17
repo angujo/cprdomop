@@ -1,3 +1,3 @@
 INSERT INTO {sc}."_chunk"
 (ordinal, patient_id)
-select {ch} AS ord, patid from {ss}.patient LIMIT {lmt} OFFSET {ost};
+select ceil((t.rid-1)/{lmt}), t.patid  from (select row_number() over(order by patid) rid, patid  from {ss}.patient p) t;

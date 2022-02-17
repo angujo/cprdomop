@@ -12,7 +12,12 @@ namespace SystemLocalStore.models
         public bool ChunksSetup { get; set; }
         public bool ChunksLoaded { get; set; }
         public bool CdmProcessed { get; set; }
+        public int ChunkSize { get; set; }
 
-        public WorkLoad() { ReleaseDate = DateTime.Now; }
+        public WorkLoad()
+        {
+            ReleaseDate = DateTime.Now;
+            ChunkSize = 500;
+        }
     }
 }

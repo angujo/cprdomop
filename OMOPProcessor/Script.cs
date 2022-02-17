@@ -27,14 +27,10 @@ namespace OMOPProcessor
             sourceSchema = source;
             targetSchema = target;
             vocSchema = vocabulary;
-            dBMSystem = DBMSystem.GetDBMSystem(sourceSchema);
+            dBMSystem = DBMSystem.GetDBMSystem(targetSchema);
         }
 
-        public void ChunkLoad(int chunk, int lmt, int ofSt)
-        {
-            chunkId = chunk; limit = lmt; offset = ofSt;
-            RunLogTimer(MethodBase.GetCurrentMethod().Name);
-        }
+        public void ChunkLoad(int lmt) { limit = lmt; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
 
         public void AddIn(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void CareSite() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
@@ -74,9 +70,10 @@ namespace OMOPProcessor
         private void RunLogTimer(string name)
         {
             var query = SQLScript(name);
-            QueueProcessor.Add<CDMTimer>(name, new { Name = name, ChunkId = chunkId, Query = query, StartTime = DateTime.Now });
-            dBMSystem.RunQuery(query);
-            QueueProcessor.Add<CDMTimer>(name, new { Name = name, ChunkId = chunkId, Query = query, EndTime = DateTime.Now });
+            QueueProcessor.Timed<CDMTimer>(name, () =>
+            {
+                dBMSystem.RunQuery(query);
+            }, new { ChunkId = chunkId, Query = query });
         }
 
         private string SetPlaceHolders(string script)
