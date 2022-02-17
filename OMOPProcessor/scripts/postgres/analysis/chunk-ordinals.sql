@@ -1,0 +1,1 @@
+select ordinal from {sc}."_chunk" group by ordinal;

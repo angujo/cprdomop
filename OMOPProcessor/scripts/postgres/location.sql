@@ -1,4 +1,4 @@
-WITH regions (
+WITH regions as (
 	SELECT 
 	region::integer, 
 	CASE region::integer 
@@ -17,6 +17,6 @@ WITH regions (
 		when 13 then 'Wales'
 		ELSE 'Missing' 
 	END AS source_value
-	FROM {ss}.region GROUP BY region)
+	FROM {ss}.practice GROUP BY region)
 INSERT INTO {sc}.location (location_id, location_source_value)
 	SELECT * FROM regions

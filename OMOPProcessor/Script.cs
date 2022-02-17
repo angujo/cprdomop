@@ -8,30 +8,14 @@ using Util;
 
 namespace OMOPProcessor
 {
-    public class Script
+    public class Script:AbsCDMQuery
     {
-        readonly DBSchema sourceSchema;
-        readonly DBSchema targetSchema;
-        readonly DBSchema vocSchema;
-        int chunkId = 0;
-        int limit = 0;
-        int offset = 0;
 
-        AbsDBMSystem dBMSystem;
-
-        public DBSchema Schema { get { return targetSchema; } }
-
-        protected string DBMSName { get { return DBMSIdentifier.GetName(DBMSType.POSTGRESQL); } }
-        public Script(DBSchema source, DBSchema target, DBSchema vocabulary)
+        public Script(DBSchema source, DBSchema target, DBSchema vocabulary) : base(source, target, vocabulary)
         {
-            sourceSchema = source;
-            targetSchema = target;
-            vocSchema = vocabulary;
-            dBMSystem = DBMSystem.GetDBMSystem(targetSchema);
         }
 
         public void ChunkLoad(int lmt) { limit = lmt; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
-
         public void AddIn(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void CareSite() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void CdmSource(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
@@ -59,32 +43,6 @@ namespace OMOPProcessor
         public void VisitDetail(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void VisitOccurrence(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
 
-        private string SQLScript(string name) { return SetPlaceHolders(FileScript($"{name.ToKebabCase()}.sql")); }
-
-        private string FileScript(string file_name)
-        {
-            var filePath = File.Exists(file_name) ? file_name : Path.Combine(Environment.CurrentDirectory, "omopscripts", DBMSName, file_name);
-            return File.Exists(filePath) ? File.ReadAllText(filePath) : string.Empty;
-        }
-
-        private void RunLogTimer(string name)
-        {
-            var query = SQLScript(name);
-            QueueProcessor.Timed<CDMTimer>(name, () =>
-            {
-                dBMSystem.RunQuery(query);
-            }, new { ChunkId = chunkId, Query = query });
-        }
-
-        private string SetPlaceHolders(string script)
-        {
-            return script
-                .Replace("{ch}", $"{chunkId}")
-                .Replace("{vs}", vocSchema.SchemaName)
-                .Replace("{ss}", sourceSchema.SchemaName)
-                .Replace("{sc}", targetSchema.SchemaName)
-                .Replace(@"{lmt}", $"{limit}")
-                .Replace(@"{ost}", $"{offset}");
-        }
+        
     }
 }

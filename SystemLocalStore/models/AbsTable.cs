@@ -59,6 +59,8 @@ namespace SystemLocalStore.models
             return DataAccess.InsertOrUpdate(this);
         }
 
+        public long? Save() { return InsertOrUpdate(); }
+
         public static void InsertOrUpdate<T>(List<T> items)
         {
             foreach (var item in items) DataAccess.InsertOrUpdate(item);
@@ -85,7 +87,7 @@ namespace SystemLocalStore.models
         public static T LoadOrNew<T>(Object parameters = null)
         {
             var ld = Load<T>(parameters);
-            if(null!=ld) return ld;
+            if (null != ld) return ld;
             return (T)(Activator.CreateInstance(typeof(T))).SetProperties(parameters);
         }
 

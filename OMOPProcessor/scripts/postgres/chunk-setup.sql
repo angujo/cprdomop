@@ -11,3 +11,5 @@ CREATE TABLE {sc}."_chunk" (
 	load_time timestamp NULL,
 	end_time timestamp NULL
 );
+CREATE INDEX idx_ordinal ON {sc}."_chunk" USING btree (ordinal);
+CREATE INDEX idx_patient_id ON {sc}."_chunk" USING btree (patient_id);

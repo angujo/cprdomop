@@ -15,6 +15,7 @@ namespace OMOPProcessor
         DBSchema targetSchema;
         DBSchema vocabularySchema;
         Script script;
+        Analyzer analyzer;
 
         public CDMBuilder(WorkLoad wl)
         {
@@ -32,16 +33,36 @@ namespace OMOPProcessor
 
         public void Run()
         {
+            if (workLoad.CdmProcessed) return;
             loadCdm();
+            loadChunks();
         }
 
-        private void loadChunks()
+        private async void loadChunks()
         {
-            var chunker = new ChunkBuilder(script);
             if (!workLoad.ChunksSetup)
             {
-                chunker.Load();
+                await ChunkBuilder.Create(script);
+                workLoad.ChunksSetup = true;
+                workLoad.Save();
             }
+            var chunker = new ChunkBuilder(script);
+            if (!workLoad.ChunksLoaded)
+            {
+                await chunker.Load(workLoad.ChunkSize);
+                var ordinals = analyzer.ChunkOrdinals();
+                ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
+                foreach (var ordinal in ordinals)
+                {
+                    (new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = ordinal }).InsertOrUpdate();
+                }
+                workLoad.ChunksLoaded = true;
+                workLoad.Save();
+            }
+            var chunk = ChunkTimer.Load<ChunkTimer>(new { WorkLoadId = (long)workLoad.Id, Touched = false });
+            if (null == chunk) return;
+            //TODO Loop here till no chunk -LATER
+             await chunker.Run(chunk);
         }
 
         private async void loadCdm()
@@ -51,7 +72,7 @@ namespace OMOPProcessor
             await loader.Create();
             await loader.Run();
             workLoad.CdmLoaded = true;
-            workLoad.InsertOrUpdate();
+            workLoad.Save();
         }
 
         private void LoadSchemas()
@@ -62,6 +83,7 @@ namespace OMOPProcessor
 
             if (null == vocabularySchema || null == sourceSchema || null == targetSchema) throw new Exception("Ensure that all three schemas are set up and loaded!");
             script = new Script(sourceSchema, targetSchema, vocabularySchema);
+            analyzer = new Analyzer(targetSchema);
         }
     }
 }

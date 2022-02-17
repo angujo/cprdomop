@@ -53,8 +53,23 @@ namespace SystemLocalStore
                 while (false == closeRequested)
                 {
                     var keys = theList.Keys.ToArray();
-                    if (!theList.TryRemove(keys[(new Random()).Next(keys.Length)], out Object abs)) return;
-                    if (typeof(AbsTable).IsAssignableFrom(abs.GetType())) ((AbsTable)abs).InsertOrUpdate();
+                    if (keys.Length <= 0)
+                    {
+                        Task.Delay(1000);
+                        continue;
+                    }
+                    var key = keys[(new Random()).Next(keys.Length)];
+                    if (!theList.TryGetValue(key, out Object abs)) continue;
+                    try
+                    {
+                        if (typeof(AbsTable).IsAssignableFrom(abs.GetType())) ((AbsTable)abs).InsertOrUpdate();
+                        theList.TryRemove(key, out abs);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+
                 }
             });
         }
@@ -68,8 +83,7 @@ namespace SystemLocalStore
 
         public static QueueProcessor Timed<T>(dynamic id, Action act, Object parameters = null)
         {
-            Add<T>(id, parameters);
-            Add<T>(id, new { StartTime = DateTime.Now });
+            Add<T>(id, (parameters ?? new { }).SetProperties(new { StartTime = DateTime.Now }));
             act();
             return Add<T>(id, new { EndTime = DateTime.Now });
         }

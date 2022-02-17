@@ -51,7 +51,7 @@ insert into {sc}.test_int
 	       '' as operator,
 	       NULL as value_as_number,
 	       '' as unit,
-	       case when tt.data1 <> 0 then lp.text else '' end as value_as_concept_id, --In this case 0 means 'data not entered' so it is set to blank. Data1 is the coded value for the qualifier (high,low) so the join on line 64 looks up the value and stores the text here.
+	       case when tt.data1 <> '0' then lp.text else '' end as value_as_concept_id, --In this case 0 means 'data not entered' so it is set to blank. Data1 is the coded value for the qualifier (high,low) so the join on line 64 looks up the value and stores the text here.
 	       tt.data2 as range_low,
 	       tt.data3 as range_high     
 	FROM test_t tt

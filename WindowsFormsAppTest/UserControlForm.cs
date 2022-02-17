@@ -19,6 +19,7 @@ namespace WindowsFormsAppTest
             loadTitle.Text = workl.Name;
 
             addTabPage(pnConf, new ConfigControl(workl));
+            addTabPage(pnCdm, new CDMControl(workl));
             Task.Run(() =>
             {
                 addTabPage(pnDB, new SchemaHolderControl(workl));

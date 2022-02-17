@@ -3,7 +3,7 @@ INSERT INTO source_to_source
 source_valid_start_date, source_valid_end_date, source_invalid_reason, target_concept_id, target_concept_name, 
 target_vocabulary_id, target_domain_id, target_concept_class_id, target_invalid_reason, target_standard_concept)
 (
-	WITH CONC AS (SELECT domain_id, valid_start_date,valid_end_date, concept_name, concept_class_id, invalid_reason, standard_concept, concept_id FROM {vs}.concept)
+	WITH CONC AS (SELECT domain_id, valid_start_date,valid_end_date, concept_name, concept_class_id, invalid_reason, standard_concept, concept_id, concept_code, vocabulary_id FROM {vs}.concept),
 	CTE_VOCAB_MAP AS (
 	       SELECT c.concept_code AS source_code, c.concept_id AS source_concept_id, c.CONCEPT_NAME AS source_code_description, 
 				c.vocabulary_id AS source_vocabulary_id, c.domain_id AS source_domain_id, c.concept_class_id AS source_concept_class_id, 

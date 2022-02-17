@@ -77,6 +77,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDMControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CDMControl.Designer.cs">
+      <DependentUpon>CDMControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="config.ui\ConfFileAdvanced.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -139,6 +145,9 @@
       <DependentUpon>WorkLoadList.cs</DependentUpon>
     </Compile>
     <Content Include="ndorms.ico" />
+    <EmbeddedResource Include="CDMControl.resx">
+      <DependentUpon>CDMControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="config.ui\ConfFileAdvanced.resx">
       <DependentUpon>ConfFileAdvanced.cs</DependentUpon>
     </EmbeddedResource>
@@ -219,6 +228,10 @@
     <ProjectReference Include="..\FileProcessor\FileProcessor.csproj">
       <Project>{0F059105-A83E-4BF0-8D81-DDF121DE88CC}</Project>
       <Name>FileProcessor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OMOPProcessor\OMOPProcessor.csproj">
+      <Project>{FD21D71D-38FD-440B-B52E-37F278D8E16E}</Project>
+      <Name>OMOPProcessor</Name>
     </ProjectReference>
     <ProjectReference Include="..\SystemLocalStore\SystemLocalStore.csproj">
       <Project>{494836da-d213-4f5d-9046-583e36702589}</Project>

@@ -409,7 +409,7 @@ WITH
 	       a.enttype, 
 	       e.category,
 	       e.description, 
-	       sm.scoring_method as data,       
+	       sm.scoringmethod as data,       
 	       a.data1 as value_as_number, 
 	       null as value_as_string,
 	       case when e.data1_lkup = 'dd/mm/yyyy' then a.data1
@@ -419,11 +419,11 @@ WITH
 	       null as read_code_description,
 	       null as gemscript_description,
 	       e.data_fields,
-	       a.enttype::varchar||'-'||e.category||'-'||e.description||'-'||sm.scoring_method  as source_value
+	       a.enttype::varchar||'-'||e.category||'-'||e.description||'-'||sm.scoringmethod  as source_value
 	from adds a
 	  join clinic c on c.adid = a.adid and c.patid = a.patid
 	  join entities e on a.enttype = e.enttype
-	  left join native.scoringmethod sm on a.data3 = sm.code::text
+	  left join {ss}.scoremethod sm on a.data3 = sm.code::text
 	  left join looktype lt4 on e.data4_lkup = lt4.name
 	  left join looks lu4 on lt4.lookup_type_id = lu4.lookup_type_id and lu4.code::text = a.data4
 	where a.enttype in (372) --This enttype is for the results of scores and questionnaires

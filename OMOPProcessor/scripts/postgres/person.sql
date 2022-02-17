@@ -3,6 +3,6 @@ INSERT INTO {sc}.person
 care_site_id, person_source_value, gender_source_value, gender_source_concept_id, race_source_value, race_source_concept_id, ethnicity_source_value, ethnicity_source_concept_id)
 SELECT 
 patid,case gender::int WHEN 1 THEN 8507 ELSE 8532 END, yob, mob, null, null, 0, 0, null, null, 
-RIGHT(patid,5)::bigint, patid, gender, 0, null, 0, null, 0
+RIGHT(patid::varchar,5)::bigint, patid, gender, 0, null, 0, null, 0
 FROM {sc}._chunk JOIN {ss}.patient ON patient_id = patid AND accept = 1 AND gender::int IN (1,2) AND yob > 1875 AND (deathdate IS NULL OR deathdate >= crd)
 WHERE ordinal = {ch};

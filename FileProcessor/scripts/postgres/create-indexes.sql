@@ -106,13 +106,13 @@ CREATE UNIQUE INDEX lookup_lookup_id_idx ON {sc}.lookup USING btree (lookup_id);
 
 CREATE UNIQUE INDEX lookup_idx_pkey ON {sc}.lookup USING btree (lookup_id, lookup_type_id, code);
 
-CREATE INDEX idx_med_medcode ON {sc}.medical USING btree (medcode, readcode);
+CREATE INDEX idx_med_medcode ON {sc}.medical USING btree (medcode, read_code);
 
 CREATE UNIQUE INDEX medical_medcode_idx ON {sc}.medical USING btree (medcode);
 
 CREATE UNIQUE INDEX medical_idx_pkey ON {sc}.medical USING btree (medcode);
 
-CREATE UNIQUE INDEX medical_read_code_idx ON {sc}.medical USING btree (readcode);
+CREATE UNIQUE INDEX medical_read_code_idx ON {sc}.medical USING btree (read_code);
 
 CREATE INDEX idx_pat_frd ON {sc}.patient USING btree (patid, frd);
 

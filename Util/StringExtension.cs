@@ -25,7 +25,7 @@ namespace Util
 
         public static string ToSnakeCase(this string str)
         {
-            return Regex.Replace(Regex.Replace(str.FirstCharToLower(), "(.*)([A-Z])", "$1_$2").ToLower(), "[^0-9a-zA-Z]+", "_");
+            return Regex.Replace(Regex.Replace(str.FirstCharToLower(), "([A-Z])([^A-Z])", "_$1$2").ToLower(), "[^0-9a-zA-Z]+", "_");
         }
 
         public static string FirstCharWord(this string str)

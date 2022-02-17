@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbsCDMQuery.cs" />
+    <Compile Include="Analyzer.cs" />
     <Compile Include="CDMBuilder.cs" />
     <Compile Include="ChunkBuilder.cs" />
     <Compile Include="Class1.cs" />
@@ -65,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="scripts\postgres\add-in.sql" />
+    <Content Include="scripts\postgres\analysis\chunk-ordinals.sql" />
     <Content Include="scripts\postgres\chunk-load.sql" />
     <Content Include="scripts\postgres\create-tables.sql" />
     <Content Include="scripts\postgres\chunk-setup.sql" />

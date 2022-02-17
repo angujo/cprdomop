@@ -184,9 +184,9 @@ CREATE TABLE IF NOT EXISTS {sc}.cohort_definition (
 	cohort_definition_id int4 NOT NULL,
 	cohort_definition_name varchar(255) NOT NULL,
 	cohort_definition_description text NULL,
-	definition_type_concept_id int4 NOT NULL,
+	definition_type_concept_id int4  NULL,
 	cohort_definition_syntax text NULL,
-	subject_concept_id int4 NOT NULL,
+	subject_concept_id int4  NULL,
 	cohort_initiation_date date NULL
 );
 
@@ -549,7 +549,7 @@ CREATE TABLE IF NOT EXISTS {sc}.observation (
 DROP TABLE IF EXISTS {sc}.observation_period;
 
 CREATE TABLE IF NOT EXISTS {sc}.observation_period (
-	observation_period_id int8 NOT NULL,
+	observation_period_id serial8 NOT NULL,
 	person_id int8 NOT NULL,
 	observation_period_start_date date NOT NULL,
 	observation_period_end_date date NOT NULL,
@@ -678,7 +678,7 @@ CREATE TABLE IF NOT EXISTS {sc}.source_to_concept_map (
 );
 
 
--- {sc}.source_to_source_vocab_map definition
+-- {sc}.source_to_source definition
 
 -- Drop table
 
@@ -702,17 +702,17 @@ CREATE TABLE IF NOT EXISTS {sc}.source_to_source (
 	target_invalid_reason varchar(1) NULL,
 	target_standard_concept varchar(1) NULL
 );
-CREATE INDEX idx_source_vocab_map_source_code ON {sc}.source_to_source_vocab_map USING btree (source_code);
-CREATE INDEX idx_source_vocab_map_source_vocab_id ON {sc}.source_to_source_vocab_map USING btree (source_vocabulary_id);
+CREATE INDEX idx_source_vocab_map_source_code ON {sc}.source_to_source USING btree (source_code);
+CREATE INDEX idx_source_vocab_map_source_vocab_id ON {sc}.source_to_source USING btree (source_vocabulary_id);
 
 
--- {sc}.source_to_standard_vocab_map definition
+-- {sc}.source_to_standard definition
 
 -- Drop table
 
-DROP TABLE IF EXISTS {sc}.source_to_standard_vocab_map;
+DROP TABLE IF EXISTS {sc}.source_to_standard;
 
-CREATE TABLE IF NOT EXISTS {sc}.source_to_standard_vocab_map (
+CREATE TABLE IF NOT EXISTS {sc}.source_to_standard (
 	source_code varchar NULL,
 	source_concept_id int4 NULL,
 	source_code_description varchar(255) NULL,
@@ -730,8 +730,8 @@ CREATE TABLE IF NOT EXISTS {sc}.source_to_standard_vocab_map (
 	target_invalid_reason varchar(1) NULL,
 	target_standard_concept varchar(1) NULL
 );
-CREATE INDEX idx_vocab_map_source_code ON {sc}.source_to_standard_vocab_map USING btree (source_code);
-CREATE INDEX idx_vocab_map_source_vocab_id ON {sc}.source_to_standard_vocab_map USING btree (source_vocabulary_id);
+CREATE INDEX idx_vocab_map_source_code ON {sc}.source_to_standard USING btree (source_code);
+CREATE INDEX idx_vocab_map_source_vocab_id ON {sc}.source_to_standard USING btree (source_vocabulary_id);
 
 
 -- {sc}.specimen definition
@@ -783,7 +783,7 @@ CREATE TABLE IF NOT EXISTS {sc}.visit_detail (
 	visit_detail_source_concept_id int4 NULL,
 	admitting_source_value varchar(50) NULL,
 	discharge_to_source_value varchar(50) NULL,
-	visit_detail_parent_id int8 NULL,
+	parent_visit_detail_id int8 NULL,
 	visit_occurrence_id int8 NOT NULL
 );
 

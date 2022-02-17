@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using System;
+using System.Collections.Generic;
 using SystemLocalStore.models;
 
 namespace DatabaseProcessor.postgres
@@ -27,6 +28,52 @@ namespace DatabaseProcessor.postgres
         public override dynamic GetConnection()
         {
             return new NpgsqlConnection(ConnectionString());
+        }
+
+        public override List<object> RunDataSet(string sql, object parameters = null)
+        {
+            List<object> rows = new List<object>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = sql;
+                    prepareCommand(cmd, parameters);
+                    using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            object[] columns = new object[reader.FieldCount];
+                            reader.GetValues(columns);
+                            rows.Add(columns);
+                        }
+                    }
+                }
+            }
+            return rows;
+        }
+        public override List<T> RunColumn<T>(string sql, object parameters = null)
+        {
+            List<T> rows = new List<T>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = sql;
+                    prepareCommand(cmd, parameters);
+                    using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+
+                            rows.Add((T)Convert.ChangeType(reader.GetValue(0), typeof(T)));
+                        }
+                    }
+                }
+            }
+            return rows;
         }
 
         public override void RunFile(string path)
@@ -60,6 +107,20 @@ namespace DatabaseProcessor.postgres
         public override void RunQueue(Queue queue)
         {
             throw new NotImplementedException();
+        }
+
+        public override T RunScalar<T>(string sql, object parameters = null)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = sql;
+                    prepareCommand(cmd, parameters);
+                    return (T)cmd.ExecuteScalar();
+                }
+            }
         }
 
         public override bool TestConnection()

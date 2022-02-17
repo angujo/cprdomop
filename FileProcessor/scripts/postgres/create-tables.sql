@@ -4,7 +4,7 @@
 
 -- DROP TABLE public.source_to_concept_map;
 
-CREATE TABLE IF NOT EXTISTS {sc}.source_to_concept_map (
+CREATE TABLE IF NOT EXISTS {sc}.source_to_concept_map (
 	source_code varchar(255) NOT NULL,
 	source_concept_id int4 NOT NULL,
 	source_vocabulary_id varchar(20) NOT NULL,
@@ -270,7 +270,7 @@ CREATE TABLE IF NOT EXISTS {sc}.lookuptype (
 CREATE TABLE IF NOT EXISTS {sc}.medical (
 	id bigserial NOT NULL,
 	medcode int8 NOT NULL,
-	readcode varchar(7) NULL DEFAULT NULL::character varying,
+	read_code varchar(7) NULL DEFAULT NULL::character varying,
 	"desc" varchar(100) NULL DEFAULT NULL::character varying,
 	CONSTRAINT medical_pkey PRIMARY KEY (id)
 );
