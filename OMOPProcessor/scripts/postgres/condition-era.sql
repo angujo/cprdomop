@@ -4,7 +4,7 @@ WITH cteConditionTarget AS (
 	),
 	
 	cteCondEndDates AS (
-	      SELECT PERSON_ID, CONDITION_CONCEPT_ID, DATEADD(day, - 30, EVENT_DATE) AS END_DATE -- unpad the end date
+	      SELECT PERSON_ID, CONDITION_CONCEPT_ID, EVENT_DATE::date - interval '30 day' AS END_DATE -- unpad the end date
 	      FROM (
 	          SELECT E1.PERSON_ID, E1.CONDITION_CONCEPT_ID, E1.EVENT_DATE, COALESCE(E1.START_ORDINAL, MAX(E2.START_ORDINAL)) START_ORDINAL, E1.OVERALL_ORD
 	          FROM (
@@ -17,7 +17,7 @@ WITH cteConditionTarget AS (
 	                  UNION ALL
 	      
 	                  -- pad the end dates by 30 to allow a grace period for overlapping ranges.
-	                  SELECT PERSON_ID, CONDITION_CONCEPT_ID, DATEADD(day, 30, CONDITION_END_DATE), 1 AS EVENT_TYPE, NULL
+	                  SELECT PERSON_ID, CONDITION_CONCEPT_ID, CONDITION_END_DATE + interval '30 day', 1 AS EVENT_TYPE, NULL
 	                  FROM cteConditionTarget
 	                  ) RAWDATA
 	              ) E1

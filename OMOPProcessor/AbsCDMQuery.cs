@@ -40,7 +40,6 @@ namespace OMOPProcessor
 
         private string SQLScript(string name)
         {
-            if (name.ToLower().StartsWith("source")) Console.WriteLine($"{name} : {name.ToKebabCase()}.sql");
             return SetPlaceHolders(FileScript($"{name.ToKebabCase()}.sql"));
         }
 
@@ -65,7 +64,7 @@ namespace OMOPProcessor
         protected void RunLogTimer(string name)
         {
             var query = SQLScript(name);
-            if (query.Length <= 0) throw new Exception($"Empty Query FOR [{name}]");
+            if (query.Length <= 0) return;
             QueueProcessor.Timed<CDMTimer>(name, () =>
             {
                 dBMSystem.RunQuery(query);

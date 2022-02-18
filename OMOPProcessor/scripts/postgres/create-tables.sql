@@ -766,7 +766,7 @@ CREATE TABLE IF NOT EXISTS {sc}.specimen (
 DROP TABLE IF EXISTS {sc}.visit_detail;
 
 CREATE TABLE IF NOT EXISTS {sc}.visit_detail (
-	visit_detail_id int8 NOT NULL,
+	visit_detail_id bigserial NOT NULL,
 	person_id int8 NOT NULL,
 	visit_detail_concept_id int4 NOT NULL,
 	visit_detail_start_date date NOT NULL,
@@ -784,7 +784,7 @@ CREATE TABLE IF NOT EXISTS {sc}.visit_detail (
 	admitting_source_value varchar(50) NULL,
 	discharge_to_source_value varchar(50) NULL,
 	parent_visit_detail_id int8 NULL,
-	visit_occurrence_id int8 NOT NULL
+	visit_occurrence_id int8 NULL
 );
 
 
@@ -811,5 +811,9 @@ CREATE TABLE IF NOT EXISTS {sc}.visit_occurrence (
 	admitting_source_value varchar(50) NULL,
 	discharge_to_concept_id int4 NULL,
 	discharge_to_source_value varchar(50) NULL,
-	preceding_visit_occurrence_id int8 NULL
+	preceding_visit_occurrence_id int8 NULL,
+	admitted_from_concept_id int8 NULL,
+	admitted_from_source_value varchar NULL,
+	discharged_to_concept_id int8 NULL,
+	discharged_to_source_value varchar NULL
 );

@@ -7,26 +7,19 @@ WITH
 		),
 	entities AS (
 		SELECT e.enttype, e.data_fields, e.category, e.description, e.data1, e.data2, e.data3, e.data4, e.data5, e.data6, e.data7, e.data1_lkup, e.data2_lkup, e.data3_lkup, e.data4_lkup, e.data5_lkup, e.data6_lkup, e.data7_lkup
-		FROM {ss}.entity e JOIN adds a ON a.enttype = e.enttype
+		FROM {ss}.entity e
 		),
 	looktype AS (
 		SELECT lt.name, lt.lookup_type_id FROM {ss}.lookuptype lt 
-		JOIN entities e ON lt.name IN (e.data1_lkup, e.data2_lkup, e.data3_lkup, e.data4_lkup, e.data5_lkup, e.data6_lkup, e.data7_lkup)
 		),
 	looks AS (
 		SELECT lu.lookup_type_id, lu.text, lu.code FROM {ss}.lookup lu 
-		JOIN looktype lt on lt.lookup_type_id = lu.lookup_type_id 
-		JOIN adds a ON lu.code::text IN (a.data1, a.data2, a.data3, a.data4, a.data5, a.data6, a.data7)
 		),
 	meds AS (
 		SELECT m.medcode, m.read_code, m.desc FROM {ss}.medical m 
-		JOIN adds a on m.medcode::text IN (a.data1, a.data2, a.data3, a.data4, a.data5, a.data6, a.data7) 
-		JOIN entities e on a.enttype = e.enttype AND 'Medical Dictionary' IN (e.data1_lkup, e.data2_lkup, e.data3_lkup, e.data4_lkup, e.data5_lkup, e.data6_lkup, e.data7_lkup)
 		),
 	products AS (
 		SELECT p.prodcode, p.gemscriptcode, p.productname FROM {ss}.product p
-		JOIN adds a on p.prodcode::text IN (a.data1, a.data2, a.data3, a.data4, a.data5, a.data6, a.data7) 
-		JOIN entities e on a.enttype = e.enttype AND 'Product Dictionary' IN (e.data1_lkup, e.data2_lkup, e.data3_lkup, e.data4_lkup, e.data5_lkup, e.data6_lkup, e.data7_lkup)
 	)
 	
 	select a.patid,
@@ -427,4 +420,4 @@ WITH
 	  left join looktype lt4 on e.data4_lkup = lt4.name
 	  left join looks lu4 on lt4.lookup_type_id = lu4.lookup_type_id and lu4.code::text = a.data4
 	where a.enttype in (372) --This enttype is for the results of scores and questionnaires
-;+
+;

@@ -32,13 +32,13 @@ INSERT INTO {sc}.visit_detail
 	provider_id, care_site_id, visit_detail_source_value, visit_detail_source_concept_id,  
 	preceding_visit_detail_id, parent_visit_detail_id, visit_occurrence_id)
 	SELECT 
-	patid, null, eventdate::date, eventdate::timestamp, eventdate::date, eventdate::timestamp, 32827,
+	patid, 9202 visit_detail_concept_id, eventdate::date, eventdate::timestamp, eventdate::date, eventdate::timestamp, 32827,
 	staffid, right(patid::varchar,5)::numeric as care_site_id, constype, 0,
 	NULL,NULL,null
 	FROM union_source ORDER BY patid, eventdate::date;
 
 -- populate the preceding entries
-WITH vdetails AS (SELECT visit_detail_id, lag(visit_detail_id, 1) over(partition BY person_id ORDER BY visit_detail_start_date) AS prev_id FROM {sc}._chunk ch JOIN {sc}.visit_detail on ch.patient_id = patid WHERE ch.ordinal = {ch} ORDER BY patid, visit_detail_start_date asc)
+WITH vdetails AS (SELECT visit_detail_id, lag(visit_detail_id, 1) over(partition BY person_id ORDER BY visit_detail_start_date) AS prev_id FROM {sc}._chunk ch JOIN {sc}.visit_detail on ch.patient_id = person_id WHERE ch.ordinal = {ch} ORDER BY person_id, visit_detail_start_date asc)
 UPDATE {sc}.visit_detail v SET preceding_visit_detail_id = d.prev_id, parent_visit_detail_id = d.prev_id FROM vdetails d WHERE v.visit_detail_id=d.visit_detail_id;
 	
 -- NOTES
