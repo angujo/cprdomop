@@ -37,9 +37,6 @@ INSERT INTO {sc}.visit_detail
 	NULL,NULL,null
 	FROM union_source ORDER BY patid, eventdate::date;
 
--- populate the preceding entries
-WITH vdetails AS (SELECT visit_detail_id, lag(visit_detail_id, 1) over(partition BY person_id ORDER BY visit_detail_start_date) AS prev_id FROM {sc}._chunk ch JOIN {sc}.visit_detail on ch.patient_id = person_id WHERE ch.ordinal = {ch} ORDER BY person_id, visit_detail_start_date asc)
-UPDATE {sc}.visit_detail v SET preceding_visit_detail_id = d.prev_id, parent_visit_detail_id = d.prev_id FROM vdetails d WHERE v.visit_detail_id=d.visit_detail_id;
 	
 -- NOTES
 -- populate visit_occurrence_id column with value from visit_occurance table

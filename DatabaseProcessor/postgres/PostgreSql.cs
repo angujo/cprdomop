@@ -21,6 +21,7 @@ namespace DatabaseProcessor.postgres
                 @"Database="+ schema.DBName,
                 @"ApplicationName=OMOPBuilder",
                 @"Pooling=false",
+                @"IncludeErrorDetail=true",
                 @"CommandTimeout=36000"
             });
         }
@@ -100,7 +101,7 @@ namespace DatabaseProcessor.postgres
             {
                 Console.WriteLine(sql);
                 Console.WriteLine(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 

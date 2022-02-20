@@ -23,56 +23,83 @@ namespace OMOPProcessor
             LoadSchemas();
             QueueProcessor.SetCreator<CDMTimer>(key =>
             {
-                return CDMTimer.LoadOrNew<CDMTimer>(new { WorkLoadId = workLoad.Id, Name = key });
+                // Console.WriteLine($"Preparing CDMTimer Load For: {key} WL#{workLoad.Id}");
+                return new CDMTimer { WorkLoadId = (long)workLoad.Id, Name = key, ChunkId = 0, StartTime = DateTime.Now };
             });
             QueueProcessor.SetCreator<ChunkTimer>(key =>
             {
-                return ChunkTimer.LoadOrNew<ChunkTimer>(new { WorkLoadId = workLoad.Id, ChunkId = key });
+                // Console.WriteLine($"Preparing ChunkTimer Load For: {key} WL#{workLoad.Id}");
+                return new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = key, StartTime = DateTime.Now };
             });
         }
 
-        public void Run()
+        public async Task RunAsync()
         {
             if (workLoad.CdmProcessed) return;
-            loadCdm();
-            loadChunks();
+            Console.WriteLine($"Started Run for WL#{workLoad.Id}");
+            await loadCdm();
+            Console.WriteLine($"Prepare Chunk Load WL#{workLoad.Id}");
+            await loadChunks();
         }
 
-        private async void loadChunks()
+        private Task loadChunks()
         {
-            if (!workLoad.ChunksSetup)
+            return Task.Run(async () =>
             {
-                await ChunkBuilder.Create(script);
-                workLoad.ChunksSetup = true;
-                workLoad.Save();
-            }
-            var chunker = new ChunkBuilder(script);
-            if (!workLoad.ChunksLoaded)
-            {
-                await chunker.Load(workLoad.ChunkSize);
-                var ordinals = analyzer.ChunkOrdinals();
-                ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
-                foreach (var ordinal in ordinals)
+                if (!workLoad.CdmLoaded) return;
+                Console.WriteLine($"Started Chunk Load WL#{workLoad.Id}");
+                if (!workLoad.ChunksSetup)
                 {
-                    (new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = ordinal }).InsertOrUpdate();
+                    Console.WriteLine($"Started Chunk Setup WL#{workLoad.Id}");
+                    await ChunkBuilder.Create(script);
+                    workLoad.ChunksSetup = true;
+                    workLoad.Save();
                 }
-                workLoad.ChunksLoaded = true;
-                workLoad.Save();
-            }
-            var chunk = ChunkTimer.Load<ChunkTimer>(new { WorkLoadId = (long)workLoad.Id, Touched = false });
-            if (null == chunk) return;
-            //TODO Loop here till no chunk -LATER
-             await chunker.Run(chunk);
+                var chunker = new ChunkBuilder(script);
+                if (!workLoad.ChunksLoaded)
+                {
+                    Console.WriteLine($"Started Chunk Content Load WL#{workLoad.Id}");
+                    await chunker.Load(workLoad.ChunkSize);
+                    var ordinals = analyzer.ChunkOrdinals();
+                    ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
+                    foreach (var ordinal in ordinals)
+                    {
+                        (new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = ordinal }).InsertOrUpdate();
+                    }
+                    workLoad.ChunksLoaded = true;
+                    workLoad.Save();
+                }
+                List<ChunkTimer> chunks = NextChunks();
+                foreach (var chunk in chunks)
+                {
+                    Console.WriteLine($"{DateTime.Now}:: Started ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
+                    chunk.Touched = true;
+                    chunk.Save();
+                    await chunker.Run(chunk);
+                    Console.WriteLine($"{DateTime.Now}:: Completed ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
+                }
+            });
+
         }
 
-        private async void loadCdm()
+        private List<ChunkTimer> NextChunks() { return ChunkTimer.List<ChunkTimer>(new { WorkLoadId = (long)workLoad.Id, Touched = false }); }
+
+        private Task loadCdm()
         {
-            if (workLoad.CdmLoaded) return;
-            var loader = new LoadBuilder(script);
-            await loader.Create();
-            await loader.Run();
-            workLoad.CdmLoaded = true;
-            workLoad.Save();
+            return Task.Run(async () =>
+            {
+                if (workLoad.CdmLoaded) return;
+                Console.WriteLine($"Started CDM Load WL#{workLoad.Id}");
+                var loader = new LoadBuilder(script);
+                Console.WriteLine($"Started CDM Load Table Create WL#{workLoad.Id}");
+                await loader.Create();
+                Console.WriteLine($"Started CDM Load Table Runs WL#{workLoad.Id}");
+                await loader.Run();
+                workLoad.CdmLoaded = true;
+                workLoad.Save();
+                Console.WriteLine($"Ended CDM Load Runs WL#{workLoad.Id}");
+            });
+
         }
 
         private void LoadSchemas()

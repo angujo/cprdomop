@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SystemLocalStore.models
 {
-    public class CDMTimer : AbsTable
+    public class CDMTimer : AbsUpsTable
     {
         public string Name { get; set; }
         public int ChunkId { get; set; }
@@ -16,5 +16,10 @@ namespace SystemLocalStore.models
         public Int64 WorkLoadId { get; set; }
 
         public CDMTimer() { ChunkId = 0; }
+
+        public override string[] UpsColumns()
+        {
+            return new string[] { "Name", "ChunkId", "WorkLoadId" };
+        }
     }
 }

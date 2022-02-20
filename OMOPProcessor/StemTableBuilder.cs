@@ -24,16 +24,19 @@ namespace OMOPProcessor
         {
             return Task.Run(async () => // Populate the stem table with chunk
             {
-                await Task.Run(() => // Populate Stem Table dependencies for the chunk i.e. visit_detail, visit_occurrence, add_in, test_int
+                List<Task> tasks = new List<Task>
                 {
                     Task.Run(() => // Populate visit_occurrence
                     {
                         script.VisitDetail(chunkId);
                         script.VisitOccurrence(chunkId);
-                    });
-                    Task.Run(() => script.AddIn(chunkId));
-                    Task.Run(() => script.TestInt(chunkId));
-                });
+                        script.VisitOccurrenceUpdate(chunkId);
+                        // script.VisitDetailUpdate(chunkId);
+                    }),
+                    Task.Run(() => script.AddIn(chunkId)),
+                    Task.Run(() => script.TestInt(chunkId)),
+                };
+                Task.WaitAll(tasks.ToArray());
                 script.StemTable(chunkId);
             });
 

@@ -55,6 +55,7 @@
     <Compile Include="Class1.cs" />
     <Compile Include="DataAccess.cs" />
     <Compile Include="models\AbsTable.cs" />
+    <Compile Include="models\AbsUpsTable.cs" />
     <Compile Include="models\CDMTimer.cs" />
     <Compile Include="models\ChunkTimer.cs" />
     <Compile Include="models\DBSchema.cs" />

@@ -19,28 +19,12 @@ namespace SystemLocalStore
             }
         }
 
-        public static List<DBSchema> loadSchemas(WorkLoad workLoad)
-        {
-            using (IDbConnection cnn = new SQLiteConnection(connectionString()))
-            {
-                return cnn.Query<DBSchema>("select * from DBSchema where WorkLoadId = @Id", workLoad).ToList();
-            }
-        }
-
-        public static DBSchema loadSchema(WorkLoad workLoad, string s_type)
-        {
-            using (IDbConnection cnn = new SQLiteConnection(connectionString()))
-            {
-                return cnn.QuerySingleOrDefault<DBSchema>("select * from DBSchema where WorkLoadId = @Id AND SchemaType = @SchemaType LIMIT 1", new { Id = workLoad.Id, SchemaType = s_type });
-            }
-        }
-
         public static T Load<T>(string table_name, Object parameters = null)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
-                var wheres=string.Empty;
-                if(parameters != null)wheres = "WHERE " + string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
+                var wheres = string.Empty;
+                if (parameters != null) wheres = "WHERE " + string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
                 parameters = null == parameters ? new DynamicParameters() : parameters;
                 return cnn.QuerySingleOrDefault<T>($"select * from {table_name} {wheres} LIMIT 1", parameters);
             }
@@ -55,6 +39,23 @@ namespace SystemLocalStore
                 var wheres = empty ? string.Empty : string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
                 var _limit = (null != limit ? $"LIMIT {limit}" : string.Empty) + (null != offset ? $"OFFSET {offset}" : string.Empty);
                 return cnn.Query<T>($"select * from {table_name} {(wheres.Length > 0 ? ("WHERE " + wheres) : string.Empty)} {_limit}", parameters).ToList();
+            }
+        }
+
+        public static T Upsert<T>(T tblObject) where T : AbsUpsTable
+        {
+            if (!tblObject.GetType().IsSubclassOf(typeof(AbsUpsTable))) return tblObject;
+            using (IDbConnection cnn = new SQLiteConnection(connectionString()))
+            {
+                var columns = ((AbsTable)tblObject).FillableColumns().ToArray();
+                var sql = $"INSERT INTO {tblObject.TableName()} ({string.Join(", ", columns)})" +
+                            $"VALUES({string.Join(", ", columns.Select(c => $"@{c}"))})" +
+                            $"ON CONFLICT({string.Join(", ", tblObject.UpsColumns())}) DO UPDATE SET {string.Join(", ", columns.Select(c => $"{c} = @{c}").ToArray())}; ";
+
+                var r = cnn.Execute((string)sql, (object)tblObject);
+                tblObject.Id = cnn.QuerySingle<int>($"SELECT seq FROM sqlite_sequence WHERE name = @Name", new { Name = tblObject.TableName() });
+
+                return (T)tblObject;
             }
         }
 

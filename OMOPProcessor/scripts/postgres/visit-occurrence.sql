@@ -2,7 +2,7 @@ WITH vdetails AS (
 	SELECT v.person_id, v.visit_detail_start_date, max(provider_id) provider_id, max(care_site_id) care_site_id, max(visit_detail_source_value) visit_detail_source_value 
 	FROM {sc}._chunk ch join {sc}.visit_detail v ON ch.patient_id = v.person_id WHERE ch.ordinal = {ch} GROUP BY v.person_id, v.visit_detail_start_date
 	)
-INSERT INTO visit_occurrence
+INSERT INTO {sc}.visit_occurrence
 	(person_id, visit_concept_id, visit_start_date, visit_start_datetime, visit_end_date, visit_end_datetime, visit_type_concept_id, provider_id, care_site_id, visit_source_value, 
 	visit_source_concept_id, admitted_from_concept_id, admitted_from_source_value, discharged_to_concept_id, discharged_to_source_value, preceding_visit_occurrence_id)
 	SELECT 
@@ -11,9 +11,3 @@ INSERT INTO visit_occurrence
 	FROM vdetails;
 
 
--- populate the preceding entries
-WITH vodetails AS (SELECT visit_occurrence_id, visit_detail_start_date, lag(visit_occurrence_id, 1) over(partition BY person_id ORDER BY visit_detail_start_date) AS prev_id FROM {sc}.visit_detail ORDER BY person_id, visit_detail_start_date asc)
-UPDATE {sc}.visit_occurrence SET preceding_visit_occurrence_id = d.prev_id FROM vodetails d WHERE visit_occurrence.visit_occurrence_id=d.visit_occurrence_id;
-	
--- populate visit_details' visit_occurrence_id
-UPDATE {sc}.visit_detail SET visit_occurrence_id = o.visit_occurrence_id FROM {sc}._chunk ch JOIN {sc}.visit_occurrence o ON ch.patient_id = o.person_id where ch.ordinal = {ch} and visit_detail.visit_detail_start_date = o.visit_start_date;

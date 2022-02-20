@@ -26,7 +26,7 @@ namespace OMOPProcessor
                 {
                     async ()=>{
                         await  new StemTableBuilder(chunk.ChunkId, script).Run();
-                        stemTableDependants(chunk);
+                       await stemTableDependants(chunk);
                     },
                 () => script.CdmSource(chunk.ChunkId),
                 () => script.Death(chunk.ChunkId),
@@ -41,7 +41,7 @@ namespace OMOPProcessor
                     {
                         Parallel.ForEach(actions, action => action());
                     },
-                    new { Touched = true });
+                    new { Touched = true }, new { Touched = true });
             });
         }
         protected Task stemTableDependants(ChunkTimer chunk)

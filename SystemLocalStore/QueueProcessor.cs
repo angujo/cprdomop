@@ -55,19 +55,22 @@ namespace SystemLocalStore
                     var keys = theList.Keys.ToArray();
                     if (keys.Length <= 0)
                     {
-                        Task.Delay(1000);
+                        Task.Delay(500);
                         continue;
                     }
                     var key = keys[(new Random()).Next(keys.Length)];
                     if (!theList.TryGetValue(key, out Object abs)) continue;
                     try
                     {
-                        if (typeof(AbsTable).IsAssignableFrom(abs.GetType())) ((AbsTable)abs).InsertOrUpdate();
+                        if (typeof(AbsUpsTable).IsAssignableFrom(abs.GetType())) ((AbsUpsTable)abs).UpSert();
+                        else if (typeof(AbsTable).IsAssignableFrom(abs.GetType())) ((AbsTable)abs).Save();
                         theList.TryRemove(key, out abs);
                     }
                     catch (Exception ex)
                     {
-
+                        Console.WriteLine($"We missed an update for {key}");
+                        Console.WriteLine(ex.StackTrace);
+                        throw;
                     }
 
                 }
@@ -81,11 +84,11 @@ namespace SystemLocalStore
             return getMe<T>().AddOrUpdate<T>(id, parameters);
         }
 
-        public static QueueProcessor Timed<T>(dynamic id, Action act, Object parameters = null)
+        public static QueueProcessor Timed<T>(dynamic id, Action act, Object startParams = null, Object endParams = null)
         {
-            Add<T>(id, (parameters ?? new { }).SetProperties(new { StartTime = DateTime.Now }));
+            Add<T>(id, (startParams ?? new { }).SetProperties(new { StartTime = DateTime.Now }));
             act();
-            return Add<T>(id, new { EndTime = DateTime.Now });
+            return Add<T>(id, (endParams ?? new { }).SetProperties(new { EndTime = DateTime.Now }));
         }
 
         public static void CloseInstance<T>() { getMe<T>().Close(); }

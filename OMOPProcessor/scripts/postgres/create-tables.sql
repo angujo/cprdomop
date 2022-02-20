@@ -57,6 +57,7 @@ CREATE TABLE {sc}.test_int (
 DROP TABLE IF EXISTS {sc}.stem_table;
 
 CREATE TABLE IF NOT EXISTS {sc}.stem_table (
+	id bigserial primary key,
 	domain_id varchar NULL,
 	person_id int8 NULL,
 	visit_occurrence_id int8 NULL,
@@ -523,7 +524,7 @@ DROP TABLE IF EXISTS {sc}.observation;
 CREATE TABLE IF NOT EXISTS {sc}.observation (
 	observation_id int8 NOT NULL,
 	person_id int8 NOT NULL,
-	observation_concept_id int4 NOT NULL,
+	observation_concept_id int4 NULL,
 	observation_date date NOT NULL,
 	observation_datetime timestamp NULL,
 	observation_type_concept_id int4 NOT NULL,
@@ -795,7 +796,7 @@ CREATE TABLE IF NOT EXISTS {sc}.visit_detail (
 DROP TABLE IF EXISTS {sc}.visit_occurrence;
 
 CREATE TABLE IF NOT EXISTS {sc}.visit_occurrence (
-	visit_occurrence_id int8 NOT NULL,
+	visit_occurrence_id bigserial primary key,
 	person_id int8 NOT NULL,
 	visit_concept_id int4 NOT NULL,
 	visit_start_date date NOT NULL,

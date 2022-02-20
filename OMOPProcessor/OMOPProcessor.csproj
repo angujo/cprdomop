@@ -94,6 +94,8 @@
     <Content Include="scripts\postgres\stem-table.sql" />
     <Content Include="scripts\postgres\test-int.sql" />
     <Content Include="scripts\postgres\visit-detail.sql" />
+    <Content Include="scripts\postgres\visit-detail-update.sql" />
+    <Content Include="scripts\postgres\visit-occurrence-update.sql" />
     <Content Include="scripts\postgres\visit-occurrence.sql" />
   </ItemGroup>
   <ItemGroup>

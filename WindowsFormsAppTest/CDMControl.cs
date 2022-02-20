@@ -22,7 +22,7 @@ namespace WindowsFormsAppTest
                 MessageBox.Show(this, "WorkLoad is missing to push the Schedule to.", "No Workload");
                 return;
             }
-            (new CDMBuilder(workLoad)).Run();
+            (new CDMBuilder(WorkLoad.Load<WorkLoad>(new { Id = workLoad.Id }))).RunAsync();
         }
     }
 }
