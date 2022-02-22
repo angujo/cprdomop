@@ -12,39 +12,32 @@ namespace OMOPProcessor
     internal class ChunkBuilder
     {
         readonly Script script;
-        private readonly AbsDBMSystem dBMSystem;
 
         public ChunkBuilder(Script s)
         {
             script = s;
-            dBMSystem = DBMSystem.GetDBMSystem(script.Schema);
         }
 
-        public Task Run(ChunkTimer chunk)
+        public void Run(ChunkTimer chunk)
         {
             List<Action> actions = new List<Action>
                 {
-                    async ()=>{
-                        await  new StemTableBuilder(chunk.ChunkId, script).Run();
-                       await stemTableDependants(chunk);
+                     ()=>{
+                        Console.WriteLine("Commencing With StemTables!");
+                        new StemTableBuilder(chunk.ChunkId, script).Run();
+                        stemTableDependants(chunk);
+                        Console.WriteLine("Done With StemTables!");
                     },
-                () => script.CdmSource(chunk.ChunkId),
                 () => script.Death(chunk.ChunkId),
                 () => script.ObservationPeriod(chunk.ChunkId),
                 () => script.Observation(chunk.ChunkId),
                 () => script.Person(chunk.ChunkId),
             };
-            return Task.Run(() =>
-            {
-                QueueProcessor.Timed<ChunkTimer>(chunk.ChunkId,
-                    () =>
-                    {
-                        Parallel.ForEach(actions, action => action());
-                    },
-                    new { Touched = true }, new { Touched = true });
-            });
+            Console.WriteLine("Start Chunk Series");
+            Parallel.ForEach(actions, action => action());
+            Console.WriteLine("Ended Chunk Series");
         }
-        protected Task stemTableDependants(ChunkTimer chunk)
+        protected void stemTableDependants(ChunkTimer chunk)
         {
             List<Action> actions = new List<Action>
                 {
@@ -61,13 +54,12 @@ namespace OMOPProcessor
                     () => script.ProcedureExposure(chunk.ChunkId),
                     () => script.Specimen(chunk.ChunkId)
                 };
-            // Populate all stem_table_dependants
-            return Task.Run(() => Parallel.ForEach(actions, task => task()));
+            Parallel.ForEach(actions, task => task());
         }
 
-        public static Task Create(Script script) { return Task.Run(() => script.ChunkSetup()); }
+        public static void Create(Script script) {  script.ChunkSetup(); }
 
-        public Task Load(int limit) { return Task.Run(() => script.ChunkLoad(limit)); }
+        public void Load(int limit) { script.ChunkLoad(limit); }
     }
 
 }

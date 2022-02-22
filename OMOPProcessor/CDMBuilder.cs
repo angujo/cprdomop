@@ -21,16 +21,6 @@ namespace OMOPProcessor
         {
             workLoad = wl;
             LoadSchemas();
-            QueueProcessor.SetCreator<CDMTimer>(key =>
-            {
-                // Console.WriteLine($"Preparing CDMTimer Load For: {key} WL#{workLoad.Id}");
-                return new CDMTimer { WorkLoadId = (long)workLoad.Id, Name = key, ChunkId = 0, StartTime = DateTime.Now };
-            });
-            QueueProcessor.SetCreator<ChunkTimer>(key =>
-            {
-                // Console.WriteLine($"Preparing ChunkTimer Load For: {key} WL#{workLoad.Id}");
-                return new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = key, StartTime = DateTime.Now };
-            });
         }
 
         public async Task RunAsync()
@@ -40,6 +30,8 @@ namespace OMOPProcessor
             await loadCdm();
             Console.WriteLine($"Prepare Chunk Load WL#{workLoad.Id}");
             await loadChunks();
+            Console.WriteLine($"Start Cleaner WL#{workLoad.Id}");
+            await loadCleaner();
         }
 
         private Task loadChunks()
@@ -51,7 +43,7 @@ namespace OMOPProcessor
                 if (!workLoad.ChunksSetup)
                 {
                     Console.WriteLine($"Started Chunk Setup WL#{workLoad.Id}");
-                    await ChunkBuilder.Create(script);
+                    ChunkBuilder.Create(script);
                     workLoad.ChunksSetup = true;
                     workLoad.Save();
                 }
@@ -59,7 +51,7 @@ namespace OMOPProcessor
                 if (!workLoad.ChunksLoaded)
                 {
                     Console.WriteLine($"Started Chunk Content Load WL#{workLoad.Id}");
-                    await chunker.Load(workLoad.ChunkSize);
+                    chunker.Load(workLoad.ChunkSize);
                     var ordinals = analyzer.ChunkOrdinals();
                     ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
                     foreach (var ordinal in ordinals)
@@ -70,19 +62,25 @@ namespace OMOPProcessor
                     workLoad.Save();
                 }
                 List<ChunkTimer> chunks = NextChunks();
-                foreach (var chunk in chunks)
-                {
-                    Console.WriteLine($"{DateTime.Now}:: Started ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
-                    chunk.Touched = true;
-                    chunk.Save();
-                    await chunker.Run(chunk);
-                    Console.WriteLine($"{DateTime.Now}:: Completed ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
-                }
+                Parallel.ForEach(chunks, new ParallelOptions { MaxDegreeOfParallelism = 3 }, (chunk) =>
+                    {
+                        RunChunk(chunk, chunker);
+                    });
             });
-
         }
 
-        private List<ChunkTimer> NextChunks() { return ChunkTimer.List<ChunkTimer>(new { WorkLoadId = (long)workLoad.Id, Touched = false }); }
+        private void RunChunk(ChunkTimer chunk, ChunkBuilder chunker)
+        {
+            Console.WriteLine($"{DateTime.Now}:: Started ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
+            chunk.StartTime = DateTime.Now;
+            chunk.Touched = true;
+            chunker.Run(chunk);
+            chunk.EndTime = DateTime.Now;
+            chunk.Save();
+            Console.WriteLine($"{DateTime.Now}:: Completed ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
+        }
+
+        private List<ChunkTimer> NextChunks() { return SysDB<ChunkTimer>.List(new { WorkLoadId = (long)workLoad.Id, Touched = false }); }
 
         private Task loadCdm()
         {
@@ -92,9 +90,9 @@ namespace OMOPProcessor
                 Console.WriteLine($"Started CDM Load WL#{workLoad.Id}");
                 var loader = new LoadBuilder(script);
                 Console.WriteLine($"Started CDM Load Table Create WL#{workLoad.Id}");
-                await loader.Create();
+                loader.Create();
                 Console.WriteLine($"Started CDM Load Table Runs WL#{workLoad.Id}");
-                await loader.Run();
+                loader.Run();
                 workLoad.CdmLoaded = true;
                 workLoad.Save();
                 Console.WriteLine($"Ended CDM Load Runs WL#{workLoad.Id}");
@@ -102,11 +100,19 @@ namespace OMOPProcessor
 
         }
 
+        private Task loadCleaner()
+        {
+            return Task.Run(() =>
+            {
+                (new CleanBuilder(script)).Run();
+            });
+        }
+
         private void LoadSchemas()
         {
-            sourceSchema = DBSchema.Load<DBSchema>(new { WorkLoadId = workLoad.Id, SchemaType = "source" });
-            targetSchema = DBSchema.Load<DBSchema>(new { WorkLoadId = workLoad.Id, SchemaType = "target" });
-            vocabularySchema = DBSchema.Load<DBSchema>(new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
+            sourceSchema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "source" });
+            targetSchema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "target" });
+            vocabularySchema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
 
             if (null == vocabularySchema || null == sourceSchema || null == targetSchema) throw new Exception("Ensure that all three schemas are set up and loaded!");
             script = new Script(sourceSchema, targetSchema, vocabularySchema);

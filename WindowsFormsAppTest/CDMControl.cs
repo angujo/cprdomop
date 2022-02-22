@@ -1,6 +1,7 @@
 ﻿using OMOPProcessor;
 using System;
 using System.Windows.Forms;
+using SystemLocalStore;
 using SystemLocalStore.models;
 
 namespace WindowsFormsAppTest
@@ -22,7 +23,7 @@ namespace WindowsFormsAppTest
                 MessageBox.Show(this, "WorkLoad is missing to push the Schedule to.", "No Workload");
                 return;
             }
-            (new CDMBuilder(WorkLoad.Load<WorkLoad>(new { Id = workLoad.Id }))).RunAsync();
+            (new CDMBuilder(SysDB<WorkLoad>.Load(new { Id = workLoad.Id }))).RunAsync();
         }
     }
 }

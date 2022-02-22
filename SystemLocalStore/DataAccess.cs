@@ -5,7 +5,9 @@ using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
+using System.Reflection;
 using SystemLocalStore.models;
+using Util;
 
 namespace SystemLocalStore
 {
@@ -47,11 +49,23 @@ namespace SystemLocalStore
             if (!tblObject.GetType().IsSubclassOf(typeof(AbsUpsTable))) return tblObject;
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
-                var columns = ((AbsTable)tblObject).FillableColumns().ToArray();
-                var sql = $"INSERT INTO {tblObject.TableName()} ({string.Join(", ", columns)})" +
-                            $"VALUES({string.Join(", ", columns.Select(c => $"@{c}"))})" +
-                            $"ON CONFLICT({string.Join(", ", tblObject.UpsColumns())}) DO UPDATE SET {string.Join(", ", columns.Select(c => $"{c} = @{c}").ToArray())}; ";
-
+                var columns = ((AbsTable)tblObject).FillableColumns()
+                    .Where(clm =>
+                    {
+                        PropertyInfo pi = tblObject.GetType().GetProperty(clm);
+                        if (null == pi || "id".Equals(clm.ToLower())) return false;
+                        var val = pi.GetValue(tblObject, null);
+                        return null != val && val != val.GetDefault();
+                    })
+                    .ToArray();
+                var sql = $"INSERT INTO {tblObject.TableName()} ({string.Join(", ", columns)}) " +
+                            $"VALUES({string.Join(", ", columns.Select(c => $"@{c}"))}) " +
+                            $"ON CONFLICT({string.Join(", ", ((string[])tblObject.GetType().GetMethod("UpsColumns").Invoke(null, null)).Select(c => c))}) " +
+                            $"DO UPDATE SET {string.Join(", ", columns.Select(c => $"{c} = @{c}").ToArray())}; ";
+                if ("cdmtimer".Equals(typeof(T)))
+                {
+                    Console.WriteLine(sql);
+                }
                 var r = cnn.Execute((string)sql, (object)tblObject);
                 tblObject.Id = cnn.QuerySingle<int>($"SELECT seq FROM sqlite_sequence WHERE name = @Name", new { Name = tblObject.TableName() });
 

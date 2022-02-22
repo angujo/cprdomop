@@ -8,7 +8,7 @@ namespace SystemLocalStore.models
 {
     public abstract class AbsUpsTable : AbsTable
     {
-        public abstract string[] UpsColumns();
+        public static string[] UpsColumns() { return new string[] { "Id" }; }
 
         public void UpSert()
         {

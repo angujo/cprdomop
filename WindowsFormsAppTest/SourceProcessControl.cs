@@ -44,8 +44,8 @@ namespace WindowsFormsAppTest
         private void loadQueues(bool force = false)
         {
             if (null != queues && !force) return;
-            DBSchema source = DBSchema.Load<DBSchema>(new { WorkLoadId = workLoad.Id, SchemaType = "source" });
-            DBSchema voc = DBSchema.Load<DBSchema>(new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
+            DBSchema source = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "source" });
+            DBSchema voc = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
             if (null == source || null == voc) throw new Exception("Ensure both source and vocabulary schemas are set!");
             AbsDBMSProcessor processor = FileDBProcessor.GetProcessor(DataAccess.loadSourceFiles(workLoad).ToArray(), source, voc);
             queues = processor.GetQueue();
@@ -56,7 +56,7 @@ namespace WindowsFormsAppTest
             if (null == queues) { MessageBox.Show(null, "The Queue need to be loaded and reviewed before it can be pushed to scheduler!", "No Queue", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
             await UIActionAsync(() =>
                {
-                   var wq = WorkQueue.Load<WorkQueue>(new { WorkLoadId = workLoad.Id, QueueType = QAction.SOURCE_FILE }) ??
+                   var wq = SysDB<WorkQueue>.Load(new { WorkLoadId = workLoad.Id, QueueType = QAction.SOURCE_FILE }) ??
                           (new WorkQueue
                           {
                               WorkLoadId = (long)workLoad.Id,
@@ -64,8 +64,8 @@ namespace WindowsFormsAppTest
                               QueueType = QAction.SOURCE_FILE,
                               Status = Status.QUEUED
                           }).InsertOrUpdate(true);
-                   Queue.Delete<Queue>(new { WorkQueueId = wq.Id });
-                   Queue.InsertOrUpdate<Queue>(queues.Select(q => { q.WorkQueueId = (long)wq.Id; return q; }).ToList());
+                   SysDB<Queue>.Delete(new { WorkQueueId = wq.Id });
+                   SysDB<Queue>.InsertOrUpdate(queues.Select(q => { q.WorkQueueId = (long)wq.Id; return q; }).ToList());
                });
         }
 

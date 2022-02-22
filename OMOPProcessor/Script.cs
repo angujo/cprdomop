@@ -18,7 +18,7 @@ namespace OMOPProcessor
         public void ChunkLoad(int lmt) { limit = lmt; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void AddIn(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void CareSite() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
-        public void CdmSource(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
+        public void CdmSource() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void ChunkSetup() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void CohortDefinition() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void ConditionEra(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
@@ -42,8 +42,8 @@ namespace OMOPProcessor
         public void TestInt(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void VisitDetail(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void VisitOccurrence(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
-        public void VisitDetailUpdate(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
-        public void VisitOccurrenceUpdate(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
+        public void VisitDetailUpdate() {  RunLogTimer(MethodBase.GetCurrentMethod().Name); }
+        public void VisitOccurrenceUpdate() {  RunLogTimer(MethodBase.GetCurrentMethod().Name); }
 
         
     }

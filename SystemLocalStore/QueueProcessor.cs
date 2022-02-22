@@ -86,9 +86,9 @@ namespace SystemLocalStore
 
         public static QueueProcessor Timed<T>(dynamic id, Action act, Object startParams = null, Object endParams = null)
         {
-            Add<T>(id, (startParams ?? new { }).SetProperties(new { StartTime = DateTime.Now }));
+            var started = DateTime.Now;
             act();
-            return Add<T>(id, (endParams ?? new { }).SetProperties(new { EndTime = DateTime.Now }));
+            return Add<T>(id, (endParams ?? ObjectExtension.AnObject()).SetProperties(new { EndTime = DateTime.Now, StartTime = started }));
         }
 
         public static void CloseInstance<T>() { getMe<T>().Close(); }

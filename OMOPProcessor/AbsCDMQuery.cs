@@ -56,7 +56,7 @@ namespace OMOPProcessor
                     filePath = Path.Combine(Environment.CurrentDirectory, "omopscripts", DBMSName, "analysis", file_name);
                     break;
             }
-            var cnt = File.Exists(filePath) ? File.ReadAllText(filePath) : string.Empty;
+            var cnt = File.Exists(filePath) ?  File.ReadAllText(filePath) : string.Empty;
             if (cnt.Length <= 0) throw new Exception($"Empty Content FOR FILE [{file_name} # {filePath}]");
             return cnt;
         }
@@ -65,10 +65,10 @@ namespace OMOPProcessor
         {
             var query = SQLScript(name);
             if (query.Length <= 0) return;
-            QueueProcessor.Timed<CDMTimer>(name, () =>
+            QueueTimer<CDMTimer>.Time(name, () =>
             {
                 dBMSystem.RunQuery(query);
-            }, new { ChunkId = chunkId, Query = query });
+            }, new { WorkLoadId = targetSchema.WorkLoadId, ChunkId = chunkId, Query = query, Name = name });
         }
 
         protected List<object> RunData(string name)

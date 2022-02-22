@@ -20,26 +20,25 @@ namespace OMOPProcessor
             dBMSystem = DBMSystem.GetDBMSystem(script.Schema);
         }
 
-        public Task Run()
+        public void Run()
         {
-            return Task.Run(async () => // Populate the stem table with chunk
-            {
-                List<Task> tasks = new List<Task>
+            List<Action> tasks = new List<Action>
                 {
-                    Task.Run(() => // Populate visit_occurrence
+                   () => // Populate visit_occurrence
                     {
                         script.VisitDetail(chunkId);
                         script.VisitOccurrence(chunkId);
-                        script.VisitOccurrenceUpdate(chunkId);
-                        // script.VisitDetailUpdate(chunkId);
-                    }),
-                    Task.Run(() => script.AddIn(chunkId)),
-                    Task.Run(() => script.TestInt(chunkId)),
+                        /*script.VisitOccurrenceUpdate(chunkId);
+                        script.VisitDetailUpdate(chunkId);*/
+                    },
+                   () => script.AddIn(chunkId),
+                   () => script.TestInt(chunkId),
                 };
-                Task.WaitAll(tasks.ToArray());
-                script.StemTable(chunkId);
-            });
-
+            Console.WriteLine("Start StemTable Preparation");
+            Parallel.ForEach(tasks, tsk => tsk());
+            Console.WriteLine("Start StemTable Series");
+            script.StemTable(chunkId);
+            Console.WriteLine("Ended StemTable Series");
         }
     }
 }

@@ -19,12 +19,11 @@ namespace OMOPProcessor
             dBMSystem = DBMSystem.GetDBMSystem(s.Schema);
         }
 
-        public Task Run()
+        public void Run()
         {
-            return Task.Run(() =>
-            {
                 List<Action> actions = new List<Action>
                 {
+                    () => script.CdmSource(),
                     () => script.CareSite(),
                     () => script.CohortDefinition(),
                     () => script.Location(),
@@ -33,9 +32,8 @@ namespace OMOPProcessor
                     () => script.SourceToStandard(),
                 };
                 Parallel.ForEach(actions, action => action());
-            });
         }
 
-        public Task Create() { return Task.Run(() => script.CreateTables()); }
+        public void Create() {  script.CreateTables(); }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SystemLocalStore;
 using SystemLocalStore.models;
 using Util;
 
@@ -19,7 +20,7 @@ namespace WindowsFormsAppTest
         {
             //pbProgress.Visible = true;
 
-            schema = DBSchema.Load<DBSchema>(new { WorkLoadId = workLoad.Id, SchemaType = s_type }) ?? new DBSchema();// DataAccess.loadSchema(workLoad, s_type.ToLower()) ?? new DBSchema();
+            schema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = s_type }) ?? new DBSchema();// DataAccess.loadSchema(workLoad, s_type.ToLower()) ?? new DBSchema();
             if (!schema.Exists())
             {
                 schema.SchemaType = s_type;

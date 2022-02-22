@@ -144,7 +144,7 @@ namespace SystemService
             var scId = (int)queue.DBSchemaId;
             if (!db.ContainsKey(scId))
             {
-                var schema = DBSchema.Load<DBSchema>(new { Id = queue.DBSchemaId });
+                var schema = SysDB<DBSchema>.Load(new { Id = queue.DBSchemaId });
                 if (null == schema) return;
                 db[scId] = DBMSystem.GetDBMSystem(schema);
             }
