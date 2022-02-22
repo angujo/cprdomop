@@ -17,14 +17,19 @@ namespace WindowsFormsAppTest
         {
             load = workl;
             loadTitle.Text = workl.Name;
-
-            addTabPage(pnConf, new ConfigControl(workl));
-            addTabPage(pnCdm, new CDMControl(workl));
-            Task.Run(() =>
+            if (load.SourceProcessed)
             {
-                addTabPage(pnDB, new SchemaHolderControl(workl));
+                tabsHolder.TabPages.Remove(tabSource);
+                tabsHolder.TabPages.Remove(tabConf);
+            }
+            else
+            {
+                addTabPage(pnConf, new ConfigControl(workl));
                 addTabPage(pnSource, new SourceProcessControl(workl));
-            });
+            }
+
+            addTabPage(pnCdm, new CDMControl(workl));
+            addTabPage(pnDB, new SchemaHolderControl(workl));
         }
 
         private void addTabPage(Panel pg, UserControl userControl)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using SystemLocalStore.models;
+using Util;
 
 namespace WindowsFormsAppTest
 {
@@ -10,6 +11,8 @@ namespace WindowsFormsAppTest
         public MainWindow()
         {
             InitializeComponent();
+            Logger.InitEventLog();
+            Logger.InitFileLog();
         }
 
         private void doLoad(WorkLoad workLoad)
@@ -93,6 +96,11 @@ namespace WindowsFormsAppTest
             {
                 doLoad(nw);
             }
+        }
+
+        private void dataStorageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            (new SettingsForm()).ShowDialog();
         }
     }
 }

@@ -1,30 +1,30 @@
 WITH consults AS (
-	SELECT consid, patid, constype FROM {sc}._chunk join {ss}.consultation ON patient_id = patid where ordinal = {ch}
+	SELECT consid, patid, constype, eventdate FROM {sc}._chunk join {ss}.consultation ON patient_id = patid where ordinal = {ch}
 ),
 clinical_source AS (
-	SELECT s.patid, s.eventdate, s.consid, s.staffid, cs.constype FROM {ss}.clinical s JOIN consults cs ON cs.consid=s.consid WHERE s.eventdate IS NOT null
+	SELECT s.patid, s.eventdate, s.consid, s.staffid FROM {sc}._chunk join {ss}.clinical s ON patient_id = patid AND s.eventdate IS NOT null where ordinal = {ch}
 ),
 referral_source AS (
-	SELECT s.patid, s.eventdate, s.consid, s.staffid, cs.constype FROM {ss}.referral s JOIN consults cs ON cs.consid=s.consid WHERE s.eventdate IS NOT null
+	SELECT s.patid, s.eventdate, s.consid, s.staffid FROM {sc}._chunk join {ss}.referral s ON patient_id = patid AND s.eventdate IS NOT null where ordinal = {ch}
 ),
 test_source AS (
-	SELECT s.patid, s.eventdate, s.consid, s.staffid, cs.constype FROM {ss}.test s JOIN consults cs ON cs.consid=s.consid WHERE s.eventdate IS NOT null
+	SELECT s.patid, s.eventdate, s.consid, s.staffid FROM {sc}._chunk join {ss}.test s ON patient_id = patid AND s.eventdate IS NOT null where ordinal = {ch}
 ),
 immunization_source AS (
-	SELECT s.patid, s.eventdate, s.consid, s.staffid, cs.constype FROM {ss}.immunisation s JOIN consults cs ON cs.consid=s.consid WHERE s.eventdate IS NOT null
+	SELECT s.patid, s.eventdate, s.consid, s.staffid FROM {sc}._chunk join {ss}.immunisation s ON patient_id = patid AND s.eventdate IS NOT null where ordinal = {ch}
 ),
 therapy_source AS (
-	SELECT s.patid, s.eventdate, s.consid, s.staffid, cs.constype FROM {ss}.therapy s JOIN consults cs ON cs.consid=s.consid WHERE s.eventdate IS NOT null
+	SELECT s.patid, s.eventdate, s.consid, s.staffid FROM {sc}._chunk join {ss}.therapy s ON patient_id = patid AND s.eventdate IS NOT null where ordinal = {ch}
 ),
 union_source AS (
 	SELECT * FROM clinical_source
-	UNION
+	UNION ALL
 	SELECT * FROM referral_source
-	UNION
+	UNION ALL
 	SELECT * FROM test_source
-	UNION
+	UNION ALL
 	SELECT * FROM immunization_source
-	UNION
+	UNION ALL
 	SELECT * FROM therapy_source
 )
 INSERT INTO {sc}.visit_detail 
@@ -32,10 +32,10 @@ INSERT INTO {sc}.visit_detail
 	provider_id, care_site_id, visit_detail_source_value, visit_detail_source_concept_id,  
 	preceding_visit_detail_id, parent_visit_detail_id, visit_occurrence_id)
 	SELECT 
-	patid, 9202 visit_detail_concept_id, eventdate::date, eventdate::timestamp, eventdate::date, eventdate::timestamp, 32827,
-	staffid, right(patid::varchar,5)::numeric as care_site_id, constype, 0,
+	u.patid, 9202 visit_detail_concept_id, u.eventdate::date, u.eventdate::timestamp, u.eventdate::date, u.eventdate::timestamp, 32827,
+	u.staffid, right(u.patid::varchar,5)::numeric as care_site_id, cs.constype, 0,
 	NULL,NULL,null
-	FROM union_source ORDER BY patid, eventdate::date;
+	FROM union_source u JOIN consults cs ON cs.patid=u.patid AND cs.consid = u.consid AND cs.eventdate = u.eventdate
 
 	
 -- NOTES

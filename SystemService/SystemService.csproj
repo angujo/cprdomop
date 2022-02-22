@@ -6,6 +6,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6797D753-0885-4A0D-B91D-C64CE7FB011B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	  <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>SystemService</RootNamespace>
     <AssemblyName>SystemService</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>

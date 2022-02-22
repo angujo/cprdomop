@@ -72,6 +72,7 @@
     <Content Include="scripts\postgres\chunk-load.sql" />
     <Content Include="scripts\postgres\create-tables.sql" />
     <Content Include="scripts\postgres\chunk-setup.sql" />
+    <Content Include="scripts\postgres\chunk-clean.sql" />
     <Content Include="scripts\postgres\specimen.sql" />
     <Content Include="scripts\postgres\observation.sql" />
     <Content Include="scripts\postgres\procedure-exposure.sql" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,50 +24,75 @@ namespace OMOPProcessor
             LoadSchemas();
         }
 
-        public async Task RunAsync()
+        public async void RunAsync()
         {
             if (workLoad.CdmProcessed) return;
-            Console.WriteLine($"Started Run for WL#{workLoad.Id}");
-            await loadCdm();
-            Console.WriteLine($"Prepare Chunk Load WL#{workLoad.Id}");
-            await loadChunks();
-            Console.WriteLine($"Start Cleaner WL#{workLoad.Id}");
-            await loadCleaner();
+            try
+            {
+                workLoad.IsRunning = true;
+                workLoad.Save();
+                Console.WriteLine($"Started Run for WL#{workLoad.Id}");
+                await loadCdm();
+                Console.WriteLine($"Prepare Chunk Load WL#{workLoad.Id}");
+                if (workLoad.CdmLoaded && loadChunks())
+                {
+                    Console.WriteLine($"Start Cleaner WL#{workLoad.Id}");
+                    await loadCleaner();
+                    Console.WriteLine($"Ended Cleaner WL#{workLoad.Id}");
+                    workLoad.CdmProcessed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry(null, ex.Message, EventLogEntryType.Error);
+                throw;
+            }
+            finally
+            {
+                workLoad.IsRunning = false;
+                workLoad.Save();
+            }
         }
 
-        private Task loadChunks()
+        //<summary
+        //@return Boolean Whether the chunks were fully loaded.
+        // If TRUE, chunks are all done, otherwise FALSE
+        //</summary>
+        private bool loadChunks()
         {
-            return Task.Run(async () =>
+            Console.WriteLine($"Started Chunk Load WL#{workLoad.Id}");
+            if (!workLoad.ChunksSetup)
             {
-                if (!workLoad.CdmLoaded) return;
-                Console.WriteLine($"Started Chunk Load WL#{workLoad.Id}");
-                if (!workLoad.ChunksSetup)
+                Console.WriteLine($"Started Chunk Setup WL#{workLoad.Id}");
+                ChunkBuilder.Create(script);
+                workLoad.ChunksSetup = true;
+                workLoad.Save();
+            }
+            var chunker = new ChunkBuilder(script);
+            if (!workLoad.ChunksLoaded)
+            {
+                Console.WriteLine($"Started Chunk Content Load WL#{workLoad.Id}");
+                chunker.Load(workLoad.ChunkSize);
+                var ordinals = analyzer.ChunkOrdinals();
+                ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
+                foreach (var ordinal in ordinals)
                 {
-                    Console.WriteLine($"Started Chunk Setup WL#{workLoad.Id}");
-                    ChunkBuilder.Create(script);
-                    workLoad.ChunksSetup = true;
-                    workLoad.Save();
+                    (new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = ordinal }).InsertOrUpdate();
                 }
-                var chunker = new ChunkBuilder(script);
-                if (!workLoad.ChunksLoaded)
-                {
-                    Console.WriteLine($"Started Chunk Content Load WL#{workLoad.Id}");
-                    chunker.Load(workLoad.ChunkSize);
-                    var ordinals = analyzer.ChunkOrdinals();
-                    ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
-                    foreach (var ordinal in ordinals)
-                    {
-                        (new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = ordinal }).InsertOrUpdate();
-                    }
-                    workLoad.ChunksLoaded = true;
-                    workLoad.Save();
-                }
-                List<ChunkTimer> chunks = NextChunks();
-                Parallel.ForEach(chunks, new ParallelOptions { MaxDegreeOfParallelism = 3 }, (chunk) =>
-                    {
-                        RunChunk(chunk, chunker);
-                    });
+                workLoad.ChunksLoaded = true;
+                workLoad.Save();
+            }
+            List<ChunkTimer> chunks = NextChunks();
+            if (chunks.Count <= 0) return true;
+            // var chunk = chunks.First();
+            if (0 < workLoad.TestChunkCount) chunks = chunks.Take((int)workLoad.TestChunkCount).ToList();
+
+            Parallel.ForEach(chunks, new ParallelOptions { MaxDegreeOfParallelism = workLoad.MaxParallels }, (chunk) =>
+            {
+                RunChunk(chunk, chunker);
             });
+
+            return 0 >= workLoad.TestChunkCount;
         }
 
         private void RunChunk(ChunkTimer chunk, ChunkBuilder chunker)

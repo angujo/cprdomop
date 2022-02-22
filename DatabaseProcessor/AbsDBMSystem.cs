@@ -10,7 +10,7 @@ namespace DatabaseProcessor
         public AbsDBMSystem(DBSchema db_schema) { schema = db_schema; }
         public abstract string Name { get; }
         public abstract dynamic GetConnection();
-        public abstract string ConnectionString();
+        protected abstract string ConnectionString();
         public abstract bool TestConnection();
         public abstract void RunFile(string path);
         public abstract void RunQuery(string sql);

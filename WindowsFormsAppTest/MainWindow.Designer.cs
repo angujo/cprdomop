@@ -46,7 +46,6 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadToolStripMenuItem,
@@ -54,7 +53,8 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1757, 33);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(1171, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -64,20 +64,20 @@
             this.mnNewWorkLoad,
             this.example2ToolStripMenuItem});
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(67, 29);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(45, 22);
             this.loadToolStripMenuItem.Text = "Load";
             // 
             // mnNewWorkLoad
             // 
             this.mnNewWorkLoad.Name = "mnNewWorkLoad";
-            this.mnNewWorkLoad.Size = new System.Drawing.Size(270, 34);
+            this.mnNewWorkLoad.Size = new System.Drawing.Size(163, 22);
             this.mnNewWorkLoad.Text = "*New Work Load";
             this.mnNewWorkLoad.Click += new System.EventHandler(this.mnNewWorkLoad_Click);
             // 
             // example2ToolStripMenuItem
             // 
             this.example2ToolStripMenuItem.Name = "example2ToolStripMenuItem";
-            this.example2ToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.example2ToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.example2ToolStripMenuItem.Text = "Load Entries";
             this.example2ToolStripMenuItem.Click += new System.EventHandler(this.example2ToolStripMenuItem_Click);
             // 
@@ -87,20 +87,21 @@
             this.appearanceToolStripMenuItem,
             this.dataStorageToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(92, 29);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // appearanceToolStripMenuItem
             // 
             this.appearanceToolStripMenuItem.Name = "appearanceToolStripMenuItem";
-            this.appearanceToolStripMenuItem.Size = new System.Drawing.Size(217, 34);
+            this.appearanceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.appearanceToolStripMenuItem.Text = "Appearance";
             // 
             // dataStorageToolStripMenuItem
             // 
             this.dataStorageToolStripMenuItem.Name = "dataStorageToolStripMenuItem";
-            this.dataStorageToolStripMenuItem.Size = new System.Drawing.Size(217, 34);
+            this.dataStorageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.dataStorageToolStripMenuItem.Text = "Data Storage";
+            this.dataStorageToolStripMenuItem.Click += new System.EventHandler(this.dataStorageToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -108,19 +109,19 @@
             this.aboutToolStripMenuItem,
             this.documentationToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(65, 29);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(237, 34);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
             // documentationToolStripMenuItem
             // 
             this.documentationToolStripMenuItem.Name = "documentationToolStripMenuItem";
-            this.documentationToolStripMenuItem.Size = new System.Drawing.Size(237, 34);
+            this.documentationToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.documentationToolStripMenuItem.Text = "Documentation";
             // 
             // ntTray
@@ -132,17 +133,18 @@
             this.ntTray.Text = "The app is minimized Here";
             this.ntTray.DoubleClick += new System.EventHandler(this.ntTray_DoubleClick);
             // 
-            // Form1
+            // MainWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1757, 1204);
+            this.ClientSize = new System.Drawing.Size(1171, 690);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(1000, 800);
-            this.Name = "Form1";
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MinimumSize = new System.Drawing.Size(672, 534);
+            this.Name = "MainWindow";
             this.Text = "Entry Form";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Resize += new System.EventHandler(this.Form1_Resize);

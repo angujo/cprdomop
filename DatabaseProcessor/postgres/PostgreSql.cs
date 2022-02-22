@@ -1,7 +1,9 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SystemLocalStore.models;
+using Util;
 
 namespace DatabaseProcessor.postgres
 {
@@ -11,7 +13,7 @@ namespace DatabaseProcessor.postgres
 
         public override string Name { get { return "pgsql"; } }
 
-        public override string ConnectionString()
+        protected override string ConnectionString()
         {
             return String.Join(";", new string[] {
                 @"Server="+ schema.Server,
@@ -68,7 +70,6 @@ namespace DatabaseProcessor.postgres
                     {
                         while (reader.Read())
                         {
-
                             rows.Add((T)Convert.ChangeType(reader.GetValue(0), typeof(T)));
                         }
                     }
@@ -94,13 +95,15 @@ namespace DatabaseProcessor.postgres
                         cmd.CommandText = sql;
                         cmd.ExecuteNonQuery();
                     }
-
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(sql);
                 Console.WriteLine(ex.ToString());
+                Logger.Error(sql);
+                Logger.Error(ex.Message);
+                Logger.Error(ex.StackTrace);
                 throw;
             }
         }
