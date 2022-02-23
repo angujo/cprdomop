@@ -13,7 +13,6 @@ namespace Util
         readonly static string Name = "OMOPApp";
         readonly static string SourceName = "WinOMOPService";
         private static EventLog _evtLog;
-        private static string file_path;
 
         public static void EvtLog(string message, LogType type = LogType.ERROR)
         {
@@ -35,31 +34,31 @@ namespace Util
 
         public static void Error(string message)
         {
-            WriteLogFile($"[{DateTime.Now}] ERROR: {message}");
+            WriteLogFile($"ERROR: {message}");
         }
 
         public static void Exception(Exception ex) { Error(ex.Message); Error(ex.StackTrace); }
 
         public static void Info(string message)
         {
-            WriteLogFile($"[{DateTime.Now}] INFO: {message}");
+            WriteLogFile($"INFO: {message}");
         }
 
         public static void Warning(string message)
         {
-            WriteLogFile($"[{DateTime.Now}] WARNING: {message}");
+            WriteLogFile($"WARNING: {message}");
         }
 
         private static void WriteLogFile(string message, int tries = 0)
         {
-            if (string.IsNullOrEmpty(file_path) || !File.Exists(file_path))
+            if (!File.Exists(Setting.LogFilePath))
             {
                 InitFileLog();
                 WriteLogFile(message, tries++);
                 if (tries > 10) return;
                 return;
             }
-            using (StreamWriter wfs = File.AppendText(file_path))
+            using (StreamWriter wfs = File.AppendText(Setting.LogFilePath))
             {
                 wfs.WriteLineAsync($"[{DateTime.Now}] {message}");
             }
@@ -75,11 +74,9 @@ namespace Util
 
         public static void InitFileLog()
         {
-            string dir_path = Path.Combine(Environment.CurrentDirectory, "log");
-            if (!Directory.Exists(file_path)) Directory.CreateDirectory(dir_path);
-            file_path = Path.Combine(dir_path, "log.txt");
-            if (File.Exists(file_path)) return;
-            using (FileStream wfs = File.Create(file_path))
+            if (!Directory.Exists(Setting.LogDirectoryPath)) Directory.CreateDirectory(Setting.LogDirectoryPath);
+            if (File.Exists(Setting.LogFilePath)) return;
+            using (FileStream wfs = File.Create(Setting.LogFilePath))
             using (BufferedStream wbs = new BufferedStream(wfs))
             using (StreamWriter sw = new StreamWriter(wbs))
             {

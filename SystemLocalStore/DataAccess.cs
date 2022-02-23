@@ -132,9 +132,10 @@ namespace SystemLocalStore
             }
         }
 
-        private static string connectionString(string id = "Default")
+        private static string connectionString()
         {
-            return ConfigurationManager.ConnectionStrings[id].ConnectionString;
+            return "Data Source=" + Setting.DBFilePath + ";Version=3;";
+            //return ConfigurationManager.ConnectionStrings[id].ConnectionString;
         }
     }
 }

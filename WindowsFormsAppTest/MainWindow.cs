@@ -8,6 +8,7 @@ namespace WindowsFormsAppTest
     public partial class MainWindow : Form
     {
         UserControlForm userControlForm;
+        private bool hideSettings = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -27,6 +28,7 @@ namespace WindowsFormsAppTest
                 MessageBox.Show(this, "Invalid Work load loaded.\n Work Load need to be saved first before it can be loaded!", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
+            hideSettings = true;
             this.Text = workLoad.Name.Trim();
             userControlForm = new UserControlForm(workLoad);
             userControlForm.Parent = this;
@@ -100,7 +102,13 @@ namespace WindowsFormsAppTest
 
         private void dataStorageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            (new SettingsForm()).ShowDialog();
+            if (hideSettings)
+            {
+                MessageBox.Show(this, "Settings can only be modified before any work is loaded!\nYou might need to restart the application!", "Settings Load", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                return;
+            }
+            var d = new SettingsForm();
+            d.ShowDialog();
         }
     }
 }

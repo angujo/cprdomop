@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.llReset = new System.Windows.Forms.LinkLabel();
             this.btnLogPath = new System.Windows.Forms.Button();
             this.tbLogPath = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnDBPath = new System.Windows.Forms.Button();
             this.tbDBPath = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.llReset = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,6 +56,18 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Application Configuraion Locations";
+            // 
+            // llReset
+            // 
+            this.llReset.AutoSize = true;
+            this.llReset.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.llReset.Location = new System.Drawing.Point(7, 118);
+            this.llReset.Name = "llReset";
+            this.llReset.Size = new System.Drawing.Size(173, 13);
+            this.llReset.TabIndex = 6;
+            this.llReset.TabStop = true;
+            this.llReset.Text = "Wish to reset the Paths? Click Here.";
+            this.llReset.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llReset_LinkClicked);
             // 
             // btnLogPath
             // 
@@ -113,18 +125,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Database File Location";
             // 
-            // llReset
-            // 
-            this.llReset.AutoSize = true;
-            this.llReset.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.llReset.Location = new System.Drawing.Point(7, 118);
-            this.llReset.Name = "llReset";
-            this.llReset.Size = new System.Drawing.Size(173, 13);
-            this.llReset.TabIndex = 6;
-            this.llReset.TabStop = true;
-            this.llReset.Text = "Wish to reset the Paths? Click Here.";
-            this.llReset.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llReset_LinkClicked);
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -135,6 +135,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SettingsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

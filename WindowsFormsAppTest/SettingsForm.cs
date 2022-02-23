@@ -24,8 +24,8 @@ namespace WindowsFormsAppTest
 
         protected void SetLoad()
         {
-            setts.LogPath = Properties.Settings.Default.log_path ?? Path.Combine(Environment.CurrentDirectory, "logs");
-            setts.DBPath = Properties.Settings.Default.db_path ?? Environment.CurrentDirectory;
+            setts.LogPath =Setting.LogDirectoryPath ?? Path.Combine(Environment.CurrentDirectory, "logs");
+            setts.DBPath = Setting.DBDirectoryPath ?? Environment.CurrentDirectory;
         }
 
         protected void Binds()
@@ -38,10 +38,8 @@ namespace WindowsFormsAppTest
         {
             if (DialogResult.OK == MessageBox.Show("Are you sure you wish to reset the settings path?\nYou will lose connection to the current paths!", "Path Reset", MessageBoxButtons.OKCancel, MessageBoxIcon.Question))
             {
-                Properties.Settings.Default.log_path = Path.Combine(Environment.CurrentDirectory, "logs");
-                Properties.Settings.Default.db_path = Environment.CurrentDirectory;
-
-                Properties.Settings.Default.Save();
+                Setting.LogDirectoryPath = Path.Combine(Environment.CurrentDirectory, "logs");
+                Setting.DBDirectoryPath = Environment.CurrentDirectory;
                 SetLoad();
             }
         }
@@ -50,32 +48,27 @@ namespace WindowsFormsAppTest
         {
             try
             {
-                string sp, dp = string.Empty;
+                string dp = string.Empty;
                 switch (type)
                 {
-                    case Items.DB_FILE_NAME:
-                        sp = Items.DBFilePath(Properties.Settings.Default.db_path);
-                        if (!string.IsNullOrEmpty(setts.DBPath) && !setts.DBPath.ToLower().Equals(Properties.Settings.Default.db_path.ToLower()) &&
-                            File.Exists(sp) && Directory.Exists(setts.DBPath))
+                    case Setting.DB_FILE_NAME:
+                        if (!string.IsNullOrEmpty(setts.DBPath) && !setts.DBPath.ToLower().Equals(Setting.DBDirectoryPath.ToLower()) &&
+                            File.Exists(Setting.DBFilePath) && Directory.Exists(setts.DBPath))
                         {
-                            File.Copy(sp, dp = Path.Combine(setts.DBPath, Items.DB_FILE_NAME));
-                            Properties.Settings.Default.db_path = setts.DBPath;
+                            File.Copy(Setting.DBFilePath,  Path.Combine(setts.DBPath, Setting.DB_FILE_NAME));
+                            Setting.DBDirectoryPath = setts.DBPath;
                         }
                         break;
-                    case Items.LOG_FILE_NAME:
-                        sp = Items.DBFilePath(Properties.Settings.Default.log_path);
-                        if (!string.IsNullOrEmpty(setts.LogPath) && !setts.LogPath.ToLower().Equals(Properties.Settings.Default.log_path.ToLower()) &&
-                            File.Exists(sp) && Directory.Exists(setts.LogPath))
+                    case Setting.LOG_FILE_NAME:
+                        if (!string.IsNullOrEmpty(setts.LogPath) && !setts.LogPath.ToLower().Equals(Setting.LogDirectoryPath.ToLower()) &&
+                            File.Exists(Setting.LogFilePath) && Directory.Exists(setts.LogPath))
                         {
-                            File.Copy(sp, dp = Path.Combine(setts.LogPath, Items.LOG_FILE_NAME));
-                            Properties.Settings.Default.db_path = setts.LogPath;
-                            Properties.Settings.Default.log_path = setts.LogPath;
+                            File.Copy(Setting.LogFilePath, Path.Combine(setts.LogPath, Setting.LOG_FILE_NAME));
+                            Setting.LogDirectoryPath = setts.LogPath;
                         }
                         break;
                     default: return;
                 }
-                Console.WriteLine($"FROM : {sp} TO : {dp}");
-                Properties.Settings.Default.Save();
             }
             catch (Exception ex)
             {
@@ -93,7 +86,7 @@ namespace WindowsFormsAppTest
             if (null != path)
             {
                 setts.DBPath = path;
-                SaveProps(Items.DB_FILE_NAME);
+                SaveProps(Setting.DB_FILE_NAME);
             }
         }
 
@@ -114,7 +107,7 @@ namespace WindowsFormsAppTest
             if (null != path)
             {
                 setts.LogPath = path;
-                SaveProps(Items.LOG_FILE_NAME);
+                SaveProps(Setting.LOG_FILE_NAME);
             }
         }
 
