@@ -37,14 +37,14 @@ namespace WindowsFormsAppTest
             }
         }
 
-        private void SaveProps(string type)
+        private void SaveProps(PropType type)
         {
             try
             {
                 string dp = string.Empty;
                 switch (type)
                 {
-                    case Setting.DB_FILE_NAME:
+                    case PropType.DB:
                         if (!string.IsNullOrEmpty(setts.DBPath) && !setts.DBPath.ToLower().Equals(Setting.DBDirectoryPath.ToLower()) &&
                             File.Exists(Setting.DBFilePath) && Directory.Exists(setts.DBPath))
                         {
@@ -52,7 +52,7 @@ namespace WindowsFormsAppTest
                             Setting.DBDirectoryPath = setts.DBPath;
                         }
                         break;
-                    case Setting.LOG_FILE_NAME:
+                    case PropType.LOG:
                         if (!string.IsNullOrEmpty(setts.LogPath) && !setts.LogPath.ToLower().Equals(Setting.LogDirectoryPath.ToLower()) &&
                             File.Exists(Setting.LogFilePath) && Directory.Exists(setts.LogPath))
                         {
@@ -79,7 +79,7 @@ namespace WindowsFormsAppTest
             if (null != path)
             {
                 setts.DBPath = path;
-                SaveProps(Setting.DB_FILE_NAME);
+                SaveProps(PropType.DB);
             }
         }
 
@@ -100,7 +100,7 @@ namespace WindowsFormsAppTest
             if (null != path)
             {
                 setts.LogPath = path;
-                SaveProps(Setting.LOG_FILE_NAME);
+                SaveProps(PropType.LOG);
             }
         }
 
@@ -114,5 +114,11 @@ namespace WindowsFormsAppTest
     {
         public string LogPath { get { return getProperty<string>("LogPath"); } set { setProperty("LogPath", value); } }
         public string DBPath { get { return getProperty<string>("DBPath"); } set { setProperty("DBPath", value); } }
+    }
+
+    internal enum PropType
+    {
+        LOG,
+        DB,
     }
 }

@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="ReactiveProperties.cs" />
     <Compile Include="Setting.cs" />
-    <Compile Include="Items.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ObjectExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -54,6 +53,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="StringExtension.cs" />
+    <Compile Include="StringValueAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

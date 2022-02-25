@@ -1,7 +1,7 @@
-﻿using DatabaseProcessor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Util;
 
 namespace OMOPProcessor
 {
@@ -9,13 +9,11 @@ namespace OMOPProcessor
     {
         readonly int chunkId;
         readonly Script script;
-        private readonly AbsDBMSystem dBMSystem;
 
         public StemTableBuilder(int index, Script s)
         {
             chunkId = index;
             script = s;
-            dBMSystem = DBMSystem.GetDBMSystem(script.Schema);
         }
 
         public void Run()
@@ -32,11 +30,11 @@ namespace OMOPProcessor
                    () => script.AddIn(chunkId),
                    () => script.TestInt(chunkId),
                 };
-            Console.WriteLine("Start StemTable Preparation");
+            Logger.Info($"Start StemTable Preparation ChunkID #{chunkId}");
             Parallel.ForEach(tasks, tsk => tsk());
-            Console.WriteLine("Start StemTable Series");
+            Logger.Info($"Start StemTable Series ChunkID #{chunkId}");
             script.StemTable(chunkId);
-            Console.WriteLine("Ended StemTable Series");
+            Logger.Info($"Ended StemTable Series ChunkID #{chunkId}");
         }
     }
 }

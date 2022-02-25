@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SystemLocalStore;
 using SystemLocalStore.models;
+using Util;
 
 namespace SystemService
 {
@@ -47,6 +48,7 @@ namespace SystemService
                     }
                 }
             });
+            Logger.Info("WorkQueue<QueueTime> Starter QueueRun2");
             QueueTimer<WorkQueue>.Time(Current.workQueue, Current.workQueue.Id, () =>
             {
                 Queue[] queues = SysDB<Queue>.List(new { WorkQueueId = Current.workQueue.Id }).ToArray();

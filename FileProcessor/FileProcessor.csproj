@@ -83,6 +83,10 @@
       <Project>{494836DA-D213-4F5D-9046-583E36702589}</Project>
       <Name>SystemLocalStore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Util\Util.csproj">
+      <Project>{7F044264-B01B-4299-8E88-9F76EA0A4984}</Project>
+      <Name>Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

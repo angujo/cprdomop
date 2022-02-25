@@ -30,41 +30,43 @@ namespace OMOPProcessor
         public Task RunAsync()
         {
             if (workLoad.CdmProcessed) return null;
-           return Task.Run(() =>
-               {
-                   QueueTimer<WorkQueue>.Time(workQueue, workQueue.Id, () =>
-                   {
-                       try
-                       {
-                           ProcessAsync();
-                           workQueue.Status = Status.COMPLETED;
-                       }
-                       catch (Exception ex)
-                       {
-                           workQueue.Status = Status.STOPPED;
-                           Logger.Exception(ex);
-                           //  throw;
-                       }
-
-                   },
-                       new { Status = Status.STARTED });
-               });
+            return Task.Run(() =>
+                {
+                    QueueTimer<WorkQueue>.Time(workQueue, workQueue.Id, () =>
+                    {
+                        try
+                        {
+                            Logger.Info($"WorkQueue<QueueTime>#{workQueue.Id} Starter: CDMBuilder");
+                            ProcessAsync();
+                            workQueue.Status = Status.COMPLETED;
+                            Logger.Info($"WorkQueue<QueueTime>#{workQueue.Id} Ender: CDMBuilder");
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Info($"WorkQueue<QueueTime>#{workQueue.Id} Exception: CDMBuilder");
+                            workQueue.Status = Status.STOPPED;
+                            Logger.Exception(ex);
+                            //  throw;
+                        }
+                    },
+                        new { Status = Status.STARTED });
+                });
         }
 
-        private async void ProcessAsync()
+        private void ProcessAsync()
         {
             try
             {
                 workLoad.IsRunning = true;
                 workLoad.Save();
-                Console.WriteLine($"Started Run for WL#{workLoad.Id}");
-                await loadCdm();
-                Console.WriteLine($"Prepare Chunk Load WL#{workLoad.Id}");
+                Logger.Info($"Started Run for WL#{workLoad.Id}");
+                loadCdm();
+                Logger.Info($"Prepare Chunk Load WL#{workLoad.Id}");
                 if (workLoad.CdmLoaded && loadChunks())
                 {
-                    Console.WriteLine($"Start Cleaner WL#{workLoad.Id}");
-                    await loadCleaner();
-                    Console.WriteLine($"Ended Cleaner WL#{workLoad.Id}");
+                    Logger.Info($"Start Cleaner WL#{workLoad.Id}");
+                    loadCleaner();
+                    Logger.Info($"Ended Cleaner WL#{workLoad.Id}");
                     workLoad.CdmProcessed = true;
                 }
             }
@@ -87,10 +89,10 @@ namespace OMOPProcessor
         //</summary>
         private bool loadChunks()
         {
-            Console.WriteLine($"Started Chunk Load WL#{workLoad.Id}");
+            Logger.Info($"Started Chunk Load WL#{workLoad.Id}");
             if (!workLoad.ChunksSetup)
             {
-                Console.WriteLine($"Started Chunk Setup WL#{workLoad.Id}");
+                Logger.Info($"Started Chunk Setup WL#{workLoad.Id}");
                 ChunkBuilder.Create(script);
                 workLoad.ChunksSetup = true;
                 workLoad.Save();
@@ -98,7 +100,7 @@ namespace OMOPProcessor
             var chunker = new ChunkBuilder(script);
             if (!workLoad.ChunksLoaded)
             {
-                Console.WriteLine($"Started Chunk Content Load WL#{workLoad.Id}");
+                Logger.Info($"Started Chunk Content Load WL#{workLoad.Id}");
                 chunker.Load(workLoad.ChunkSize);
                 var ordinals = analyzer.ChunkOrdinals();
                 ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
@@ -112,16 +114,19 @@ namespace OMOPProcessor
             List<ChunkTimer> chunks = NextChunks();
             if (chunks.Count <= 0) return true;
             // var chunk = chunks.First();
-            if (0 < workLoad.TestChunkCount) chunks = chunks.Take((int)workLoad.TestChunkCount).ToList();
+            Logger.Info($"Total Chunks: {chunks.Count}");
+            List<ChunkTimer> chunkQueues = (0 < workLoad.TestChunkCount) ? chunks.Take((int)workLoad.TestChunkCount).ToList() : chunks;
+            Logger.Info($"Queued Chunks: {chunkQueues.Count} of {workLoad.TestChunkCount}");
             try
             {
-                Parallel.ForEach(chunks, ParallelOptions(), (chunk) =>
+                Parallel.ForEach(chunkQueues, ParallelOptions(), (chunk) =>
                            {
                                RunChunk(chunk, chunker);
                            });
             }
             catch (Exception ex)
             {
+                Logger.Exception(ex);
                 return false;
             }
 
@@ -130,41 +135,35 @@ namespace OMOPProcessor
 
         private void RunChunk(ChunkTimer chunk, ChunkBuilder chunker)
         {
-            Console.WriteLine($"{DateTime.Now}:: Started ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
+            Logger.Info($"Started ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
             chunk.StartTime = DateTime.Now;
             chunk.Touched = true;
             chunker.Run(chunk);
             chunk.EndTime = DateTime.Now;
             chunk.Save();
-            Console.WriteLine($"{DateTime.Now}:: Completed ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
+            Logger.Info($"Completed ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
         }
 
         private List<ChunkTimer> NextChunks() { return SysDB<ChunkTimer>.List(new { WorkLoadId = (long)workLoad.Id, Touched = false }); }
 
-        private Task loadCdm()
+        private void loadCdm()
         {
-            return Task.Run(async () =>
-            {
-                if (workLoad.CdmLoaded) return;
-                Console.WriteLine($"Started CDM Load WL#{workLoad.Id}");
-                var loader = new LoadBuilder(script);
-                Console.WriteLine($"Started CDM Load Table Create WL#{workLoad.Id}");
-                loader.Create();
-                Console.WriteLine($"Started CDM Load Table Runs WL#{workLoad.Id}");
-                loader.Run();
-                workLoad.CdmLoaded = true;
-                workLoad.Save();
-                Console.WriteLine($"Ended CDM Load Runs WL#{workLoad.Id}");
-            });
+            if (workLoad.CdmLoaded) return;
+            Logger.Info($"Started CDM Load WL#{workLoad.Id}");
+            var loader = new LoadBuilder(script);
+            Logger.Info($"Started CDM Load Table Create WL#{workLoad.Id}");
+            loader.Create();
+            Logger.Info($"Started CDM Load Table Runs WL#{workLoad.Id}");
+            loader.Run();
+            workLoad.CdmLoaded = true;
+            workLoad.Save();
+            Logger.Info($"Ended CDM Load Runs WL#{workLoad.Id}");
 
         }
 
-        private Task loadCleaner()
+        private void loadCleaner()
         {
-            return Task.Run(() =>
-            {
-                (new CleanBuilder(script)).Run();
-            });
+            (new CleanBuilder(script)).Run();
         }
 
         private void LoadSchemas()

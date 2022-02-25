@@ -47,13 +47,13 @@ namespace OMOPProcessor
             switch (nm)
             {
                 case "script":
-                    filePath = Path.Combine(Environment.CurrentDirectory, "omopscripts", DBMSName, file_name);
+                    filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSName, file_name);
                     break;
                 case "analyzer":
-                    filePath = Path.Combine(Environment.CurrentDirectory, "omopscripts", DBMSName, "analysis", file_name);
+                    filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSName, "analysis", file_name);
                     break;
             }
-            var cnt = File.Exists(filePath) ?  File.ReadAllText(filePath) : string.Empty;
+            var cnt = File.Exists(filePath) ? File.ReadAllText(filePath) : string.Empty;
             if (cnt.Length <= 0) throw new Exception($"Empty Content FOR FILE [{file_name} # {filePath}]");
             return cnt;
         }
@@ -64,7 +64,9 @@ namespace OMOPProcessor
             if (query.Length <= 0) return;
             QueueTimer<CDMTimer>.Time(name, () =>
             {
+                Logger.Info($"Start Running Query : {name} Chunk ID #{chunkId}");
                 dBMSystem.RunQuery(query);
+                Logger.Info($"Done Running Query : {name} Chunk ID #{chunkId}");
             }, new { WorkLoadId = targetSchema.WorkLoadId, ChunkId = chunkId, Query = query, Name = name });
         }
 

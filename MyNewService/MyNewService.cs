@@ -11,7 +11,6 @@ namespace OMOPService
 {
     public partial class MyNewService : ServiceBase
     {
-        private int eventId = 1;
         private SystemLocalStore.models.ServiceStatus sStatus;
 
         [DllImport("advapi32.dll", SetLastError = true)]
@@ -31,9 +30,10 @@ namespace OMOPService
 
 
             // eventLog1.WriteEntry("In OnStart.");
-            Logger.Info("In OnStart");
+            Logger.Info("Service started...");
+            Logger.Info($"Work Directory: {Setting.InstallationDirectory}");
             Timer timer = new Timer();
-            timer.Interval = 3000; // 60 seconds
+            timer.Interval = 3000; // 3 seconds
             timer.Elapsed += new ElapsedEventHandler(this.OnTimer);
             timer.Start();
 
@@ -58,7 +58,7 @@ namespace OMOPService
                 if (!sStatus.Exists())
                 {
                     sStatus.ServiceName = Setting.APP_NAME;
-                    sStatus.ServiceDescription = "";
+                    sStatus.ServiceDescription = "A service to run source file mapping and OMOP CDM transformation from source files.";
                 }
             }
             sStatus.Status = Status.RUNNING;
@@ -72,7 +72,7 @@ namespace OMOPService
         protected override void OnStop()
         {
             Current.status = SystemLocalStore.Status.STOPPED;
-            Logger.Info("In OnStop");
+            Logger.Info("...Service Stopped");
             //eventLog1.WriteEntry("In OnStop.");
         }
     }

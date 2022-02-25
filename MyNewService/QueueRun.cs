@@ -32,6 +32,7 @@ namespace OMOPService
 
         public void SetTasks()
         {
+            Logger.Info("WorkQueue<QueueTime> Starter: QueueRun");
             QueueTimer<WorkQueue>.Time(Current.workQueue, Current.workQueue.Id, () =>
             {
                 Queue[] queues = SysDB<Queue>.List(new { WorkQueueId = Current.workQueue.Id }).ToArray();

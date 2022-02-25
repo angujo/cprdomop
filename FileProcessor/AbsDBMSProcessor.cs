@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SystemLocalStore.models;
+using Util;
 
 namespace FileProcessor
 {
@@ -39,7 +40,7 @@ namespace FileProcessor
 
         protected T GetScriptContent<T>(string file_name)
         {
-            var filePath = File.Exists(file_name) || Directory.Exists(file_name) ? file_name : Path.Combine(Environment.CurrentDirectory, "filescripts", DBMSName, file_name);
+            var filePath = File.Exists(file_name) || Directory.Exists(file_name) ? file_name : Path.Combine(Setting.InstallationDirectory, "filescripts", DBMSName, file_name);
             if (File.Exists(filePath))
             {
                 return (T)Convert.ChangeType(File.ReadAllText(filePath), typeof(T));
@@ -75,7 +76,7 @@ namespace FileProcessor
                 IsFile = false,
                 FileHash = "[NO HASHING]",
                 Code = "source_to_concept_map",
-                FilePath = Path.Combine(Environment.CurrentDirectory, "filescripts", DBMSName, "source-to-concept"),
+                FilePath = Path.Combine(Setting.InstallationDirectory, "filescripts", DBMSName, "source-to-concept"),
                 TableName = "source_to_concept_map"
             };
             int ord = 0;

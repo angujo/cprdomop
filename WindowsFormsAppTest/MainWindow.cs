@@ -12,6 +12,14 @@ namespace WindowsFormsAppTest
         public MainWindow()
         {
             InitializeComponent();
+            if (Environment.CurrentDirectory!=Setting.InstallationDirectory && !Setting.IsAdmin())
+            {
+                MessageBox.Show(this, "First run requires Admin privileges. Admin run is required to prepare shared variables with the service.\nAfter first run, normal runs are permitted!", "First Run", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Close();
+                return;
+            }
+            else if (Setting.IsAdmin()) Setting.InstallationDirectory = Environment.CurrentDirectory;
+
             Logger.InitEventLog();
             Logger.InitFileLog();
         }
@@ -87,8 +95,8 @@ namespace WindowsFormsAppTest
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult res = MessageBox.Show(this, "You are about to close this app while a process is running.\nDo you wish to proceed?", "Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-            if (res != DialogResult.OK) e.Cancel = true;
+           /* DialogResult res = MessageBox.Show(this, "You are about to close this app while a process is running.\nDo you wish to proceed?", "Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            if (res != DialogResult.OK) e.Cancel = true;*/
         }
 
         private void mnNewWorkLoad_Click(object sender, EventArgs e)
@@ -109,7 +117,7 @@ namespace WindowsFormsAppTest
             }
             if (!Setting.IsAdmin())
             {
-                MessageBox.Show(this, "Settings can only be modified when application runs As Administrator!\nYou might need to restart the application as Administraor!", "Settings Load", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                MessageBox.Show(this, "Settings can only be modified when application runs As Administrator!\nYou might need to restart the application as Administrator!", "Settings Load", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 return;
             }
             var d = new SettingsForm();

@@ -56,11 +56,7 @@ namespace Util
             if (obj.GetType().Name.Equals("ExpandoObject"))
             {
                 var dict = ((IDictionary<string, object>)obj);
-                if (dict.ContainsKey(name))
-                {
-                    dict[name] = value;
-                }
-                else dict.Add(name, value);
+                dict[name] = value;
             }
             else
             {

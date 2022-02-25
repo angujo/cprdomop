@@ -76,7 +76,6 @@ namespace SystemService
         public void Process()
         {
             Logger.Info("AM a service runner!");
-            // Console.WriteLine(Environment.CurrentDirectory);
             // Console.WriteLine(Setting.LogFilePath);
             Console.WriteLine("Am written!");
         }

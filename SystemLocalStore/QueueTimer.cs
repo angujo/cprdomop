@@ -38,7 +38,6 @@ namespace SystemLocalStore
                     var keys = schedules.ToList().Select(kv => kv.Key).ToArray();
                     if (keys.Length <= 0)
                     {
-                        Task.Delay(500);
                         continue;
                     }
                     var key = keys[(new Random()).Next(keys.Length)];
@@ -50,6 +49,7 @@ namespace SystemLocalStore
                     catch (Exception ex)
                     {
                         Console.WriteLine($"We missed an update for {key}");
+                        Console.WriteLine(ex.Message);
                         Console.WriteLine(ex.StackTrace);
                         //    throw;
                     }
@@ -60,7 +60,7 @@ namespace SystemLocalStore
 
         protected QueueItem<T> AddOrUpdate(dynamic id, object parameters)
         {
-            QueueItem<T> f(dynamic i, QueueItem<T> oV) { return oV.SetProperties(parameters); }
+            QueueItem<T> f(dynamic i, QueueItem<T> oV) { return oV.SetProperties(parameters).SetProperties(new { IsScheduled = false }); }
 
             theList.AddOrUpdate(id, createObject(parameters), (Func<dynamic, QueueItem<T>, QueueItem<T>>)f);
 

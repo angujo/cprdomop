@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Util
 {
     public class Logger
     {
         private static EventLog _evtLog;
+        private static ConcurrentBag<LogHolder> logs = new ConcurrentBag<LogHolder>();
+        private static bool bagging { get { return logs.Count > 0; } }
 
         public static void EvtLog(string message, LogType type = LogType.ERROR)
         {
@@ -23,34 +27,56 @@ namespace Util
 
         public static void Error(string message)
         {
-            WriteLogFile($"ERROR: {message}");
+            WriteLogFile(message, LogType.ERROR, DateTime.Now);
         }
 
         public static void Exception(Exception ex) { Error(ex.Message); Error(ex.StackTrace); }
 
         public static void Info(string message)
         {
-            WriteLogFile($"INFO: {message}");
+            WriteLogFile(message, LogType.INFO, DateTime.Now);
         }
 
         public static void Warning(string message)
         {
-            WriteLogFile($"WARNING: {message}");
+            WriteLogFile(message, LogType.WARN, DateTime.Now);
         }
 
-        private static void WriteLogFile(string message, int tries = 0)
+        private static void WriteLogFile(string message, LogType type, DateTime dated, int tries = 0)
         {
             if (!File.Exists(Setting.LogFilePath))
             {
                 InitFileLog();
-                WriteLogFile(message, tries++);
+                WriteLogFile(message, type, dated, tries++);
                 if (tries > 10) throw new Exception($"Unable to initialize the logfile at '{Setting.LogFilePath}'");
                 return;
             }
-            using (StreamWriter wfs = File.AppendText(Setting.LogFilePath))
+            Task.Run(() =>
             {
-                wfs.WriteLineAsync($"[{DateTime.Now}] {message}");
-            }
+                try
+                {
+                    using (StreamWriter wfs = File.AppendText(Setting.LogFilePath))
+                    {
+                        while (logs.TryTake(out var bg))
+                        {
+                            wfs.WriteLineAsync($"[{bg.Dated:yyyy-MM-dd H:mm:ss.FFFFFF}#EXC] {bg.Type.GetStringValue()}: {bg.Message}");
+                        }
+                        wfs.WriteLineAsync($"[{dated:yyyy-MM-dd H:mm:ss.FFFFFF}] {type.GetStringValue()}: {message}");
+                    }
+                }
+                catch (Exception)
+                {
+                    logs.Add(new LogHolder { Dated = DateTime.Now, Message = message, Type = type });
+                    // initRunner();
+                    // throw;
+                }
+            });
+
+        }
+
+        private static void WriteLogFile(LogHolder logHolder)
+        {
+            WriteLogFile(logHolder.Message, logHolder.Type, logHolder.Dated);
         }
 
         public static void InitEventLog()
@@ -79,12 +105,38 @@ namespace Util
                 sw.WriteLineAsync($"------NEW LOG FILE [{DateTime.Now}]------");
             }
         }
+
+        private static void initRunner()
+        {
+            if (bagging) return;
+            Task.Run(async () =>
+            {
+                while (bagging)
+                {
+                    await Task.Delay(200);
+                    if (logs.TryTake(out LogHolder logHolder))
+                    {
+                        WriteLogFile(logHolder);
+                    }
+                }
+            });
+        }
     }
 
     public enum LogType
     {
+        [StringValue("ERROR")]
         ERROR,
+        [StringValue("INFO")]
         INFO,
+        [StringValue("WARNING")]
         WARN,
+    }
+
+    internal class LogHolder
+    {
+        public LogType Type { get; set; }
+        public string Message { get; set; }
+        public DateTime Dated { get; set; }
     }
 }

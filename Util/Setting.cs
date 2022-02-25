@@ -7,11 +7,18 @@ namespace Util
 {
     public static class Setting
     {
+        public static string LOG_FILE_NAME { get { return "log" + DateTime.Now.ToString("yyyyMMdd") + ".txt"; } }
+
         public const string APP_NAME = "OMOPAPP";
         public const string SERVICE_SOURCE_NAME = "OMOPAPPService";
         public const string SERVICE_LOG_NAME = "OMOPAPPLog";
-        public const string LOG_FILE_NAME = "log.txt";
         public const string DB_FILE_NAME = "database.sqlite3";
+
+        public static string InstallationDirectory
+        {
+            get { return GetRegistryValue("InstallationDirectory"); }
+            set { SetRegistryValue("InstallationDirectory", value); }
+        }
 
         public static string DBDirectoryPath
         {
@@ -46,16 +53,19 @@ namespace Util
                 .IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        private static string GetRegistryValue(string key)
+        private static string GetRegistryValue(string key, bool userBased = false)
         {
-            RegistryKey appKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", false).OpenSubKey(APP_NAME, false);
+            // 
+            RegistryKey locKey = userBased ? Registry.CurrentUser : Registry.LocalMachine;
+            RegistryKey appKey = locKey.OpenSubKey("SOFTWARE", false).OpenSubKey(APP_NAME, false);
             if (null == appKey) return null;
             return (string)appKey.GetValue(key);
         }
 
-        private static void SetRegistryValue(string key, string value)
+        private static void SetRegistryValue(string key, string value, bool userBased = false)
         {
-            RegistryKey appKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true).CreateSubKey(APP_NAME, true);
+            RegistryKey locKey = userBased ? Registry.CurrentUser : Registry.LocalMachine;
+            RegistryKey appKey = locKey.OpenSubKey("SOFTWARE", true).CreateSubKey(APP_NAME, true);
             appKey.SetValue(key, value);
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SystemLocalStore.models;
+using Util;
 
 namespace OMOPProcessor
 {
@@ -19,22 +20,23 @@ namespace OMOPProcessor
             List<Action> actions = new List<Action>
                 {
                      ()=>{
-                        Console.WriteLine("Commencing With StemTables!");
+                        Logger.Info($"Commencing With StemTables! ChunkID#{chunk.ChunkId}");
                         new StemTableBuilder(chunk.ChunkId, script).Run();
                         stemTableDependants(chunk);
-                        Console.WriteLine("Done With StemTables!");
+                        Logger.Info($"Done With StemTables! ChunkID#{chunk.ChunkId}");
                     },
                 () => script.Death(chunk.ChunkId),
                 () => script.ObservationPeriod(chunk.ChunkId),
                 () => script.Observation(chunk.ChunkId),
                 () => script.Person(chunk.ChunkId),
             };
-            Console.WriteLine("Start Chunk Series");
+            Logger.Info($"Start Chunk Series ChunkID#{chunk.ChunkId}");
             Parallel.ForEach(actions, action => action());
-            Console.WriteLine("Ended Chunk Series");
+            Logger.Info($"Ended Chunk Series ChunkID#{chunk.ChunkId}");
         }
         protected void stemTableDependants(ChunkTimer chunk)
         {
+            Logger.Info($"Commencing With StemTables Dependants! ChunkID#{chunk.ChunkId}");
             List<Action> actions = new List<Action>
                 {
                     () =>{
@@ -51,9 +53,10 @@ namespace OMOPProcessor
                     () => script.Specimen(chunk.ChunkId)
                 };
             Parallel.ForEach(actions, task => task());
+            Logger.Info($"Done With StemTables Dependants! ChunkID#{chunk.ChunkId}");
         }
 
-        public static void Create(Script script) {  script.ChunkSetup(); }
+        public static void Create(Script script) { script.ChunkSetup(); }
 
         public void Load(int limit) { script.ChunkLoad(limit); }
     }
