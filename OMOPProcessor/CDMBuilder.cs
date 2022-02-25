@@ -1,32 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using SystemLocalStore;
 using SystemLocalStore.models;
+using Util;
 
 namespace OMOPProcessor
 {
     public class CDMBuilder
     {
+        WorkQueue workQueue;
         WorkLoad workLoad;
         DBSchema sourceSchema;
         DBSchema targetSchema;
         DBSchema vocabularySchema;
         Script script;
         Analyzer analyzer;
+        CancellationTokenSource cancelToken = new CancellationTokenSource();
 
-        public CDMBuilder(WorkLoad wl)
+        public CDMBuilder(WorkQueue wq)
         {
-            workLoad = wl;
+            workQueue = wq;
+            workLoad = SysDB<WorkLoad>.Load(new { Id = workQueue.WorkLoadId });
             LoadSchemas();
         }
 
-        public async void RunAsync()
+        public Task RunAsync()
         {
-            if (workLoad.CdmProcessed) return;
+            if (workLoad.CdmProcessed) return null;
+           return Task.Run(() =>
+               {
+                   QueueTimer<WorkQueue>.Time(workQueue, workQueue.Id, () =>
+                   {
+                       try
+                       {
+                           ProcessAsync();
+                           workQueue.Status = Status.COMPLETED;
+                       }
+                       catch (Exception ex)
+                       {
+                           workQueue.Status = Status.STOPPED;
+                           Logger.Exception(ex);
+                           //  throw;
+                       }
+
+                   },
+                       new { Status = Status.STARTED });
+               });
+        }
+
+        private async void ProcessAsync()
+        {
             try
             {
                 workLoad.IsRunning = true;
@@ -44,7 +70,8 @@ namespace OMOPProcessor
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry(null, ex.Message, EventLogEntryType.Error);
+                Logger.Exception(ex);
+                // EventLog.WriteEntry(null, ex.Message, EventLogEntryType.Error);
                 throw;
             }
             finally
@@ -86,11 +113,17 @@ namespace OMOPProcessor
             if (chunks.Count <= 0) return true;
             // var chunk = chunks.First();
             if (0 < workLoad.TestChunkCount) chunks = chunks.Take((int)workLoad.TestChunkCount).ToList();
-
-            Parallel.ForEach(chunks, new ParallelOptions { MaxDegreeOfParallelism = workLoad.MaxParallels }, (chunk) =>
+            try
             {
-                RunChunk(chunk, chunker);
-            });
+                Parallel.ForEach(chunks, ParallelOptions(), (chunk) =>
+                           {
+                               RunChunk(chunk, chunker);
+                           });
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
 
             return 0 >= workLoad.TestChunkCount;
         }
@@ -143,6 +176,14 @@ namespace OMOPProcessor
             if (null == vocabularySchema || null == sourceSchema || null == targetSchema) throw new Exception("Ensure that all three schemas are set up and loaded!");
             script = new Script(sourceSchema, targetSchema, vocabularySchema);
             analyzer = new Analyzer(targetSchema);
+        }
+
+        private ParallelOptions ParallelOptions()
+        {
+            ParallelOptions parallelOptions = new ParallelOptions();
+            parallelOptions.CancellationToken = cancelToken.Token;
+            parallelOptions.MaxDegreeOfParallelism = workLoad.MaxParallels;
+            return parallelOptions;
         }
     }
 }

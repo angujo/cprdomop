@@ -1,13 +1,11 @@
 ﻿using FileProcessor;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SystemLocalStore;
 using SystemLocalStore.models;
-using SystemService;
 
 namespace WindowsFormsAppTest
 {
@@ -54,16 +52,26 @@ namespace WindowsFormsAppTest
         private async void btnQueue_Click(object sender, EventArgs e)
         {
             if (null == queues) { MessageBox.Show(null, "The Queue need to be loaded and reviewed before it can be pushed to scheduler!", "No Queue", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            var wq = SysDB<WorkQueue>.Load(new { WorkLoadId = workLoad.Id, QueueType = QAction.SOURCE_FILE });
+            var wl = null != wq ? SysDB<WorkLoad>.Load() : null;
+            if (SysDB<WorkLoad>.Exists(new { Id = wq.WorkLoadId, CdmLoaded = 1 }))
+            {
+                MessageBox.Show(null, "This process cannot be run!\nThe OMOP mapping had already been initiated and source files cannot be mapped", "Queue Rerun", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                return;
+            }
+            if (wq != null && Status.COMPLETED == wq.Status &&
+                DialogResult.Cancel == MessageBox.Show(null, "This process had already been run before to completion!\nDo you wish to overwrite the changes and rerun the process?", "Queue Rerun", MessageBoxButtons.OKCancel, MessageBoxIcon.Question))
+            { return; }
             await UIActionAsync(() =>
                {
-                   var wq = SysDB<WorkQueue>.Load(new { WorkLoadId = workLoad.Id, QueueType = QAction.SOURCE_FILE }) ??
-                          (new WorkQueue
-                          {
-                              WorkLoadId = (long)workLoad.Id,
-                              Name = Guid.NewGuid().ToString(),
-                              QueueType = QAction.SOURCE_FILE,
-                              Status = Status.QUEUED
-                          }).InsertOrUpdate(true);
+                   wq = (WorkQueue)(wq ??
+                         (new WorkQueue
+                         {
+                             WorkLoadId = (long)workLoad.Id,
+                             Name = Guid.NewGuid().ToString(),
+                             QueueType = QAction.SOURCE_FILE,
+                             Status = Status.QUEUED
+                         }).InsertOrUpdate(true));
                    SysDB<Queue>.Delete(new { WorkQueueId = wq.Id });
                    SysDB<Queue>.InsertOrUpdate(queues.Select(q => { q.WorkQueueId = (long)wq.Id; return q; }).ToList());
                });
@@ -100,7 +108,7 @@ namespace WindowsFormsAppTest
         private async void button1_Click(object sender, EventArgs e)
         {
             //  Console.WriteLine("Testing output to console....");
-            await UIActionAsync(() => { QueueRun.DoRun(); });
+           // await UIActionAsync(() => { QueueRun.DoRun(); });
             // CleanLineFeeds(@"D:\temp\cdm\vocabulary\CONCEPT_RELATIONSHIP.csv");
         }
 

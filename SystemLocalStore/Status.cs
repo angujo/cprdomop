@@ -10,5 +10,6 @@
         SHUTDOWN,
         QUEUED,
         ERROR_EXIT,
+        COMPLETED,
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
@@ -29,6 +28,26 @@ namespace SystemLocalStore
                 if (parameters != null) wheres = "WHERE " + string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
                 parameters = null == parameters ? new DynamicParameters() : parameters;
                 return cnn.QuerySingleOrDefault<T>($"select * from {table_name} {wheres} LIMIT 1", parameters);
+            }
+        }
+
+        public static T Scalar<T>(string column_name, string table_name, Object parameters = null)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(connectionString()))
+            {
+                var wheres = string.Empty;
+                if (parameters != null) wheres = "WHERE " + string.Join(" AND ", parameters.GetType().GetProperties().Select(pi => $"{pi.Name} = @{pi.Name}").ToArray());
+                parameters = null == parameters ? new DynamicParameters() : parameters;
+                return cnn.QuerySingleOrDefault<T>($"select {column_name} from {table_name} {wheres} LIMIT 1", parameters);
+            }
+        }
+
+        public static bool Exists(string table_name, Object parameters = null)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(connectionString()))
+            {
+                var scalar=Scalar<int>("1",table_name,parameters);
+                return null!=scalar && 1==scalar;
             }
         }
 
@@ -124,11 +143,11 @@ namespace SystemLocalStore
                 cnn.Execute("UPDATE WorkLoad SET FilesLocked = 1  WHERE Id = @Id", workLoad);
             }
         }
-        public static WorkQueue ForQueues()
+        public static WorkQueue ForQueues(Status status)
         {
             using (IDbConnection cnn = new SQLiteConnection(connectionString()))
             {
-                return cnn.QuerySingleOrDefault<WorkQueue>("select * from WorkQueue where Status IN @Stats ORDER BY Id ASC", new { Stats = new int[] { (int)Status.PAUSED, (int)Status.STOPPED, (int)Status.QUEUED } });
+                return cnn.QuerySingleOrDefault<WorkQueue>("select * from WorkQueue where Status = @Stats ORDER BY Id ASC LIMIT 1", new { Stats = status });
             }
         }
 

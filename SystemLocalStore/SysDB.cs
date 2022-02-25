@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SystemLocalStore.models;
 using Util;
 
@@ -22,6 +19,10 @@ namespace SystemLocalStore
         public static T Load(Object parameters = null)
         {
             return DataAccess.Load<T>(typeof(T).Name, parameters);
+        }
+        public static bool Exists(Object parameters = null)
+        {
+            return DataAccess.Exists(typeof(T).Name, parameters);
         }
 
         public static T LoadOrNew(Object parameters = null)

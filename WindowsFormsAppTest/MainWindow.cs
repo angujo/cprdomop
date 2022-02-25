@@ -104,7 +104,12 @@ namespace WindowsFormsAppTest
         {
             if (hideSettings)
             {
-                MessageBox.Show(this, "Settings can only be modified before any work is loaded!\nYou might need to restart the application!", "Settings Load", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                MessageBox.Show(this, "Settings can only be modified before any work is loaded and applican runs As Administrator!\nYou might need to restart the application!", "Settings Load", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                return;
+            }
+            if (!Setting.IsAdmin())
+            {
+                MessageBox.Show(this, "Settings can only be modified when application runs As Administrator!\nYou might need to restart the application as Administraor!", "Settings Load", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 return;
             }
             var d = new SettingsForm();

@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Util;
 
@@ -24,7 +17,7 @@ namespace WindowsFormsAppTest
 
         protected void SetLoad()
         {
-            setts.LogPath =Setting.LogDirectoryPath ?? Path.Combine(Environment.CurrentDirectory, "logs");
+            setts.LogPath = Setting.LogDirectoryPath ?? Path.Combine(Environment.CurrentDirectory, "logs");
             setts.DBPath = Setting.DBDirectoryPath ?? Environment.CurrentDirectory;
         }
 
@@ -55,7 +48,7 @@ namespace WindowsFormsAppTest
                         if (!string.IsNullOrEmpty(setts.DBPath) && !setts.DBPath.ToLower().Equals(Setting.DBDirectoryPath.ToLower()) &&
                             File.Exists(Setting.DBFilePath) && Directory.Exists(setts.DBPath))
                         {
-                            File.Copy(Setting.DBFilePath,  Path.Combine(setts.DBPath, Setting.DB_FILE_NAME));
+                            File.Copy(Setting.DBFilePath, Path.Combine(setts.DBPath, Setting.DB_FILE_NAME));
                             Setting.DBDirectoryPath = setts.DBPath;
                         }
                         break;
@@ -117,19 +110,9 @@ namespace WindowsFormsAppTest
         }
     }
 
-    internal class Setts : INotifyPropertyChanged
+    internal class Setts : ReactiveProperties
     {
-        string _logpath;
-        public string LogPath { get { return _logpath; } set { _logpath = value; OnChange("LogPath"); } }
-        string _dbpath;
-        public string DBPath { get { return _dbpath; } set { _dbpath = value; OnChange("DBPath"); } }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnChange(string name)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(name));
-        }
+        public string LogPath { get { return getProperty<string>("LogPath"); } set { setProperty("LogPath", value); } }
+        public string DBPath { get { return getProperty<string>("DBPath"); } set { setProperty("DBPath", value); } }
     }
 }

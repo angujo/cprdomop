@@ -40,9 +40,9 @@
             this.tabCdm = new System.Windows.Forms.TabPage();
             this.pnCdm = new System.Windows.Forms.Panel();
             this.tabRuntime = new System.Windows.Forms.TabPage();
-            this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.loadTitle = new System.Windows.Forms.Label();
+            this.pnRuntime = new System.Windows.Forms.Panel();
             this.tabsHolder.SuspendLayout();
             this.tabSummary.SuspendLayout();
             this.tabConf.SuspendLayout();
@@ -190,8 +190,8 @@
             // 
             // tabRuntime
             // 
-            this.tabRuntime.BackColor = System.Drawing.Color.MistyRose;
-            this.tabRuntime.Controls.Add(this.label5);
+            this.tabRuntime.BackColor = System.Drawing.SystemColors.Window;
+            this.tabRuntime.Controls.Add(this.pnRuntime);
             this.tabRuntime.Location = new System.Drawing.Point(4, 29);
             this.tabRuntime.Margin = new System.Windows.Forms.Padding(2);
             this.tabRuntime.Name = "tabRuntime";
@@ -199,16 +199,6 @@
             this.tabRuntime.Size = new System.Drawing.Size(763, 330);
             this.tabRuntime.TabIndex = 4;
             this.tabRuntime.Text = "Runtime";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(318, 185);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(86, 17);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "For Tab 101";
             // 
             // panel1
             // 
@@ -234,6 +224,15 @@
             this.loadTitle.TabIndex = 0;
             this.loadTitle.Text = "This is the name of Loaded Entry";
             // 
+            // pnRuntime
+            // 
+            this.pnRuntime.AutoScroll = true;
+            this.pnRuntime.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnRuntime.Location = new System.Drawing.Point(1, 1);
+            this.pnRuntime.Name = "pnRuntime";
+            this.pnRuntime.Size = new System.Drawing.Size(506, 217);
+            this.pnRuntime.TabIndex = 0;
+            // 
             // UserControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -251,7 +250,6 @@
             this.tabSource.ResumeLayout(false);
             this.tabCdm.ResumeLayout(false);
             this.tabRuntime.ResumeLayout(false);
-            this.tabRuntime.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -268,12 +266,12 @@
         private System.Windows.Forms.Label loadTitle;
         private System.Windows.Forms.TabPage tabSchemas;
         private System.Windows.Forms.TabPage tabRuntime;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TabPage tabCdm;
         private System.Windows.Forms.Panel pnConf;
         private System.Windows.Forms.Panel pnDB;
         private System.Windows.Forms.TabPage tabSource;
         private System.Windows.Forms.Panel pnSource;
         private System.Windows.Forms.Panel pnCdm;
+        private System.Windows.Forms.Panel pnRuntime;
     }
 }

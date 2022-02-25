@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Util
 {
     public class Logger
     {
-        readonly static string Name = "OMOPApp";
-        readonly static string SourceName = "WinOMOPService";
         private static EventLog _evtLog;
 
         public static void EvtLog(string message, LogType type = LogType.ERROR)
@@ -23,12 +17,7 @@ namespace Util
                 case LogType.WARN: et = EventLogEntryType.Warning; break;
                 default: et = EventLogEntryType.Error; break;
             }
-            if (!EventLog.SourceExists(SourceName)) return;
-            if (null == _evtLog)
-            {
-                _evtLog = new EventLog();
-                _evtLog.Source = SourceName;
-            }
+            InitEventLog();
             _evtLog.WriteEntry(message, et);
         }
 
@@ -55,7 +44,7 @@ namespace Util
             {
                 InitFileLog();
                 WriteLogFile(message, tries++);
-                if (tries > 10) return;
+                if (tries > 10) throw new Exception($"Unable to initialize the logfile at '{Setting.LogFilePath}'");
                 return;
             }
             using (StreamWriter wfs = File.AppendText(Setting.LogFilePath))
@@ -66,9 +55,16 @@ namespace Util
 
         public static void InitEventLog()
         {
-            if (!EventLog.SourceExists(SourceName))
+            if (!EventLog.SourceExists(Setting.SERVICE_SOURCE_NAME))
             {
-                EventLog.CreateEventSource(SourceName, Name);
+                EventLog.CreateEventSource(Setting.SERVICE_SOURCE_NAME, Setting.SERVICE_LOG_NAME);
+            }
+
+            if (null == _evtLog)
+            {
+                _evtLog = new EventLog();
+                _evtLog.Source = Setting.SERVICE_SOURCE_NAME;
+                _evtLog.Log = Setting.SERVICE_LOG_NAME;
             }
         }
 

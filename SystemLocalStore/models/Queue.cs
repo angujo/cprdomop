@@ -2,7 +2,7 @@
 
 namespace SystemLocalStore.models
 {
-    public class Queue : AbsTable
+    public class Queue : AbsUpsTable
     {
         public Int64 WorkQueueId { get; set; }
         public Int64 DBSchemaId { get; set; }

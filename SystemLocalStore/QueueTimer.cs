@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SystemLocalStore.models;
-using Util;
 
 namespace SystemLocalStore
 {
@@ -17,16 +14,18 @@ namespace SystemLocalStore
         ConcurrentDictionary<dynamic, QueueItem<T>> theList = new ConcurrentDictionary<dynamic, QueueItem<T>>();
         protected QueueTimer() { }
 
-        public static void Time(object key, Action func, object parameters = null)
+        public static void Time(T obj, object key, Action func, object preParams = null, object postParams = null)
         {
             var item = getMe().AddOrUpdate(key, new { StartTime = DateTime.Now });
-            item.SetProperties(parameters);
+            item.SetProperties(preParams);
+            if (null != obj) item.SetItem(obj);
             func();
-            item.SetProperties(new { EndTime = DateTime.Now });
+            item.SetProperties(new { EndTime = DateTime.Now }).SetProperties(postParams);
+        }
 
-
-            //Test
-            var i = 1 + 0;
+        public static void Time(object key, Action func, object preParams = null, object postParams = null)
+        {
+            Time(null, key, func, preParams, postParams);
         }
 
         public Task Open()
@@ -52,7 +51,7 @@ namespace SystemLocalStore
                     {
                         Console.WriteLine($"We missed an update for {key}");
                         Console.WriteLine(ex.StackTrace);
-                    //    throw;
+                        //    throw;
                     }
 
                 }
@@ -73,19 +72,31 @@ namespace SystemLocalStore
             return (new QueueItem<T>()).SetProperties(parameters);
         }
 
-        private static QueueTimer<T> getMe()
+        private static QueueTimer<T> getMe(bool loadOnly = false)
         {
             var name = typeof(T).Name;
             QueueTimer<T> process;
-            if (null == processes) processes = new ConcurrentDictionary<string, QueueTimer<T>>();
+            if (null == processes)
+            {
+                if (loadOnly) return null;
+                processes = new ConcurrentDictionary<string, QueueTimer<T>>();
+            }
 
             if (!processes.TryGetValue(name, out process))
             {
+                if (loadOnly) return null;
                 process = new QueueTimer<T>();
                 processes.TryAdd(name, process);
                 process.Open();
             }
             return process;
+        }
+
+        public static void Close()
+        {
+            var m = getMe(true);
+            if (null == m) return;
+            m.closeRequested = true;
         }
     }
 }

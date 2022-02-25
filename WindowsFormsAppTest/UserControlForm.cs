@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using SystemLocalStore.models;
 
 namespace WindowsFormsAppTest
@@ -17,7 +16,7 @@ namespace WindowsFormsAppTest
         {
             load = workl;
             loadTitle.Text = workl.Name;
-            if (load.SourceProcessed)
+            if (load.CdmLoaded)
             {
                 tabsHolder.TabPages.Remove(tabSource);
                 tabsHolder.TabPages.Remove(tabConf);
@@ -28,6 +27,7 @@ namespace WindowsFormsAppTest
                 addTabPage(pnSource, new SourceProcessControl(workl));
             }
 
+            addTabPage(pnRuntime, new RunTimeControl(workl));
             addTabPage(pnCdm, new CDMControl(workl));
             addTabPage(pnDB, new SchemaHolderControl(workl));
         }

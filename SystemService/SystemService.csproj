@@ -6,9 +6,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6797D753-0885-4A0D-B91D-C64CE7FB011B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-	  <PublishSingleFile>true</PublishSingleFile>
-	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	  <PlatformTarget>x64</PlatformTarget>
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>SystemService</RootNamespace>
     <AssemblyName>SystemService</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -36,6 +36,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SystemService.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -71,6 +74,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueRun.cs" />
+    <Compile Include="SelfInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -92,6 +96,10 @@
     <ProjectReference Include="..\SystemLocalStore\SystemLocalStore.csproj">
       <Project>{494836DA-D213-4F5D-9046-583E36702589}</Project>
       <Name>SystemLocalStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Util\Util.csproj">
+      <Project>{7F044264-B01B-4299-8E88-9F76EA0A4984}</Project>
+      <Name>Util</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

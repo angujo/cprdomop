@@ -14,6 +14,9 @@ namespace SystemService
     {
         private ConcurrentDictionary<int, AbsTable> updates = new ConcurrentDictionary<int, AbsTable>();
         private Dictionary<Int64, AbsDBMSystem> db = new Dictionary<Int64, AbsDBMSystem>();
+
+        protected QueueRun() { }
+
         public static void DoRun()
         {
             if (Current.IsRunning() || Current.StopRequested()) return;
@@ -29,7 +32,7 @@ namespace SystemService
 
         public void SetTasks()
         {
-            workStarted();
+            // workStarted();
             Task.Run(async () =>
             {
                 while (Status.RUNNING == Current.status)
@@ -39,21 +42,25 @@ namespace SystemService
                     {
                         var keys = updates.Keys.ToArray();
                         if (!updates.TryRemove(keys[(new Random()).Next(keys.Length)], out AbsTable queue)) return;
-                        queue.InsertOrUpdate();
+                        queue.Save();
                         Console.WriteLine($"RUN ABS[{queue.Id}]...{DateTime.Now}");
                     }
                 }
             });
-            Queue[] queues = Queue.List<Queue>(new { WorkQueueId = Current.workQueue.Id }).ToArray();
-            if (queues.Length <= 0) return;
-            List<int?> taskIndexes = (queues.Select(q => q.TaskIndex).ToArray() ?? (new int?[] { })).Distinct().ToList();
-            List<Task> tasks = new List<Task>();
-            foreach (var taskIndex in taskIndexes)
+            QueueTimer<WorkQueue>.Time(Current.workQueue, Current.workQueue.Id, () =>
             {
-                if (Current.StopRequested()) break;
-                TaskIndexRun(queues.Where(q => taskIndex == q.TaskIndex).ToList());
-            }
-            workStopped();
+                Queue[] queues = SysDB<Queue>.List(new { WorkQueueId = Current.workQueue.Id }).ToArray();
+                if (queues.Length <= 0) return;
+                List<int?> taskIndexes = (queues.Select(q => q.TaskIndex).ToArray() ?? (new int?[] { })).Distinct().ToList();
+                List<Task> tasks = new List<Task>();
+                foreach (var taskIndex in taskIndexes)
+                {
+                    if (Current.StopRequested()) break;
+                    TaskIndexRun(queues.Where(q => taskIndex == q.TaskIndex).ToList());
+                }
+            }, new { Status = Status.STARTED }, new { Status = Status.STOPPED });
+
+            // workStopped();
         }
 
         protected void TaskIndexRun(List<Queue> queues)
@@ -71,23 +78,24 @@ namespace SystemService
         {
             foreach (var queue in queues)
             {
-                queueStarted(queue);
                 if (Current.StopRequested()) break;
-                try
-                {
-                    Debug.WriteLine($"Executing Queue: {queue.Id} :: {queue.TaskIndex}-{queue.ParallelIndex}-{queue.Ordinal}");
-                    runQueue(queue);
-                }
-                catch (Exception ex)
-                {
-                    queue.ErrorLog = ex.ToString();
-                    queue.Status = Status.ERROR_EXIT;
-                    Console.WriteLine(ex.ToString());
-                }
-                finally
-                {
-                    queueStopped(queue);
-                }
+                QueueTimer<Queue>.Time(queue, queue.Id,
+                    () =>
+                    {
+                        try
+                        {
+                            Debug.WriteLine($"Executing Queue: {queue.Id} :: {queue.TaskIndex}-{queue.ParallelIndex}-{queue.Ordinal}");
+                            runQueue(queue);
+                        }
+                        catch (Exception ex)
+                        {
+                            queue.ErrorLog = ex.ToString();
+                            queue.Status = Status.ERROR_EXIT;
+                            Console.WriteLine(ex.ToString());
+                        }
+                    },
+                    new { Status = Status.RUNNING }, new { Status = Status.STOPPED }
+                    );
 
             }
         }
@@ -98,7 +106,7 @@ namespace SystemService
             {
                 Current.workQueue.StartTime = DateTime.Now;
                 Current.workQueue.Status = Status.STARTED;
-                Current.workQueue.InsertOrUpdate();
+                Current.workQueue.Save();
             });
         }
         private void workStopped()
@@ -107,7 +115,7 @@ namespace SystemService
             {
                 Current.workQueue.EndTime = DateTime.Now;
                 Current.workQueue.Status = Status.STOPPED;
-                Current.workQueue.InsertOrUpdate();
+                Current.workQueue.Save();
             });
         }
 

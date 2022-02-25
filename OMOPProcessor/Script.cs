@@ -1,10 +1,5 @@
-﻿using DatabaseProcessor;
-using System;
-using System.IO;
-using System.Reflection;
-using SystemLocalStore;
+﻿using System.Reflection;
 using SystemLocalStore.models;
-using Util;
 
 namespace OMOPProcessor
 {

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SystemLocalStore.models;
 using Util;
 
@@ -12,7 +9,7 @@ namespace SystemLocalStore
     {
         public bool IsScheduled { get; set; }
         public bool IsCompleted { get; set; }
-        public T item { get; set; }
+        protected T item { get; set; }
 
         private Object loadKeys;
         private Object properties;
@@ -27,12 +24,14 @@ namespace SystemLocalStore
             return SysDB<T>.LoadOrNew(loadKeys);
         }
 
+        public QueueItem<T> SetItem(T itm) { item = itm; return this; }
+
         private void SetLoader()
         {
             if (null == properties) return;
             if (null == loadKeys) loadKeys = ObjectExtension.AnObject();
             var cols = (string[])typeof(T).GetMethod("UpsColumns").Invoke(null, null);
-           // var props=
+            // var props=
             properties.RunProperties((name, value) =>
             {
                 if (!cols.Contains(name)) return;
