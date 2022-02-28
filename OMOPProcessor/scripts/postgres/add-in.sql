@@ -1,4 +1,6 @@
-WITH 
+INSERT INTO {sc}.add_in 
+(patid, eventdate, constype, consid, staffid, enttype, category, description, data, value_as_number, value_as_string, value_as_date, unit_source_value, qualifier_source_value, read_code_description, gemscript_description, data_fields, source_value)
+(WITH 
 	adds AS (
 		SELECT patid, adid, a.enttype, a.data1, a.data2, a.data3, a.data4, a.data5, a.data6, a.data7 FROM {sc}._chunk c join {ss}.additional a ON c.patient_id = a.patid WHERE c.ordinal = {ch}
 		),
@@ -420,4 +422,4 @@ WITH
 	  left join looktype lt4 on e.data4_lkup = lt4.name
 	  left join looks lu4 on lt4.lookup_type_id = lu4.lookup_type_id and lu4.code::text = a.data4
 	where a.enttype in (372) --This enttype is for the results of scores and questionnaires
-;
+);

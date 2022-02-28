@@ -1,0 +1,1 @@
+DELETE FROM {sc}.add_in  WHERE patid IN (SELECT patient_id FROM  {sc}._chunk WHERE ordinal = {ch});

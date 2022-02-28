@@ -1,0 +1,1 @@
+DELETE FROM {sc}.stem_table WHERE person_id IN (SELECT patient_id FROM  {sc}._chunk WHERE ordinal = {ch});

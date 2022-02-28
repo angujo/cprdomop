@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using SystemLocalStore.models;
+using Util;
 
 namespace SystemLocalStore
 {
@@ -16,11 +17,28 @@ namespace SystemLocalStore
 
         public static void Time(T obj, object key, Action func, object preParams = null, object postParams = null)
         {
-            var item = getMe().AddOrUpdate(key, new { StartTime = DateTime.Now });
-            item.SetProperties(preParams);
-            if (null != obj) item.SetItem(obj);
-            func();
-            item.SetProperties(new { EndTime = DateTime.Now }).SetProperties(postParams);
+            var pra = ObjectExtension.AnObject(preParams).SetProperties(new { StartTime = DateTime.Now, EndTime = DateTime.Now, Status = Status.STARTED });
+            var item = getMe().AddOrUpdate(key, null);
+            item.SetProperties(pra);
+            try
+            {
+                if (null != obj) item.SetItem(obj);
+                func();
+                pra.SetProperties(new { Status = Status.COMPLETED, });
+            }
+            catch (Exception ex)
+            {
+                pra.SetProperties(new { ErrorLog = ex.Message, Status = Status.ERROR_EXIT, });
+                throw;
+            }
+            finally
+            {
+                pra.SetProperties(new { EndTime = DateTime.Now, }).SetProperties(postParams);
+                item = getMe().AddOrUpdate(key, null);
+                item.SetProperties(pra);
+                if (null != obj) item.SetItem(obj);
+
+            }
         }
 
         public static void Time(object key, Action func, object preParams = null, object postParams = null)
@@ -41,7 +59,7 @@ namespace SystemLocalStore
                         continue;
                     }
                     var key = keys[(new Random()).Next(keys.Length)];
-                    if (!theList.TryGetValue(key, out QueueItem<T> abs)) continue;
+                    if (!theList.TryRemove(key, out QueueItem<T> abs)) continue;
                     try
                     {
                         abs.Commit();
@@ -60,11 +78,20 @@ namespace SystemLocalStore
 
         protected QueueItem<T> AddOrUpdate(dynamic id, object parameters)
         {
-            QueueItem<T> f(dynamic i, QueueItem<T> oV) { return oV.SetProperties(parameters).SetProperties(new { IsScheduled = false }); }
+            // QueueItem<T> f(dynamic i, QueueItem<T> oV) { return oV.SetProperties(parameters).SetProperties(new { IsScheduled = false }); }
+            if (theList.TryRemove(id, out QueueItem<T> abs))
+            {
+                abs = abs.SetProperties(parameters);
+            }
+            else
+            {
+                abs = createObject(parameters);
+            }
+            abs.SetProperties(new { IsScheduled = false });
+            theList.TryAdd(id, abs);
+            // theList.AddOrUpdate(id, createObject(parameters), (Func<dynamic, QueueItem<T>, QueueItem<T>>)f);
 
-            theList.AddOrUpdate(id, createObject(parameters), (Func<dynamic, QueueItem<T>, QueueItem<T>>)f);
-
-            return theList.TryGetValue(id, out QueueItem<T> rt) ? rt : null;
+            return abs;// theList.TryGetValue(id, out QueueItem<T> rt) ? rt : null;
         }
 
         private QueueItem<T> createObject(Object parameters)

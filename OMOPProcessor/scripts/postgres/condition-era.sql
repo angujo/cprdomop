@@ -38,7 +38,7 @@ WITH cteConditionTarget AS (
 		GROUP BY c.PERSON_ID, c.CONDITION_CONCEPT_ID, c.CONDITION_START_DATE
 	 )
 	
-	INSERT INTO {sc}.condition_era (condition_era_id, person_id, condition_concept_id, condition_era_start_date, condition_era_end_date, condition_occurrence_count) 
-	    SELECT row_number() OVER (ORDER BY person_id) AS condition_era_id, person_id, CONDITION_CONCEPT_ID, min(CONDITION_START_DATE) AS CONDITION_ERA_START_DATE, ERA_END_DATE AS CONDITION_ERA_END_DATE, COUNT(*) AS CONDITION_OCCURRENCE_COUNT
+	INSERT INTO {sc}.condition_era ( person_id, condition_concept_id, condition_era_start_date, condition_era_end_date, condition_occurrence_count) 
+	    SELECT person_id, CONDITION_CONCEPT_ID, min(CONDITION_START_DATE) AS CONDITION_ERA_START_DATE, ERA_END_DATE AS CONDITION_ERA_END_DATE, COUNT(*) AS CONDITION_OCCURRENCE_COUNT
 	    FROM cteConditionEnds
 	    GROUP BY person_id, CONDITION_CONCEPT_ID, ERA_END_DATE;

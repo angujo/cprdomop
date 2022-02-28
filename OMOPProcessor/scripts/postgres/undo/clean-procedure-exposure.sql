@@ -1,0 +1,1 @@
+DELETE FROM {sc}.procedure_occurrence WHERE PERSON_ID IN (SELECT patient_id FROM  {sc}._chunk WHERE ordinal = {ch});

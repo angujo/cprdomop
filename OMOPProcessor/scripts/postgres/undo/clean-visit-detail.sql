@@ -1,0 +1,1 @@
+DELETE FROM {sc}.visit_detail  WHERE person_id IN (SELECT patient_id FROM  {sc}._chunk WHERE ordinal = {ch});

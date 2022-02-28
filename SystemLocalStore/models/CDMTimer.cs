@@ -10,6 +10,7 @@ namespace SystemLocalStore.models
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public Int64 WorkLoadId { get; set; }
+        public Status Status { get; set; }
 
         public CDMTimer() { ChunkId = 0; }
 

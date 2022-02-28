@@ -101,8 +101,7 @@ namespace DatabaseProcessor.postgres
                 Console.WriteLine(sql);
                 Console.WriteLine(ex.ToString());
                 Logger.Error(sql);
-                Logger.Error(ex.Message);
-                Logger.Error(ex.StackTrace);
+                Logger.Exception(ex);
                 throw;
             }
         }

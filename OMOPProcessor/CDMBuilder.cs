@@ -36,6 +36,7 @@ namespace OMOPProcessor
                     {
                         try
                         {
+                            workQueue.Status = Status.STARTED;
                             Logger.Info($"WorkQueue<QueueTime>#{workQueue.Id} Starter: CDMBuilder");
                             ProcessAsync();
                             workQueue.Status = Status.COMPLETED;
@@ -48,8 +49,7 @@ namespace OMOPProcessor
                             Logger.Exception(ex);
                             //  throw;
                         }
-                    },
-                        new { Status = Status.STARTED });
+                    });
                 });
         }
 
@@ -136,11 +136,15 @@ namespace OMOPProcessor
         private void RunChunk(ChunkTimer chunk, ChunkBuilder chunker)
         {
             Logger.Info($"Started ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
-            chunk.StartTime = DateTime.Now;
-            chunk.Touched = true;
-            chunker.Run(chunk);
-            chunk.EndTime = DateTime.Now;
-            chunk.Save();
+            QueueTimer<ChunkTimer>.Time(chunk, chunk.Id, () =>
+            {
+                chunker.Run(chunk);
+            }, new { Touched = true });
+            /* chunk.StartTime = DateTime.Now;
+             chunk.Touched = true;
+             chunker.Run(chunk);
+             chunk.EndTime = DateTime.Now;
+             chunk.Save();*/
             Logger.Info($"Completed ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
         }
 

@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util", "Util\Util.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMOPService", "MyNewService\OMOPService.csproj", "{89DEE7D4-505A-4C98-AC98-44ECE90470C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTestProject\UnitTestProject.csproj", "{5266BA5B-3104-4F8C-95AB-B893A57C7D66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{89DEE7D4-505A-4C98-AC98-44ECE90470C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89DEE7D4-505A-4C98-AC98-44ECE90470C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89DEE7D4-505A-4C98-AC98-44ECE90470C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5266BA5B-3104-4F8C-95AB-B893A57C7D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5266BA5B-3104-4F8C-95AB-B893A57C7D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5266BA5B-3104-4F8C-95AB-B893A57C7D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5266BA5B-3104-4F8C-95AB-B893A57C7D66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

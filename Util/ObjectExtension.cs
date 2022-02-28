@@ -8,6 +8,17 @@ namespace Util
 {
     public static class ObjectExtension
     {
+        public static bool HasMethod(this object obj, string name)
+        {
+            try
+            {
+                return null != obj.GetType().GetMethod(name);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
         public static ExpandoObject ShadowCopy(this ExpandoObject obj)
         {
             var origObj = (IDictionary<string, object>)obj;
@@ -51,6 +62,16 @@ namespace Util
             return (T)obj;
         }
 
+        public static object GetProperty<T>(this T obj, string name)
+        {
+            return null == obj ? null : getValue(obj, name);
+        }
+
+        public static bool HasProperty<T>(this T obj, string name)
+        {
+            return obj.GetType().Name.Equals("ExpandoObject") ? ((IDictionary<string, object>)obj).ContainsKey(name) : null != obj.GetType().GetProperty(name);
+        }
+
         private static void setValue(object obj, string name, object value)
         {
             if (obj.GetType().Name.Equals("ExpandoObject"))
@@ -63,6 +84,20 @@ namespace Util
                 PropertyInfo pi = obj.GetType().GetProperty(name);
                 if (null == pi) return;
                 pi.SetValue(obj, value);
+            }
+        }
+
+        private static object getValue(object obj, string name)
+        {
+            if (obj.GetType().Name.Equals("ExpandoObject"))
+            {
+                var dict = ((IDictionary<string, object>)obj);
+                return dict.ContainsKey(name) ? dict[name] : null;
+            }
+            else
+            {
+                PropertyInfo pi = obj.GetType().GetProperty(name);
+                return (null == pi) ? null : pi.GetValue(obj);
             }
         }
 

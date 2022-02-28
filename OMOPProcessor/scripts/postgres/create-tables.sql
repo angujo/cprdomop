@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS {sc}.cohort_definition (
 DROP TABLE IF EXISTS {sc}.condition_era;
 
 CREATE TABLE IF NOT EXISTS {sc}.condition_era (
-	condition_era_id int8 NOT NULL,
+	condition_era_id bigserial NOT NULL,
 	person_id int8 NOT NULL,
 	condition_concept_id int4 NOT NULL,
 	condition_era_start_date date NOT NULL,

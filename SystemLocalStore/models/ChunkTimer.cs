@@ -9,6 +9,7 @@ namespace SystemLocalStore.models
         public DateTime? EndTime { get; set; }
         public bool Touched { get; set; }
         public Int64 WorkLoadId { get; set; }
+        public Status Status { get; set; }
 
         public static string[] UpsColumns()
         {
