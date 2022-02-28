@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS {sc}.stem_table (
 	provider_id int8 NULL,
 	start_datetime timestamp NULL,
 	concept_id int4 NULL,
-	source_value varchar(20) NULL,
+	source_value varchar(450) NULL,
 	source_concept_id int4 NULL,
 	type_concept_id int4 NULL,
 	start_date date NULL,

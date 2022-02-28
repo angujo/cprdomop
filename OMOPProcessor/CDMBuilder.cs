@@ -19,11 +19,13 @@ namespace OMOPProcessor
         Script script;
         Analyzer analyzer;
         CancellationTokenSource cancelToken = new CancellationTokenSource();
+        TimerLogger cdmLogger;
 
         public CDMBuilder(WorkQueue wq)
         {
             workQueue = wq;
             workLoad = SysDB<WorkLoad>.Load(new { Id = workQueue.WorkLoadId });
+            cdmLogger = new TimerLogger(workLoad);
             LoadSchemas();
         }
 
@@ -135,6 +137,9 @@ namespace OMOPProcessor
 
         private void RunChunk(ChunkTimer chunk, ChunkBuilder chunker)
         {
+            Logger.Info($"Started Preparing CDM Timer Logger ChunkID#{chunk.Id} Load WL#{workLoad.Id}");
+            cdmLogger.prepareCDMTimers(chunk);
+            Logger.Info($"Ended Preparation of CDM Timer Logger ChunkID#{chunk.Id} Load WL#{workLoad.Id}");
             Logger.Info($"Started ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
             QueueTimer<ChunkTimer>.Time(chunk, chunk.Id, () =>
             {
@@ -177,7 +182,7 @@ namespace OMOPProcessor
             vocabularySchema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
 
             if (null == vocabularySchema || null == sourceSchema || null == targetSchema) throw new Exception("Ensure that all three schemas are set up and loaded!");
-            script = new Script(sourceSchema, targetSchema, vocabularySchema);
+            script = new Script(sourceSchema, targetSchema, vocabularySchema, cdmLogger);
             analyzer = new Analyzer(targetSchema);
         }
 

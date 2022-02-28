@@ -16,6 +16,7 @@ namespace OMOPProcessor
         readonly DBSchema sourceSchema;
         readonly DBSchema targetSchema;
         readonly DBSchema vocSchema;
+        TimerLogger cdmLogger;
         AbsDBMSystem dBMSystem;
 
         public DBSchema Schema { get { return targetSchema; } }
@@ -35,19 +36,23 @@ namespace OMOPProcessor
             vocSchema = vocabulary;
         }
 
-        private string SQLScript(string name)
+        public AbsCDMQuery(DBSchema source, DBSchema target, DBSchema vocabulary, TimerLogger logger)
+            : this(source, target, vocabulary)
+        { cdmLogger = logger; }
+
+        private string SQLScript(string name, bool undo = false)
         {
-            return SetPlaceHolders(FileScript($"{name.ToKebabCase()}.sql"));
+            return SetPlaceHolders(FileScript($"{name.ToKebabCase()}.sql", undo));
         }
 
-        private string FileScript(string file_name)
+        private string FileScript(string file_name, bool undo = false)
         {
             var filePath = file_name;
             var nm = File.Exists(file_name) ? string.Empty : this.GetType().Name.ToLower();
             switch (nm)
             {
                 case "script":
-                    filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSName, file_name);
+                    filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSName, undo ? "undo" : String.Empty, file_name);
                     break;
                 case "analyzer":
                     filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSName, "analysis", file_name);
@@ -62,6 +67,14 @@ namespace OMOPProcessor
         {
             var query = SQLScript(name);
             if (query.Length <= 0) return;
+            if (null != cdmLogger && !cdmLogger.RunCDMTimer(name, chunkId, _name =>
+                {
+                    var uQuery = SQLScript(_name, true);
+                    Logger.Info($"Start Running CleanUp Query : {_name} Chunk ID #{chunkId}");
+                    Logger.Info($"CleanUp Query : {uQuery}");
+                    dBMSystem.RunQuery(uQuery);
+                    Logger.Info($"Done Running CleanUp Query : {_name} Chunk ID #{chunkId}");
+                })) return;
             QueueTimer<CDMTimer>.Time(name, () =>
             {
                 Logger.Info($"Start Running Query : {name} Chunk ID #{chunkId}");

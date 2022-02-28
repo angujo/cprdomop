@@ -3,10 +3,10 @@ using SystemLocalStore.models;
 
 namespace OMOPProcessor
 {
-    public class Script:AbsCDMQuery
+    public class Script : AbsCDMQuery
     {
 
-        public Script(DBSchema source, DBSchema target, DBSchema vocabulary) : base(source, target, vocabulary)
+        public Script(DBSchema source, DBSchema target, DBSchema vocabulary, TimerLogger logger) : base(source, target, vocabulary, logger)
         {
         }
 
@@ -37,9 +37,9 @@ namespace OMOPProcessor
         public void TestInt(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void VisitDetail(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void VisitOccurrence(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
-        public void VisitDetailUpdate() {  RunLogTimer(MethodBase.GetCurrentMethod().Name); }
-        public void VisitOccurrenceUpdate() {  RunLogTimer(MethodBase.GetCurrentMethod().Name); }
+        public void VisitDetailUpdate() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
+        public void VisitOccurrenceUpdate() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
 
-        
+
     }
 }

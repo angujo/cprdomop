@@ -242,6 +242,7 @@ namespace SystemLocalStore
         private List<string> Process(object entries)
         {
             List<string> ws = new List<string>();
+            if (null == entries) return ws;
             if (entries.GetType().IsArray)
             {
                 var ps = (object[])entries;

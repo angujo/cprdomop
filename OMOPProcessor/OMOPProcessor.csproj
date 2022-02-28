@@ -45,6 +45,7 @@
     <Compile Include="Analyzer.cs" />
     <Compile Include="CDMBuilder.cs" />
     <Compile Include="ChunkBuilder.cs" />
+    <Compile Include="TimerLogger.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="CleanBuilder.cs" />
     <Compile Include="LoadBuilder.cs" />
