@@ -35,7 +35,7 @@ namespace OMOPService
             Logger.Info("WorkQueue<QueueTime> Starter: QueueRun");
             QueueTimer<WorkQueue>.Time(Current.workQueue, Current.workQueue.Id, () =>
             {
-                Queue[] queues = SysDB<Queue>.List(new { WorkQueueId = Current.workQueue.Id }).ToArray();
+                Queue[] queues = SysDB<Queue>.List("Where WorkQueueId = @WorkQueueId",new { WorkQueueId = Current.workQueue.Id }).ToArray();
                 if (queues.Length <= 0) return;
                 List<int?> taskIndexes = (queues.Select(q => q.TaskIndex).ToArray() ?? (new int?[] { })).Distinct().ToList();
                 foreach (var taskIndex in taskIndexes)
@@ -48,7 +48,7 @@ namespace OMOPService
                     TaskIndexRun(queues.Where(q => taskIndex == q.TaskIndex).ToList());
                 }
                 Current.workQueue.Status = Status.COMPLETED;
-                var wl = SysDB<WorkLoad>.Load(new { Id = Current.workQueue.WorkLoadId });
+                var wl = SysDB<WorkLoad>.Load("Where Id = @Id",new { Id = Current.workQueue.WorkLoadId });
                 if (null != wl)
                 {
                     wl.SourceProcessed = true;
@@ -146,7 +146,7 @@ namespace OMOPService
             var scId = (int)queue.DBSchemaId;
             if (!db.ContainsKey(scId))
             {
-                var schema = SysDB<DBSchema>.Load(new { Id = queue.DBSchemaId });
+                var schema = SysDB<DBSchema>.Load("Where Id = @Id",new { Id = queue.DBSchemaId });
                 if (null == schema) return;
                 db[scId] = DBMSystem.GetDBMSystem(schema);
             }

@@ -12,7 +12,9 @@ namespace WindowsFormsAppTest
         public MainWindow()
         {
             InitializeComponent();
-            if (Environment.CurrentDirectory!=Setting.InstallationDirectory && !Setting.IsAdmin())
+            // Always try and check the system password.
+            Setting.SetSysPassword();
+            if (Environment.CurrentDirectory != Setting.InstallationDirectory && !Setting.IsAdmin())
             {
                 MessageBox.Show(this, "First run requires Admin privileges. Admin run is required to prepare shared variables with the service.\nAfter first run, normal runs are permitted!", "First Run", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 Close();
@@ -95,8 +97,8 @@ namespace WindowsFormsAppTest
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-           /* DialogResult res = MessageBox.Show(this, "You are about to close this app while a process is running.\nDo you wish to proceed?", "Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-            if (res != DialogResult.OK) e.Cancel = true;*/
+            /* DialogResult res = MessageBox.Show(this, "You are about to close this app while a process is running.\nDo you wish to proceed?", "Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+             if (res != DialogResult.OK) e.Cancel = true;*/
         }
 
         private void mnNewWorkLoad_Click(object sender, EventArgs e)

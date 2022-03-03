@@ -121,6 +121,12 @@
     <Compile Include="RunTimeControl.Designer.cs">
       <DependentUpon>RunTimeControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="RuntimeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RuntimeView.Designer.cs">
+      <DependentUpon>RuntimeView.cs</DependentUpon>
+    </Compile>
     <Compile Include="SchemaHolderControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -158,6 +164,9 @@
       <DependentUpon>WorkLoadList.cs</DependentUpon>
     </Compile>
     <Content Include="ndorms.ico" />
+    <Content Include="system-pgsql.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="CDMControl.resx">
       <DependentUpon>CDMControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -185,6 +194,9 @@
     </Compile>
     <EmbeddedResource Include="RunTimeControl.resx">
       <DependentUpon>RunTimeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RuntimeView.resx">
+      <DependentUpon>RuntimeView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SchemaHolderControl.resx">
       <DependentUpon>SchemaHolderControl.cs</DependentUpon>

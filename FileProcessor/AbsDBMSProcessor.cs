@@ -16,8 +16,6 @@ namespace FileProcessor
         protected DBSchema vocabularySchema;
         protected int Index = 0;
 
-        protected string DBMSName { get { return DBMSIdentifier.GetName(DBMSType.POSTGRESQL); } }
-
         protected string lookupTypeTable = "lookuptype";
         protected string[] vocabularyTables = { "concept", "concept_ancestor", "concept_class", "concept_relationship", "concept_synonym", "domain", "drug_strength", "relationship", "vocabulary", };
 
@@ -40,7 +38,7 @@ namespace FileProcessor
 
         protected T GetScriptContent<T>(string file_name)
         {
-            var filePath = File.Exists(file_name) || Directory.Exists(file_name) ? file_name : Path.Combine(Setting.InstallationDirectory, "filescripts", DBMSName, file_name);
+            var filePath = File.Exists(file_name) || Directory.Exists(file_name) ? file_name : Path.Combine(Setting.InstallationDirectory, "filescripts", DBMSIdentifier.Active(), file_name);
             if (File.Exists(filePath))
             {
                 return (T)Convert.ChangeType(File.ReadAllText(filePath), typeof(T));
@@ -76,7 +74,7 @@ namespace FileProcessor
                 IsFile = false,
                 FileHash = "[NO HASHING]",
                 Code = "source_to_concept_map",
-                FilePath = Path.Combine(Setting.InstallationDirectory, "filescripts", DBMSName, "source-to-concept"),
+                FilePath = Path.Combine(Setting.InstallationDirectory, "filescripts", DBMSIdentifier.Active(), "source-to-concept"),
                 TableName = "source_to_concept_map"
             };
             int ord = 0;

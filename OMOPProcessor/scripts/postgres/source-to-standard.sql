@@ -27,3 +27,9 @@ target_invalid_reason, target_standard_concept)
 	)
 	SELECT * FROM CTE_VOCAB_MAP
 );
+
+
+CREATE INDEX idx_sstandard_source_code ON {sc}.source_to_standard USING btree (source_code);
+CREATE INDEX idx_sstandard_source_vocab_id ON {sc}.source_to_standard USING btree (source_vocabulary_id);
+CREATE INDEX idx_sstandard_target_inv_reason ON {sc}.source_to_standard USING btree (target_invalid_reason);
+CREATE INDEX idx_sstandard_target_stconcept ON {sc}.source_to_standard USING btree (target_standard_concept);

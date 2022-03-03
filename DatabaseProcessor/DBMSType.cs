@@ -1,9 +1,15 @@
-﻿namespace DatabaseProcessor
+﻿using Util;
+
+namespace DatabaseProcessor
 {
     public enum DBMSType
     {
+        [StringValue("postgres")]
         POSTGRESQL,
-        MYSQL
+        [StringValue("mysql")]
+        MYSQL,
+        [StringValue("sqlite")]
+        SQLITE,
     }
 
     public static class DBMSIdentifier
@@ -16,6 +22,12 @@
                 case DBMSType.MYSQL: return "mysql";
                 default: return string.Empty;
             }
+        }
+
+        public static string Active()
+        {
+            //TODO Add more DBMSs and auto switch
+            return DBMSType.POSTGRESQL.GetStringValue();
         }
     }
 }

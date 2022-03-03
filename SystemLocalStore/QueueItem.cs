@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SystemLocalStore.models;
 using Util;
@@ -21,7 +22,11 @@ namespace SystemLocalStore
 
         private T Load()
         {
-            return SysDB<T>.LoadOrNew(loadKeys);
+            var cond=new List<string>();
+            loadKeys.RunProperties((k, v) => {
+            cond.Add($"{k} = @{k}");
+            });
+            return SysDB<T>.LoadOrNew(string.Join(" AND ",cond),loadKeys);
         }
 
         public QueueItem<T> SetItem(T itm) { item = itm; return this; }

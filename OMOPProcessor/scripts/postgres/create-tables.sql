@@ -703,8 +703,6 @@ CREATE TABLE IF NOT EXISTS {sc}.source_to_source (
 	target_invalid_reason varchar(1) NULL,
 	target_standard_concept varchar(1) NULL
 );
-CREATE INDEX idx_source_vocab_map_source_code ON {sc}.source_to_source USING btree (source_code);
-CREATE INDEX idx_source_vocab_map_source_vocab_id ON {sc}.source_to_source USING btree (source_vocabulary_id);
 
 
 -- {sc}.source_to_standard definition
@@ -731,8 +729,6 @@ CREATE TABLE IF NOT EXISTS {sc}.source_to_standard (
 	target_invalid_reason varchar(1) NULL,
 	target_standard_concept varchar(1) NULL
 );
-CREATE INDEX idx_vocab_map_source_code ON {sc}.source_to_standard USING btree (source_code);
-CREATE INDEX idx_vocab_map_source_vocab_id ON {sc}.source_to_standard USING btree (source_vocabulary_id);
 
 
 -- {sc}.specimen definition

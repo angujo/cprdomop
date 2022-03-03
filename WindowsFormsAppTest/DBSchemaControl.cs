@@ -20,7 +20,7 @@ namespace WindowsFormsAppTest
         {
             //pbProgress.Visible = true;
 
-            schema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = s_type }) ?? new DBSchema();// DataAccess.loadSchema(workLoad, s_type.ToLower()) ?? new DBSchema();
+            schema = SysDB<DBSchema>.Load("Where WorkLoadId = @WorkLoadId AND SchemaType = @SchemaType", new { WorkLoadId = workLoad.Id, SchemaType = s_type }) ?? new DBSchema();// DataAccess.loadSchema(workLoad, s_type.ToLower()) ?? new DBSchema();
             if (!schema.Exists())
             {
                 schema.SchemaType = s_type;

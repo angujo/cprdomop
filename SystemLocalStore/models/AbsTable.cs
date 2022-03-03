@@ -63,7 +63,7 @@ namespace SystemLocalStore.models
 
         public static void InsertOrUpdate<T>(List<T> items)
         {
-            foreach (var item in items) DataAccess.InsertOrUpdate(item);
+            foreach (var item in items) DataAccess.InsertOrUpdate(item as AbsTable);
         }
 
         public AbsTable InsertOrUpdate(bool returnObject) { InsertOrUpdate(); return this; }
@@ -81,7 +81,9 @@ namespace SystemLocalStore.models
 
         public static T Load<T>(Object parameters = null)
         {
-            return DataAccess.Load<T>(typeof(T).Name, parameters);
+            var cond = List<string>();
+            parameters.RunProperties((k, v) => cond.Add($"{k} = @{k}"));
+            return DataAccess.Load<T>(typeof(T).Name, string.Join(" AND ", cond.ToArray()), parameters);
         }
 
         public static T LoadOrNew<T>(Object parameters = null)
@@ -93,7 +95,9 @@ namespace SystemLocalStore.models
 
         public static List<T> List<T>(Object parameters = null)
         {
-            return DataAccess.LoadList<T>(typeof(T).Name, parameters);
+            var cond =new List<string>();
+            parameters.RunProperties((k, v) => cond.Add($"{k} = @{k}"));
+            return DataAccess.LoadList<T>(string.Join(" AND ", cond.ToArray()), parameters);
         }
     }
 }

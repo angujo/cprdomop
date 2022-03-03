@@ -26,7 +26,7 @@ namespace WindowsFormsAppTest
 
         public void SetWorkLoad(WorkLoad wl) { workLoad = wl; }
 
-        private async void btnLoad_ClickAsync(object sender, System.EventArgs e)
+        private async void btnLoad_ClickAsync(object sender, EventArgs e)
         {
             await UIActionAsync(() => { loadQueues(true); });
             lvQueue.Items.Clear();
@@ -42,8 +42,8 @@ namespace WindowsFormsAppTest
         private void loadQueues(bool force = false)
         {
             if (null != queues && !force) return;
-            DBSchema source = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "source" });
-            DBSchema voc = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
+            DBSchema source = SysDB<DBSchema>.Load("Where WorkLoadId = @WorkLoadId AND SchemaType= @SchemaType",new { WorkLoadId = workLoad.Id, SchemaType = "source" });
+            DBSchema voc = SysDB<DBSchema>.Load("Where WorkLoadId = @WorkLoadId AND SchemaType= @SchemaType",new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
             if (null == source || null == voc) throw new Exception("Ensure both source and vocabulary schemas are set!");
             AbsDBMSProcessor processor = FileDBProcessor.GetProcessor(DataAccess.loadSourceFiles(workLoad).ToArray(), source, voc);
             queues = processor.GetQueue();
@@ -52,9 +52,9 @@ namespace WindowsFormsAppTest
         private async void btnQueue_Click(object sender, EventArgs e)
         {
             if (null == queues) { MessageBox.Show(null, "The Queue need to be loaded and reviewed before it can be pushed to scheduler!", "No Queue", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-            var wq = SysDB<WorkQueue>.Load(new { WorkLoadId = workLoad.Id, QueueType = QAction.SOURCE_FILE });
+            var wq = SysDB<WorkQueue>.Load("Where WorkLoadId = @WorkLoadId AND QueueType= @QueueType", new { WorkLoadId = workLoad.Id, QueueType = QAction.SOURCE_FILE });
             var wl = null != wq ? SysDB<WorkLoad>.Load() : null;
-            if (SysDB<WorkLoad>.Exists(new { Id = wq.WorkLoadId, CdmLoaded = 1 }))
+            if (SysDB<WorkLoad>.Exists("Where WorkLoadId = @WorkLoadId AND CdmLoaded= @CdmLoaded", new { Id = wq.WorkLoadId, CdmLoaded = 1 }))
             {
                 MessageBox.Show(null, "This process cannot be run!\nThe OMOP mapping had already been initiated and source files cannot be mapped", "Queue Rerun", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                 return;

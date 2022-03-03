@@ -16,25 +16,30 @@ namespace SystemLocalStore
         {
             return DataAccess.Delete(typeof(T).Name, parameters);
         }
-        public static T Load(Object parameters = null)
+        public static T Load(string conditions = null, Object parameters = null)
         {
-            return DataAccess.Load<T>(typeof(T).Name, parameters);
+            return DataAccess.Load<T>(typeof(T).Name, conditions, parameters);
         }
-        public static bool Exists(Object parameters = null)
+        public static bool Exists(string conditions = null, Object parameters = null)
         {
-            return DataAccess.Exists(typeof(T).Name, parameters);
+            return DataAccess.Exists(typeof(T).Name, conditions, parameters);
         }
 
-        public static T LoadOrNew(Object parameters = null)
+        public static T LoadOrNew(string conditions = null, Object parameters = null)
         {
-            var ld = Load(parameters);
+            var ld = Load(conditions, parameters);
             if (null != ld) return ld;
             return (T)(Activator.CreateInstance(typeof(T))).SetProperties(parameters);
         }
 
-        public static List<T> List(Object parameters = null)
+        public static List<T> List(string conditions = null, Object parameters = null)
         {
-            return DataAccess.LoadList<T>(typeof(T).Name, parameters);
+            return DataAccess.LoadList<T>(conditions, parameters);
+        }
+
+        public static List<C> Column<C>(string col_name, string conditions = null, Object parameters = null)
+        {
+            return DataAccess.Column<C>(col_name, typeof(T).Name, conditions, parameters);
         }
 
     }

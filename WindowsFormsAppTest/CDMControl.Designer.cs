@@ -40,8 +40,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.btnSaveConf = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.btnSaveTest = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.nudTestChunk = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
@@ -50,7 +48,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudChunkSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudParallels)).BeginInit();
             this.groupBox1.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudTestChunk)).BeginInit();
             this.SuspendLayout();
             // 
@@ -60,9 +57,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.btnSchedule);
-            this.groupBox2.Location = new System.Drawing.Point(3, 194);
+            this.groupBox2.Location = new System.Drawing.Point(3, 183);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(485, 60);
+            this.groupBox2.Size = new System.Drawing.Size(572, 60);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Runtime";
@@ -176,7 +173,7 @@
             // 
             // btnSaveConf
             // 
-            this.btnSaveConf.Location = new System.Drawing.Point(114, 75);
+            this.btnSaveConf.Location = new System.Drawing.Point(114, 145);
             this.btnSaveConf.Name = "btnSaveConf";
             this.btnSaveConf.Size = new System.Drawing.Size(108, 23);
             this.btnSaveConf.TabIndex = 6;
@@ -189,48 +186,26 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.btnSaveConf);
+            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.nudTestChunk);
             this.groupBox1.Controls.Add(this.nudParallels);
+            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nudChunkSize);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(485, 105);
+            this.groupBox1.Size = new System.Drawing.Size(572, 174);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Chunk Configuration";
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.btnSaveTest);
-            this.groupBox3.Controls.Add(this.label6);
-            this.groupBox3.Controls.Add(this.nudTestChunk);
-            this.groupBox3.Controls.Add(this.label7);
-            this.groupBox3.Location = new System.Drawing.Point(3, 114);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(485, 74);
-            this.groupBox3.TabIndex = 7;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Test Chunk Run";
-            // 
-            // btnSaveTest
-            // 
-            this.btnSaveTest.Location = new System.Drawing.Point(114, 42);
-            this.btnSaveTest.Name = "btnSaveTest";
-            this.btnSaveTest.Size = new System.Drawing.Size(108, 23);
-            this.btnSaveTest.TabIndex = 6;
-            this.btnSaveTest.Text = "Save Test";
-            this.btnSaveTest.UseVisualStyleBackColor = true;
-            this.btnSaveTest.Click += new System.EventHandler(this.workLoadSave);
-            // 
             // label6
             // 
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(240, 19);
+            this.label6.Location = new System.Drawing.Point(240, 97);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(239, 42);
             this.label6.TabIndex = 5;
@@ -239,7 +214,7 @@
             // 
             // nudTestChunk
             // 
-            this.nudTestChunk.Location = new System.Drawing.Point(92, 16);
+            this.nudTestChunk.Location = new System.Drawing.Point(92, 94);
             this.nudTestChunk.Maximum = new decimal(new int[] {
             10,
             0,
@@ -258,7 +233,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 19);
+            this.label7.Location = new System.Drawing.Point(6, 97);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(82, 13);
             this.label7.TabIndex = 3;
@@ -268,19 +243,16 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "CDMControl";
-            this.Size = new System.Drawing.Size(491, 262);
+            this.Size = new System.Drawing.Size(578, 249);
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.eventLog)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudChunkSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudParallels)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudTestChunk)).EndInit();
             this.ResumeLayout(false);
 
@@ -291,8 +263,6 @@
         private System.Windows.Forms.Button btnSchedule;
         private System.Windows.Forms.Label label3;
         private System.Diagnostics.EventLog eventLog;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button btnSaveTest;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown nudTestChunk;
         private System.Windows.Forms.Label label7;

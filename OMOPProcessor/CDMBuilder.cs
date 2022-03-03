@@ -23,10 +23,19 @@ namespace OMOPProcessor
 
         public CDMBuilder(WorkQueue wq)
         {
-            workQueue = wq;
-            workLoad = SysDB<WorkLoad>.Load(new { Id = workQueue.WorkLoadId });
-            cdmLogger = new TimerLogger(workLoad);
-            LoadSchemas();
+            try
+            {
+                workQueue = wq;
+                workLoad = SysDB<WorkLoad>.Load("Where Id = @Id", new { Id = workQueue.WorkLoadId });
+                cdmLogger = new TimerLogger(workLoad);
+                LoadSchemas();
+            }
+            catch (Exception ex)
+            {
+                Logger.Exception(ex);
+                Console.WriteLine(ex.ToString());
+                throw;
+            }
         }
 
         public Task RunAsync()
@@ -49,7 +58,7 @@ namespace OMOPProcessor
                             Logger.Info($"WorkQueue<QueueTime>#{workQueue.Id} Exception: CDMBuilder");
                             workQueue.Status = Status.STOPPED;
                             Logger.Exception(ex);
-                            //  throw;
+                            throw;
                         }
                     });
                 });
@@ -59,12 +68,22 @@ namespace OMOPProcessor
         {
             try
             {
+                int loads = 10;
                 workLoad.IsRunning = true;
                 workLoad.Save();
                 Logger.Info($"Started Run for WL#{workLoad.Id}");
                 loadCdm();
                 Logger.Info($"Prepare Chunk Load WL#{workLoad.Id}");
-                if (workLoad.CdmLoaded && loadChunks())
+            LoadAgain:
+                loadChunks();
+                var ex = SysDB<ChunkTimer>.Exists("Where WorkLoadId = @WorkLoadId AND Status <> @Status", new { Status = Status.COMPLETED, WorkLoadId = workLoad.Id });
+                if (0 == workLoad.TestChunkCount && ex)
+                {
+                    loads--;
+                    if (0 == loads) { workQueue.Status = Status.ERROR_EXIT; Logger.Error("Exceeded number of ProcessAsync Loads!"); }
+                    else goto LoadAgain;
+                }
+                if (workLoad.CdmLoaded && !ex)
                 {
                     Logger.Info($"Start Cleaner WL#{workLoad.Id}");
                     loadCleaner();
@@ -89,7 +108,7 @@ namespace OMOPProcessor
         //@return Boolean Whether the chunks were fully loaded.
         // If TRUE, chunks are all done, otherwise FALSE
         //</summary>
-        private bool loadChunks()
+        private void loadChunks()
         {
             Logger.Info($"Started Chunk Load WL#{workLoad.Id}");
             if (!workLoad.ChunksSetup)
@@ -97,6 +116,9 @@ namespace OMOPProcessor
                 Logger.Info($"Started Chunk Setup WL#{workLoad.Id}");
                 ChunkBuilder.Create(script);
                 workLoad.ChunksSetup = true;
+                SysDB<ChunkTimer>.Delete(new { WorkLoadId = workLoad.Id });
+                SysDB<CDMTimer>.Delete(new { WorkLoadId = workLoad.Id });
+                workLoad.ChunksLoaded = false;
                 workLoad.Save();
             }
             var chunker = new ChunkBuilder(script);
@@ -105,55 +127,88 @@ namespace OMOPProcessor
                 Logger.Info($"Started Chunk Content Load WL#{workLoad.Id}");
                 chunker.Load(workLoad.ChunkSize);
                 var ordinals = analyzer.ChunkOrdinals();
+                Logger.Info($"Started Cleanup of ChunkTimer Content Load WL#{workLoad.Id}");
                 ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
+                Logger.Info($"DONE Cleanup of ChunkTimer Content Load WL#{workLoad.Id}");
+                Logger.Info($"Started Populating of ChunkTimer WL#{workLoad.Id}");
                 foreach (var ordinal in ordinals)
                 {
                     (new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = ordinal }).InsertOrUpdate();
                 }
                 workLoad.ChunksLoaded = true;
                 workLoad.Save();
+                Logger.Info($"Done Populating of ChunkTimer WL#{workLoad.Id}");
             }
-            List<ChunkTimer> chunks = NextChunks();
-            if (chunks.Count <= 0) return true;
+            List<int> chunks = NextChunks();
+            // foreach (var chunk in chunks) Console.WriteLine(chunk); return false;
             // var chunk = chunks.First();
-            Logger.Info($"Total Chunks: {chunks.Count}");
-            List<ChunkTimer> chunkQueues = (0 < workLoad.TestChunkCount) ? chunks.Take((int)workLoad.TestChunkCount).ToList() : chunks;
-            Logger.Info($"Queued Chunks: {chunkQueues.Count} of {workLoad.TestChunkCount}");
+            Logger.Info($"Called Chunks: {chunks.Count}");
+            // List<ChunkTimer> chunkQueues = (0 < workLoad.TestChunkCount) ? chunks.Take((int)workLoad.TestChunkCount).ToList() : chunks;
+            // Logger.Info($"Queued Chunks: {chunkQueues.Count} of {workLoad.TestChunkCount}");
             try
             {
-                Parallel.ForEach(chunkQueues, ParallelOptions(), (chunk) =>
-                           {
-                               RunChunk(chunk, chunker);
-                           });
+                Parallel.ForEach(chunks, ParallelOptions(), (chunkId) =>
+                {
+                    var chunk = SysDB<ChunkTimer>.Load("Where ChunkId = @ChunkId AND WorkLoadId = @WorkLoadId", new { ChunkId = chunkId, WorkLoadId = workLoad.Id });
+                    try
+                    {
+                        RunChunk(chunk, chunker);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Exception(ex);
+                        chunk.ErrorLog = ex.Message;
+                        chunk.Save();
+                    }
+                });
             }
             catch (Exception ex)
             {
                 Logger.Exception(ex);
-                return false;
             }
-
-            return 0 >= workLoad.TestChunkCount;
         }
 
         private void RunChunk(ChunkTimer chunk, ChunkBuilder chunker)
         {
-            Logger.Info($"Started Preparing CDM Timer Logger ChunkID#{chunk.Id} Load WL#{workLoad.Id}");
-            cdmLogger.prepareCDMTimers(chunk);
-            Logger.Info($"Ended Preparation of CDM Timer Logger ChunkID#{chunk.Id} Load WL#{workLoad.Id}");
-            Logger.Info($"Started ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
-            QueueTimer<ChunkTimer>.Time(chunk, chunk.Id, () =>
+            if (null == chunk || !chunk.Exists()) return;
+            Logger.Info($"Started ChunkData#{chunk.ChunkId} Load WL#{workLoad.Id}");
+            try
             {
+                chunk.Status = Status.STARTED;
+                chunk.StartTime = DateTime.Now;
+                chunk.ErrorLog = null;
+                chunk.Touched = true;
+                chunk.Save();
+
                 chunker.Run(chunk);
-            }, new { Touched = true });
+                chunk.Status = Status.COMPLETED;
+            }
+            catch (Exception ex)
+            {
+                chunk.Status = Status.ERROR_EXIT;
+                chunk.ErrorLog = ex.Message;
+                Logger.Exception(ex);
+            }
+            finally
+            {
+                chunk.EndTime = DateTime.Now;
+                chunk.Touched = false;
+                chunk.Save();
+            }
+
             /* chunk.StartTime = DateTime.Now;
              chunk.Touched = true;
              chunker.Run(chunk);
              chunk.EndTime = DateTime.Now;
              chunk.Save();*/
-            Logger.Info($"Completed ChunkData#{chunk.Id} Load WL#{workLoad.Id}");
+            Logger.Info($"Completed ChunkData#{chunk.ChunkId} Load WL#{workLoad.Id}");
         }
 
-        private List<ChunkTimer> NextChunks() { return SysDB<ChunkTimer>.List(new { WorkLoadId = (long)workLoad.Id, Touched = false }); }
+        private List<int> NextChunks()
+        {
+            return SysDB<ChunkTimer>.Column<int>("ChunkId", "Where WorkLoadId = @WorkLoadId AND Status <> @Status ORDER BY ChunkId ASC " + (0 < workLoad.TestChunkCount ? $"LIMIT {workLoad.TestChunkCount}" : string.Empty),
+                new { WorkLoadId = (long)workLoad.Id, Touched = false, Status = Status.COMPLETED });
+        }
 
         private void loadCdm()
         {
@@ -177,9 +232,9 @@ namespace OMOPProcessor
 
         private void LoadSchemas()
         {
-            sourceSchema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "source" });
-            targetSchema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "target" });
-            vocabularySchema = SysDB<DBSchema>.Load(new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
+            sourceSchema = SysDB<DBSchema>.Load("Where WorkLoadId= @WorkLoadId AND  SchemaType= @SchemaType ", new { WorkLoadId = workLoad.Id, SchemaType = "source" });
+            targetSchema = SysDB<DBSchema>.Load("Where WorkLoadId= @WorkLoadId AND  SchemaType= @SchemaType ", new { WorkLoadId = workLoad.Id, SchemaType = "target" });
+            vocabularySchema = SysDB<DBSchema>.Load("Where WorkLoadId= @WorkLoadId AND SchemaType = @SchemaType ", new { WorkLoadId = workLoad.Id, SchemaType = "vocabulary" });
 
             if (null == vocabularySchema || null == sourceSchema || null == targetSchema) throw new Exception("Ensure that all three schemas are set up and loaded!");
             script = new Script(sourceSchema, targetSchema, vocabularySchema, cdmLogger);

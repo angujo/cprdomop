@@ -11,12 +11,15 @@ namespace SystemLocalStore.models
         public DateTime? EndTime { get; set; }
         public Int64 WorkLoadId { get; set; }
         public Status Status { get; set; }
+        public string ErrorLog { get; set; }
 
         public CDMTimer() { ChunkId = 0; }
 
-        public static string[] UpsColumns()
+        public static new string[] UpsColumns()
         {
             return new string[] { "Name", "ChunkId", "WorkLoadId" };
         }
+
+        public static new string UpsIndex() { return "CDMTimer_Unique"; }
     }
 }

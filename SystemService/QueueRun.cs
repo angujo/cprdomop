@@ -51,7 +51,7 @@ namespace SystemService
             Logger.Info("WorkQueue<QueueTime> Starter QueueRun2");
             QueueTimer<WorkQueue>.Time(Current.workQueue, Current.workQueue.Id, () =>
             {
-                Queue[] queues = SysDB<Queue>.List(new { WorkQueueId = Current.workQueue.Id }).ToArray();
+                Queue[] queues = SysDB<Queue>.List("Where WorkQueueId = @WorkQueueId",new { WorkQueueId = Current.workQueue.Id }).ToArray();
                 if (queues.Length <= 0) return;
                 List<int?> taskIndexes = (queues.Select(q => q.TaskIndex).ToArray() ?? (new int?[] { })).Distinct().ToList();
                 List<Task> tasks = new List<Task>();
@@ -154,7 +154,7 @@ namespace SystemService
             var scId = (int)queue.DBSchemaId;
             if (!db.ContainsKey(scId))
             {
-                var schema = SysDB<DBSchema>.Load(new { Id = queue.DBSchemaId });
+                var schema = SysDB<DBSchema>.Load("Where Id=@Id",new { Id = queue.DBSchemaId });
                 if (null == schema) return;
                 db[scId] = DBMSystem.GetDBMSystem(schema);
             }

@@ -43,7 +43,7 @@ namespace WindowsFormsAppTest
             if (workLoad.FilesLocked)
             {
                 workLocked();
-                sourceFiles.populatePaths(SourceFile.List<SourceFile>(new { WorkLoadId = workLoad.Id }));//  DataAccess.loadSourceFiles(workLoad));
+                sourceFiles.populatePaths(SysDB<SourceFile>.List("Where WorkLoadId = @WorkLoadId", new { WorkLoadId = workLoad.Id }));//  DataAccess.loadSourceFiles(workLoad));
             }
         }
 

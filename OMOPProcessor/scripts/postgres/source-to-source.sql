@@ -23,4 +23,8 @@ target_vocabulary_id, target_domain_id, target_concept_class_id, target_invalid_
 	       WHERE stcm.INVALID_REASON IS NULL
 	)
 	SELECT * FROM CTE_VOCAB_MAP
-)
+);
+
+
+CREATE INDEX idx_source_vocab_map_source_code ON {sc}.source_to_source USING btree (source_code);
+CREATE INDEX idx_source_vocab_map_source_vocab_id ON {sc}.source_to_source USING btree (source_vocabulary_id);

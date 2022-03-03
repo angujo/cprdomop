@@ -21,8 +21,6 @@ namespace OMOPProcessor
 
         public TimerLogger(WorkLoad wl) { workLoad = wl; loadNonChunks(); }
 
-        protected string DBMSName { get { return DBMSIdentifier.GetName(DBMSType.POSTGRESQL); } }
-
         protected void loadNonChunks()
         {
             loopMethods(name =>
@@ -52,6 +50,17 @@ namespace OMOPProcessor
             return Status.COMPLETED != timer.Status;
         }
 
+        public void updateTimer(int chunkId, string name, Status status)
+        {
+            if (!chunkTimers.ContainsKey(chunkId) || !chunkTimers[chunkId].ContainsKey(name)) return;
+            chunkTimers[chunkId][name].Status = status;
+        }
+
+        public bool AllCompleted(int ChunkId)
+        {
+            return chunkTimers.ContainsKey(ChunkId) && 0 == (int)chunkTimers[ChunkId].Where(kv => kv.Value.Status != Status.COMPLETED).Count();
+        }
+
         protected void loadForChunk(ChunkTimer chunk)
         {
             Dictionary<string, CDMTimer> cHolder = new Dictionary<string, CDMTimer>();
@@ -60,7 +69,11 @@ namespace OMOPProcessor
                 CDMTimer c;
                 if (null != (c = GetTimer(name, chunk))) cHolder.Add(name, c);
             });
-            chunkTimers.Add(chunk.ChunkId, cHolder);
+            if (chunkTimers.ContainsKey(chunk.ChunkId))
+            {
+                chunkTimers[chunk.ChunkId] = cHolder;
+            }
+            else chunkTimers.Add(chunk.ChunkId, cHolder);
         }
 
         protected void loopMethods(Action<string> func)
@@ -74,7 +87,7 @@ namespace OMOPProcessor
 
         private bool FileExist(string name, bool isUndo = false)
         {
-            string p = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSName, isUndo ? "undo" : string.Empty, isUndo ? UndoFileName(name) : DoFileName(name));
+            string p = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSIdentifier.Active(), isUndo ? "undo" : string.Empty, isUndo ? UndoFileName(name) : DoFileName(name));
             return File.Exists(p);
         }
 
@@ -90,8 +103,8 @@ namespace OMOPProcessor
         private CDMTimer GetTimer(string name, ChunkTimer chunk = null)
         {
             if ((chunk == null || !chunk.Exists()) && !NonChunks.Contains(name)) return null;
-            var t = SysDB<CDMTimer>.LoadOrNew(new { Name = name, WorkLoadId = workLoad.Id, ChunkId = NonChunks.Contains(name) ? 0 : chunk.ChunkId });
-            if (!t.Exists())
+            var t = SysDB<CDMTimer>.LoadOrNew("Where Name = @Name AND WorkLoadId = @WorkLoadId AND ChunkId = @ChunkId", new { Name = name, WorkLoadId = workLoad.Id, ChunkId = NonChunks.Contains(name) ? 0 : chunk.ChunkId });
+            if (!t.Exists() || Status.COMPLETED != t.Status)
             {
                 t.Status = Status.QUEUED;
                 t.Save();

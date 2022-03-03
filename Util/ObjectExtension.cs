@@ -108,6 +108,7 @@ namespace Util
 
         private static void loopProperties(Object parameters, Action<string, object> func)
         {
+            if(null == parameters) return;
             if (parameters.GetType().Name.Contains("AnonymousType"))
             {
                 var properties = parameters.GetType().GetProperties();

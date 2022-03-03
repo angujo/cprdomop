@@ -13,6 +13,7 @@ namespace SystemLocalStore.models
         public int? ProgressPercent { get; set; }
 
         public static new string[] UpsColumns() { return new string[] { "WorkLoadId", "QueueType" }; }
+        public static new string UpsIndex() { return "WorkQueue_Unique"; }
 
         public static WorkQueue NextAvailable() { return ByStatusAvailable(); }
 

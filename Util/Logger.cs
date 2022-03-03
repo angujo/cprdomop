@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
@@ -8,6 +9,7 @@ namespace Util
 {
     public class Logger
     {
+        private static bool serilogSet = false;
         private static EventLog _evtLog;
         private static ConcurrentBag<LogHolder> logs = new ConcurrentBag<LogHolder>();
         private static bool bagging { get { return logs.Count > 0; } }
@@ -44,14 +46,22 @@ namespace Util
 
         private static void WriteLogFile(string message, LogType type, DateTime dated, int tries = 0)
         {
-            if (!File.Exists(Setting.LogFilePath))
+            InitFileLog();
+            /* if (!File.Exists(Setting.LogFilePath))
+             {
+                 InitFileLog();
+                 WriteLogFile(message, type, dated, tries++);
+                 if (tries > 10) throw new Exception($"Unable to initialize the logfile at '{Setting.LogFilePath}'");
+                 return;
+             }*/
+            switch (type)
             {
-                InitFileLog();
-                WriteLogFile(message, type, dated, tries++);
-                if (tries > 10) throw new Exception($"Unable to initialize the logfile at '{Setting.LogFilePath}'");
-                return;
+                case LogType.INFO: Log.Information(message); break;
+                case LogType.WARN: Log.Warning(message); break;
+                case LogType.ERROR: Log.Error(message); break;
             }
-            Task.Run(() =>
+            Console.WriteLine(message);
+            /*Task.Run(() =>
             {
                 try
                 {
@@ -70,7 +80,7 @@ namespace Util
                     // initRunner();
                     // throw;
                 }
-            });
+            });*/
 
         }
 
@@ -96,6 +106,15 @@ namespace Util
 
         public static void InitFileLog()
         {
+            if (!serilogSet)
+            {
+                Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.File(Setting.LogFilePath, rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+                serilogSet = true;
+            }
+            return;
             if (!Directory.Exists(Setting.LogDirectoryPath)) Directory.CreateDirectory(Setting.LogDirectoryPath);
             if (File.Exists(Setting.LogFilePath)) return;
             using (FileStream wfs = File.Create(Setting.LogFilePath))

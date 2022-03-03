@@ -1,3 +1,4 @@
+/** AddIn */
 INSERT INTO {sc}.add_in 
 (patid, eventdate, constype, consid, staffid, enttype, category, description, data, value_as_number, value_as_string, value_as_date, unit_source_value, qualifier_source_value, read_code_description, gemscript_description, data_fields, source_value)
 (WITH 

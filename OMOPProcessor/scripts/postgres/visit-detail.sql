@@ -1,7 +1,5 @@
-WITH consults AS (
-	SELECT consid, patid, constype, eventdate FROM {sc}._chunk join {ss}.consultation ON patient_id = patid where ordinal = {ch}
-),
-clinical_source AS (
+/** VisitDetail */
+WITH clinical_source AS (
 	SELECT s.patid, s.eventdate, s.consid, s.staffid FROM {sc}._chunk join {ss}.clinical s ON patient_id = patid AND s.eventdate IS NOT null where ordinal = {ch}
 ),
 referral_source AS (
@@ -35,7 +33,10 @@ INSERT INTO {sc}.visit_detail
 	u.patid, 9202 visit_detail_concept_id, u.eventdate::date, u.eventdate::timestamp, u.eventdate::date, u.eventdate::timestamp, 32827,
 	u.staffid, right(u.patid::varchar,5)::numeric as care_site_id, cs.constype, 0,
 	NULL,NULL,null
-	FROM union_source u JOIN consults cs ON cs.patid=u.patid AND cs.consid = u.consid AND cs.eventdate = u.eventdate
+	FROM {sc}._chunk 
+	join {ss}.consultation cs ON patient_id = cs.patid 
+	JOIN union_source u ON cs.patid=u.patid AND cs.consid = u.consid AND cs.eventdate = u.eventdate
+	where ordinal = {ch}
 
 	
 -- NOTES

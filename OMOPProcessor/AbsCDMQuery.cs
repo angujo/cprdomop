@@ -16,12 +16,12 @@ namespace OMOPProcessor
         readonly DBSchema sourceSchema;
         readonly DBSchema targetSchema;
         readonly DBSchema vocSchema;
-        TimerLogger cdmLogger;
+        TimerLogger _cdmLogger;
         AbsDBMSystem dBMSystem;
 
-        public DBSchema Schema { get { return targetSchema; } }
+        public TimerLogger CdmLogger { get { return _cdmLogger; } }
 
-        protected string DBMSName { get { return DBMSIdentifier.GetName(DBMSType.POSTGRESQL); } }
+        public DBSchema Schema { get { return targetSchema; } }
 
         public AbsCDMQuery(DBSchema schema)
         {
@@ -38,7 +38,7 @@ namespace OMOPProcessor
 
         public AbsCDMQuery(DBSchema source, DBSchema target, DBSchema vocabulary, TimerLogger logger)
             : this(source, target, vocabulary)
-        { cdmLogger = logger; }
+        { _cdmLogger = logger; }
 
         private string SQLScript(string name, bool undo = false)
         {
@@ -52,10 +52,10 @@ namespace OMOPProcessor
             switch (nm)
             {
                 case "script":
-                    filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSName, undo ? "undo" : String.Empty, file_name);
+                    filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSIdentifier.Active(), undo ? "undo" : String.Empty, file_name);
                     break;
                 case "analyzer":
-                    filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSName, "analysis", file_name);
+                    filePath = Path.Combine(Setting.InstallationDirectory, "omopscripts", DBMSIdentifier.Active(), "analysis", file_name);
                     break;
             }
             var cnt = File.Exists(filePath) ? File.ReadAllText(filePath) : string.Empty;
@@ -67,7 +67,7 @@ namespace OMOPProcessor
         {
             var query = SQLScript(name);
             if (query.Length <= 0) return;
-            if (null != cdmLogger && !cdmLogger.RunCDMTimer(name, chunkId, _name =>
+            if (null != _cdmLogger && !_cdmLogger.RunCDMTimer(name, chunkId, _name =>
                 {
                     var uQuery = SQLScript(_name, true);
                     Logger.Info($"Start Running CleanUp Query : {_name} Chunk ID #{chunkId}");
@@ -79,6 +79,7 @@ namespace OMOPProcessor
             {
                 Logger.Info($"Start Running Query : {name} Chunk ID #{chunkId}");
                 dBMSystem.RunQuery(query);
+                _cdmLogger.updateTimer(chunkId, name, Status.COMPLETED);
                 Logger.Info($"Done Running Query : {name} Chunk ID #{chunkId}");
             }, new { WorkLoadId = targetSchema.WorkLoadId, ChunkId = chunkId, Query = query, Name = name });
         }

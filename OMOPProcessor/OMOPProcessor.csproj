@@ -91,9 +91,14 @@
     <Content Include="scripts\postgres\observation-period.sql" />
     <Content Include="scripts\postgres\person.sql" />
     <Content Include="scripts\postgres\provider.sql" />
-    <Content Include="scripts\postgres\Script.sql" />
     <Content Include="scripts\postgres\source-to-source.sql" />
     <Content Include="scripts\postgres\source-to-standard.sql" />
+    <Content Include="scripts\postgres\stem-refferal.sql" />
+    <Content Include="scripts\postgres\stem-immunization.sql" />
+    <Content Include="scripts\postgres\stem-test.sql" />
+    <Content Include="scripts\postgres\stem-additional.sql" />
+    <Content Include="scripts\postgres\stem-therapy.sql" />
+    <Content Include="scripts\postgres\stem-clinical.sql" />
     <Content Include="scripts\postgres\stem-table.sql" />
     <Content Include="scripts\postgres\test-int.sql" />
     <Content Include="scripts\postgres\undo\add-in.sql" />

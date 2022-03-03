@@ -24,7 +24,7 @@ namespace WindowsFormsAppTest
 
         private void btnSchedule_Click(object sender, EventArgs e)
         {
-            workLoad = SysDB<WorkLoad>.Load(new { Id = workLoad.Id });
+            // workLoad = SysDB<WorkLoad>.Load(new { Id = workLoad.Id });
             if (null == workLoad)
             {
                 MessageBox.Show(this, "WorkLoad is missing to push the Schedule to.", "No Workload");
@@ -41,20 +41,15 @@ namespace WindowsFormsAppTest
                 // EventLog.WriteEntry("OmopCPRDSystem", "Gettint started with EventLog Here!", EventLogEntryType.Error);
                 //   new CDMBuilder(SysDB<WorkLoad>.Load(new { Id = workLoad.Id })).RunAsync();
 
-                var wq = SysDB<WorkQueue>.Load(new { WorkLoadId = workLoad.Id, QueueType = QAction.OMOP_MAP });
-                if (null != wq && -1 != Array.IndexOf(new Status[] { Status.QUEUED, Status.STARTED }, wq.Status))
+                if (SysDB<WorkQueue>.Exists("Where WorkLoadId = @WorkLoadId AND QueueType= @QueueType AND Status IN (@Status, @QStatus)", new { WorkLoadId = workLoad.Id, QueueType = QAction.OMOP_MAP,Status = (int)Status.STARTED,QStatus =(int)Status.QUEUED } ))
                 {
                     MessageBox.Show(null, "Queue is already running or scheduled.\nCheck on the service status or Error Log!", "Scheduled", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
-                wq = (WorkQueue)(wq ??
-                                         (new WorkQueue
-                                         {
-                                             WorkLoadId = (long)workLoad.Id,
-                                             Name = Guid.NewGuid().ToString(),
-                                             QueueType = QAction.OMOP_MAP,
-                                             Status = Status.QUEUED
-                                         }).InsertOrUpdate(true));
+                WorkQueue wq = SysDB<WorkQueue>.LoadOrNew("Where WorkLoadId = @WorkLoadId AND QueueType= @QueueType", new { WorkLoadId = (long)workLoad.Id, QueueType = QAction.OMOP_MAP, });
+                wq.Status = Status.QUEUED;
+                wq.Name = Guid.NewGuid().ToString();
+                wq.Save();
                 MessageBox.Show(null, "Queue Added successfully and will be run on next schedule.\nEnsure the Service is running!", "Scheduled", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             }
@@ -64,13 +59,14 @@ namespace WindowsFormsAppTest
                 // eventLog.WriteEntry(ex.StackTrace, System.Diagnostics.EventLogEntryType.Error);
                 MessageBox.Show(null, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Logger.Error(ex.Message);
-                Logger.Error(ex.StackTrace);
+                Logger.Error(ex.ToString());
                 // throw;
             }
         }
 
         private void workLoadSave(object sender, EventArgs e)
         {
+            Console.WriteLine($"Worklod #{workLoad.Id}");
             if (0 < workLoad.Save()) MessageBox.Show(this, "Configuration saved successfully!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else MessageBox.Show(this, "Error Saving configuration!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }

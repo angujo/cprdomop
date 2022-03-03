@@ -33,7 +33,13 @@ namespace OMOPProcessor
             Logger.Info($"Start StemTable Preparation ChunkID #{chunkId}");
             Parallel.ForEach(tasks, tsk => tsk());
             Logger.Info($"Start StemTable Series ChunkID #{chunkId}");
-            script.StemTable(chunkId);
+            script.StemAdditional(chunkId);
+            script.StemClinical(chunkId);
+            script.StemImmunization(chunkId);
+            script.StemRefferal(chunkId);
+            script.StemTest(chunkId);
+            script.StemTherapy(chunkId);
+            // script.StemTable(chunkId);
             Logger.Info($"Ended StemTable Series ChunkID #{chunkId}");
         }
     }
