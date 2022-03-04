@@ -5,3 +5,4 @@ Remove duplicate rows from tables: do this before running primary and unique ind
 
 --- OMOP
 set visit_occurrence_id to NOT NULL once data is loaded
+update and review loading of value_as_concept_id of stemTable from additional table i.e. StemAdditional file

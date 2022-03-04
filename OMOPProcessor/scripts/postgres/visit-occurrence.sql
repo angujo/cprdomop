@@ -7,4 +7,3 @@ INSERT INTO {sc}.visit_occurrence
 	0, null, null, null, null, null
 	FROM {sc}._chunk ch join {sc}.visit_detail v ON ch.patient_id = v.person_id WHERE ch.ordinal = {ch} GROUP BY v.person_id, v.visit_detail_start_date;
 
-
