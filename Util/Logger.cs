@@ -47,41 +47,12 @@ namespace Util
         private static void WriteLogFile(string message, LogType type, DateTime dated, int tries = 0)
         {
             InitFileLog();
-            /* if (!File.Exists(Setting.LogFilePath))
-             {
-                 InitFileLog();
-                 WriteLogFile(message, type, dated, tries++);
-                 if (tries > 10) throw new Exception($"Unable to initialize the logfile at '{Setting.LogFilePath}'");
-                 return;
-             }*/
             switch (type)
             {
                 case LogType.INFO: Log.Information(message); break;
                 case LogType.WARN: Log.Warning(message); break;
                 case LogType.ERROR: Log.Error(message); break;
             }
-            Console.WriteLine(message);
-            /*Task.Run(() =>
-            {
-                try
-                {
-                    using (StreamWriter wfs = File.AppendText(Setting.LogFilePath))
-                    {
-                        while (logs.TryTake(out var bg))
-                        {
-                            wfs.WriteLineAsync($"[{bg.Dated:yyyy-MM-dd H:mm:ss.FFFFFF}#EXC] {bg.Type.GetStringValue()}: {bg.Message}");
-                        }
-                        wfs.WriteLineAsync($"[{dated:yyyy-MM-dd H:mm:ss.FFFFFF}] {type.GetStringValue()}: {message}");
-                    }
-                }
-                catch (Exception)
-                {
-                    logs.Add(new LogHolder { Dated = DateTime.Now, Message = message, Type = type });
-                    // initRunner();
-                    // throw;
-                }
-            });*/
-
         }
 
         private static void WriteLogFile(LogHolder logHolder)

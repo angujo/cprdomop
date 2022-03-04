@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SystemLocalStore.models;
@@ -15,7 +16,7 @@ namespace SystemLocalStore
         ConcurrentDictionary<dynamic, QueueItem<T>> theList = new ConcurrentDictionary<dynamic, QueueItem<T>>();
         protected QueueTimer() { }
 
-        public static void Time(T obj, object key, Action func, object preParams = null, object postParams = null)
+        public static void Timexxx(T obj, object key, Action func, object preParams = null, object postParams = null)
         {
             var pra = ObjectExtension.AnObject(preParams).SetProperties(new { StartTime = DateTime.Now, EndTime = DateTime.Now, Status = Status.STARTED });
             var item = getMe().AddOrUpdate(key, null);
@@ -23,6 +24,7 @@ namespace SystemLocalStore
             try
             {
                 if (null != obj) item.SetItem(obj);
+                item.Commit();
                 func();
                 pra.SetProperties(new { Status = Status.COMPLETED, });
             }
@@ -40,11 +42,53 @@ namespace SystemLocalStore
 
             }
         }
+        public static void Time(T obj, object key, Action func, object preParams = null, object postParams = null)
+        {
+            var pra = ObjectExtension.AnObject(preParams).SetProperties(new { StartTime = DateTime.Now, EndTime = DateTime.Now, Status = Status.STARTED });
+            if(null==obj)obj= (T)Activator.CreateInstance(typeof(T));
+            obj.SetProperties(pra);
+            try
+            {
+                obj.UpSert();
+                func();
+                pra = ObjectExtension.AnObject(postParams).SetProperties(new { Status = Status.COMPLETED, });
+            }
+            catch (Exception ex)
+            {
+                pra.SetProperties(new { ErrorLog = ex.Message, Status = Status.ERROR_EXIT, });
+                Logger.Error(typeof(T).Name);
+                Logger.Exception(ex);
+            }
+            finally
+            {
+                obj.SetProperties(pra).SetProperties(new { EndTime = DateTime.Now, });
+                obj.UpSert();
+            }
+        }
 
         public static void Time(object key, Action func, object preParams = null, object postParams = null)
         {
             Time(null, key, func, preParams, postParams);
         }
+
+        private T SetLoader(T obj)
+        {
+            var loadKeys = ObjectExtension.AnObject();
+            var cols = (string[])typeof(T).GetMethod("UpsColumns").Invoke(null, null);
+            // var props=
+            var cond = new List<string>();
+            if (null != obj)
+            {
+                obj.RunProperties((name, value) =>
+               {
+                   if (!cols.Contains(name)) return;
+                   loadKeys.SetProperties(name, value);
+                   cond.Add($"{name} = @{name}");
+               });
+            }
+            return SysDB<T>.LoadOrNew((cond.Count > 0 ? "Where " : string.Empty) + string.Join(" AND ", cond), loadKeys);
+        }
+
 
         public Task Open()
         {
@@ -114,7 +158,7 @@ namespace SystemLocalStore
                 if (loadOnly) return null;
                 process = new QueueTimer<T>();
                 processes.TryAdd(name, process);
-                process.Open();
+                // process.Open();
             }
             return process;
         }

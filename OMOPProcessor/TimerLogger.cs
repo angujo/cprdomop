@@ -107,7 +107,7 @@ namespace OMOPProcessor
             if (!t.Exists() || Status.COMPLETED != t.Status)
             {
                 t.Status = Status.QUEUED;
-                t.Save();
+                t.UpSert();
             }
             return t;
         }

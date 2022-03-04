@@ -1,3 +1,4 @@
+/** SourceToSource */
 INSERT INTO {sc}.source_to_source
 (source_code, source_concept_id, source_code_description, source_vocabulary_id, source_domain_id, source_concept_class_id, 
 source_valid_start_date, source_valid_end_date, source_invalid_reason, target_concept_id, target_concept_name, 

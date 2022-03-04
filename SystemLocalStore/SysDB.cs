@@ -12,9 +12,13 @@ namespace SystemLocalStore
             foreach (var item in items) DataAccess.InsertOrUpdate(item);
         }
 
-        public static bool Delete(Object parameters = null)
+        public static bool Delete(Object parameters)
         {
             return DataAccess.Delete(typeof(T).Name, parameters);
+        }
+        public static bool Delete(string condition, Object parameters)
+        {
+            return DataAccess.Delete(typeof(T).Name, condition, parameters);
         }
         public static T Load(string conditions = null, Object parameters = null)
         {

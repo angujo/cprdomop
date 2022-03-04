@@ -1,3 +1,4 @@
+/** ConditionOccurrence #{ch} */
 INSERT INTO {sc}.condition_occurrence 
 (condition_status_source_value, provider_id, visit_occurrence_id, visit_detail_id, condition_status_concept_id, condition_occurrence_id, 
 condition_source_value, person_id, condition_concept_id, condition_start_date, condition_source_concept_id, 

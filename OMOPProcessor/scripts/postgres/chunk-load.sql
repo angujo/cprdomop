@@ -1,3 +1,4 @@
+/** ChunkLoad */
 -- Clean it up 
 truncate table {sc}."_chunk" ;
 -- Now setup chunks

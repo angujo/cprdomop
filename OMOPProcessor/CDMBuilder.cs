@@ -117,7 +117,7 @@ namespace OMOPProcessor
                 ChunkBuilder.Create(script);
                 workLoad.ChunksSetup = true;
                 SysDB<ChunkTimer>.Delete(new { WorkLoadId = workLoad.Id });
-                SysDB<CDMTimer>.Delete(new { WorkLoadId = workLoad.Id });
+                SysDB<CDMTimer>.Delete("Where WorkLoadId = @WorkLoadId AND ChunkId <> -1", new { WorkLoadId = workLoad.Id });
                 workLoad.ChunksLoaded = false;
                 workLoad.Save();
             }

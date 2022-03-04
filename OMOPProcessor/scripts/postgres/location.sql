@@ -1,3 +1,4 @@
+/** Location */
 WITH regions as (
 	SELECT 
 	region::integer, 

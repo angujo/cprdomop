@@ -1,3 +1,4 @@
+/** DrugExposure #{ch} */
 INSERT INTO {sc}.drug_exposure 
 (sig, drug_exposure_start_date, drug_exposure_start_datetime, drug_exposure_end_date, drug_exposure_end_datetime, 
 visit_occurrence_id, visit_detail_id, drug_source_concept_id, stop_reason, provider_id, route_concept_id, days_supply, quantity, 

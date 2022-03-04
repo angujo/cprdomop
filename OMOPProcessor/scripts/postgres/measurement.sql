@@ -1,3 +1,4 @@
+/** Measurement #{ch} */
 INSERT INTO {sc}.measurement 
 (measurement_id, measurement_source_value, unit_source_value, value_source_value, measurement_time, person_id, measurement_concept_id, 
 measurement_date, measurement_datetime, measurement_type_concept_id, operator_concept_id, value_as_number, value_as_concept_id, 

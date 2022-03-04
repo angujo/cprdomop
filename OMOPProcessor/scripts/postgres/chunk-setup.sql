@@ -1,3 +1,4 @@
+/** ChunkSetup */
 -- Drop table
 
 DROP TABLE IF EXISTS {sc}."_chunk";

@@ -170,15 +170,25 @@ namespace SystemLocalStore
             });
         }
 
-        public static bool Delete(string table_name, object parameters = null)
+        public static bool Delete(string table_name, string condition, object parameters)
         {
             return RunConnection(cnn =>
             {
-                if (null == parameters) return false;
-                if (parameters.GetType().IsSubclassOf(typeof(AbsTable))) { parameters = new { Id = ((AbsTable)parameters).Id }; }
-                var whereClause = new WhereClause(parameters);
-                return 0 < cnn.Execute($"DELETE FROM {table_name} {whereClause.AsString}", whereClause.DynamicParameters);
+                if (null == parameters && string.IsNullOrEmpty(condition)) return false;
+                if (string.IsNullOrEmpty(condition))
+                {
+                    if (parameters.GetType().IsSubclassOf(typeof(AbsTable))) { parameters = new { Id = ((AbsTable)parameters).Id }; }
+                    var whereClause = new WhereClause(parameters);
+                    condition = whereClause.AsString;
+                    parameters = whereClause.DynamicParameters;
+                }
+                return 0 < cnn.Execute($"DELETE FROM {table_name} {condition}", parameters);
             });
+        }
+
+        public static bool Delete(string table_name, object parameters = null)
+        {
+            return Delete(table_name, null, parameters);
         }
 
         public static int LockWorkLoad(WorkLoad workLoad)

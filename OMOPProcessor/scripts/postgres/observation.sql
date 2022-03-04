@@ -1,3 +1,4 @@
+/** Observation #{ch} */
 INSERT INTO {sc}.observation 
 (observation_date, observation_datetime, observation_type_concept_id, unit_source_value, qualifier_source_value, value_as_string, 
 observation_source_concept_id, visit_detail_id, visit_occurrence_id, provider_id, observation_source_value, unit_concept_id, qualifier_concept_id, 

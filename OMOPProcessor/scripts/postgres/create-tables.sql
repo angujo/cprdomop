@@ -1,4 +1,4 @@
-
+/** CreateTables */
 -- {sc}.add_in definition
 
 -- Drop table

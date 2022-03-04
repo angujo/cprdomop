@@ -1,3 +1,4 @@
+/** TestInt #{ch} */
 insert into {sc}.test_int 
 (patid, eventdate, consid, staffid, read_code, medcode, read_description, map_value, enttype, enttype_desc, data_fields, operator, value_as_number, unit, value_as_concept_id, range_low, range_high)
 (

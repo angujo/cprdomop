@@ -1,3 +1,4 @@
+/** ConfitionEra #{ch} */
 WITH cteConditionTarget AS (
 		SELECT co.PERSON_ID, co.condition_concept_id, co.CONDITION_START_DATE, COALESCE(co.CONDITION_END_DATE, CONDITION_START_DATE + interval '1 day') AS CONDITION_END_DATE
 		FROM {sc}._chunk JOIN {sc}.CONDITION_OCCURRENCE co ON patient_id = co.person_id WHERE ordinal = {ch}

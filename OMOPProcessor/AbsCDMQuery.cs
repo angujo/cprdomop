@@ -10,7 +10,7 @@ namespace OMOPProcessor
 {
     public abstract class AbsCDMQuery
     {
-        protected int chunkId = 0;
+        protected int chunkId = -1;
         protected int limit = 0;
 
         readonly DBSchema sourceSchema;
@@ -75,13 +75,19 @@ namespace OMOPProcessor
                     dBMSystem.RunQuery(uQuery);
                     Logger.Info($"Done Running CleanUp Query : {_name} Chunk ID #{chunkId}");
                 })) return;
-            QueueTimer<CDMTimer>.Time(name, () =>
-            {
-                Logger.Info($"Start Running Query : {name} Chunk ID #{chunkId}");
-                dBMSystem.RunQuery(query);
-                _cdmLogger.updateTimer(chunkId, name, Status.COMPLETED);
-                Logger.Info($"Done Running Query : {name} Chunk ID #{chunkId}");
-            }, new { WorkLoadId = targetSchema.WorkLoadId, ChunkId = chunkId, Query = query, Name = name });
+            QueueTimer<CDMTimer>.Time(SysDB<CDMTimer>.LoadOrNew("Where WorkLoadId = @WId AND ChunkId = @CId AND Name = @Name",
+                new
+                {
+                    WId = targetSchema.WorkLoadId,
+                    CId = chunkId,
+                    Name = name,
+                }), name, () =>
+                {
+                    Logger.Info($"Start Running Query : {name} Chunk ID #{chunkId}");
+                    dBMSystem.RunQuery(query);
+                    _cdmLogger.updateTimer(chunkId, name, Status.COMPLETED);
+                    Logger.Info($"Done Running Query : {name} Chunk ID #{chunkId}");
+                }, new { WorkLoadId = targetSchema.WorkLoadId, ChunkId = chunkId, Query = query, Name = name });
         }
 
         protected List<object> RunData(string name)

@@ -109,21 +109,20 @@ namespace Util
         private static void loopProperties(Object parameters, Action<string, object> func)
         {
             if(null == parameters) return;
-            if (parameters.GetType().Name.Contains("AnonymousType"))
-            {
-                var properties = parameters.GetType().GetProperties();
-                foreach (var property in properties)
-                {
-                    func(property.Name, property.GetValue(parameters));
-                }
-            }
-            else if (parameters.GetType().Name.Equals("ExpandoObject"))
+            if (parameters.GetType().Name.Equals("ExpandoObject"))
             {
                 var copyObj = ((ExpandoObject)parameters).ShadowCopy();
                 var kys = new List<object>(((IDictionary<string, object>)copyObj).Keys);
                 foreach (string descriptor in kys)
                 {
                     func(descriptor, ((IDictionary<string, object>)copyObj)[descriptor]);
+                }
+            }else
+            {
+                var properties = parameters.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    func(property.Name, property.GetValue(parameters));
                 }
             }
         }

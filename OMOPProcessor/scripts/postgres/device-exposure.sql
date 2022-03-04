@@ -1,3 +1,4 @@
+/** DeviceExposure #{ch} */
 INSERT INTO {sc}.device_exposure 
 (device_type_concept_id, device_exposure_id, person_id, device_concept_id, device_exposure_start_date, 
 device_exposure_start_datetime, device_exposure_end_date, device_exposure_end_datetime, unique_device_id, 

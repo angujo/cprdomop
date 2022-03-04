@@ -1,3 +1,4 @@
+/** CdmSource  */
 insert into {sc}.cdm_source (
 cdm_source_name,
 cdm_source_abbreviation,
