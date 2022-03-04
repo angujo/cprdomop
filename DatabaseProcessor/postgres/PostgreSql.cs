@@ -1,6 +1,7 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SystemLocalStore.models;
 using Util;
 
@@ -23,7 +24,10 @@ namespace DatabaseProcessor.postgres
                 @"ApplicationName=OMOPBuilder",
                 @"Pooling=false",
                 @"IncludeErrorDetail=true",
-                @"CommandTimeout=36000"
+                @"CommandTimeout=36000",
+                @"Options="+String.Join(" ", (new string[] {
+                    "synchronous_commit=off"
+                }).Select(o=>$"-c {o}"))
             });
         }
 
@@ -113,7 +117,7 @@ namespace DatabaseProcessor.postgres
 
         public override T RunScalar<T>(string sql, object parameters = null)
         {
-            using (var conn = GetConnection())
+            using (NpgsqlConnection conn = GetConnection())
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -131,6 +135,25 @@ namespace DatabaseProcessor.postgres
             {
                 conn.Open();
                 return conn.State == System.Data.ConnectionState.Open;
+            }
+        }
+
+        public static void BinaryCopy(DBSchema fromSchema, DBSchema toSchema, string fromQuery, string toQuery)
+        {
+            var from = new PostgreSql(fromSchema);
+            var to = new PostgreSql(toSchema);
+            using (NpgsqlConnection f_conn = from.GetConnection())
+            {
+                f_conn.Open();
+                using (NpgsqlConnection t_conn = to.GetConnection())
+                {
+                    t_conn.Open();
+                    using (NpgsqlRawCopyStream inStream = f_conn.BeginRawBinaryCopy(fromQuery))
+                    using (NpgsqlRawCopyStream outStream = t_conn.BeginRawBinaryCopy(toQuery))
+                    {
+                        inStream.CopyTo(outStream);
+                    }
+                }
             }
         }
     }

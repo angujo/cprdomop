@@ -57,6 +57,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DatabaseProcessor\DatabaseProcessor.csproj">
+      <Project>{1D1CA331-DA5C-4464-8A15-E0838F57091E}</Project>
+      <Name>DatabaseProcessor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SystemLocalStore\SystemLocalStore.csproj">
       <Project>{494836da-d213-4f5d-9046-583e36702589}</Project>
       <Name>SystemLocalStore</Name>

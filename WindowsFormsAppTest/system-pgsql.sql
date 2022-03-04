@@ -4,19 +4,19 @@
 
 -- DROP TABLE public.cdmtimer;
 
-CREATE TABLE public.cdmtimer (
+CREATE TABLE IF NOT EXISTS public.cdmtimer (
 	id bigserial NOT NULL,
 	"name" varchar(250) NULL,
-	chunkid int4 NULL DEFAULT 0,
+	chunkid int4 NULL,
 	query text NULL,
 	starttime timestamp NULL,
 	endtime timestamp NULL,
 	workloadid int8 NOT NULL,
 	status int4 NULL,
 	errorlog text NULL,
-	CONSTRAINT cdmtimer_id_key UNIQUE (id)
+	CONSTRAINT cdmtimer_id_key UNIQUE (id),
+	CONSTRAINT cdmtimer_unique UNIQUE (name, workloadid, chunkid)
 );
-CREATE UNIQUE INDEX cdmtimer_unique ON public.cdmtimer USING btree (name, chunkid, workloadid);
 
 
 -- public.chunktimer definition
@@ -25,18 +25,18 @@ CREATE UNIQUE INDEX cdmtimer_unique ON public.cdmtimer USING btree (name, chunki
 
 -- DROP TABLE public.chunktimer;
 
-CREATE TABLE public.chunktimer (
+CREATE TABLE IF NOT EXISTS public.chunktimer (
 	id bigserial NOT NULL,
 	chunkid int4 NULL,
 	starttime timestamp NULL,
 	endtime timestamp NULL,
-	touched int4 NULL DEFAULT 0,
+	touched bool NULL DEFAULT false,
 	workloadid int4 NULL,
 	status int4 NULL,
 	errorlog text NULL,
-	CONSTRAINT chunktimer_id_key UNIQUE (id)
+	CONSTRAINT chunktimer_id_key UNIQUE (id),
+	CONSTRAINT chunktimer_unique UNIQUE (chunkid, workloadid)
 );
-CREATE UNIQUE INDEX chunktimer_unique ON public.chunktimer USING btree (chunkid, workloadid);
 
 
 -- public.queue definition
@@ -45,7 +45,7 @@ CREATE UNIQUE INDEX chunktimer_unique ON public.chunktimer USING btree (chunkid,
 
 -- DROP TABLE public.queue;
 
-CREATE TABLE public.queue (
+CREATE TABLE IF NOT EXISTS public.queue (
 	id bigserial NOT NULL,
 	workqueueid int4 NULL,
 	taskindex int4 NULL,
@@ -69,7 +69,7 @@ CREATE TABLE public.queue (
 
 -- DROP TABLE public.servicestatus;
 
-CREATE TABLE public.servicestatus (
+CREATE TABLE IF NOT EXISTS public.servicestatus (
 	id bigserial NOT NULL,
 	servicename varchar(250) NULL,
 	servicedescription varchar(450) NULL,
@@ -85,16 +85,16 @@ CREATE TABLE public.servicestatus (
 
 -- DROP TABLE public.sourcefile;
 
-CREATE TABLE public.sourcefile (
+CREATE TABLE IF NOT EXISTS public.sourcefile (
 	id bigserial NOT NULL,
 	workloadid int8 NOT NULL,
 	filename varchar(250) NOT NULL,
 	filepath varchar(450) NOT NULL,
 	filehash varchar(250) NULL,
-	processed int4 NOT NULL DEFAULT 0,
+	processed bool NOT NULL DEFAULT false,
 	tablename varchar(250) NOT NULL,
 	code text NOT NULL,
-	isfile int4 NOT NULL DEFAULT 0,
+	isfile bool NOT NULL DEFAULT false,
 	CONSTRAINT sourcefile_id_key UNIQUE (id)
 );
 
@@ -105,7 +105,7 @@ CREATE TABLE public.sourcefile (
 
 -- DROP TABLE public.workload;
 
-CREATE TABLE public.workload (
+CREATE TABLE IF NOT EXISTS public.workload (
 	id bigserial NOT NULL,
 	"name" varchar(250) NOT NULL,
 	releasedate timestamp NULL,
@@ -116,7 +116,7 @@ CREATE TABLE public.workload (
 	chunksloaded bool NOT NULL DEFAULT false,
 	cdmprocessed bool NOT NULL DEFAULT false,
 	chunksize int4 NULL DEFAULT 500,
-	isrunning int4 NOT NULL DEFAULT 0,
+	isrunning bool NOT NULL DEFAULT false,
 	maxparallels int4 NOT NULL DEFAULT 3,
 	testchunkcount int4 NULL,
 	CONSTRAINT workload_id_key UNIQUE (id)
@@ -129,7 +129,7 @@ CREATE TABLE public.workload (
 
 -- DROP TABLE public.dbschema;
 
-CREATE TABLE public.dbschema (
+CREATE TABLE IF NOT EXISTS public.dbschema (
 	id bigserial NOT NULL,
 	workloadid int8 NOT NULL,
 	schematype varchar(250) NULL,
@@ -139,7 +139,7 @@ CREATE TABLE public.dbschema (
 	schemaname varchar(250) NULL,
 	username varchar(250) NULL,
 	"password" varchar(250) NULL,
-	testsuccess int4 NOT NULL DEFAULT 0,
+	testsuccess bool NOT NULL DEFAULT false,
 	CONSTRAINT dbschema_id_key UNIQUE (id),
 	CONSTRAINT dbschema_workloadid_fkey FOREIGN KEY (workloadid) REFERENCES public.workload(id)
 );
@@ -151,7 +151,7 @@ CREATE TABLE public.dbschema (
 
 -- DROP TABLE public.workqueue;
 
-CREATE TABLE public.workqueue (
+CREATE TABLE IF NOT EXISTS public.workqueue (
 	id bigserial NOT NULL,
 	workloadid int8 NOT NULL,
 	"name" varchar(250) NULL,
@@ -162,6 +162,6 @@ CREATE TABLE public.workqueue (
 	progresspercent int4 NULL,
 	errorlog text NULL,
 	CONSTRAINT workqueue_id_key UNIQUE (id),
+	CONSTRAINT workqueue_unique UNIQUE (workloadid, queuetype),
 	CONSTRAINT workqueue_workloadid_fkey FOREIGN KEY (workloadid) REFERENCES public.workload(id)
 );
-CREATE UNIQUE INDEX workqueue_unique ON public.workqueue USING btree (workloadid, queuetype);

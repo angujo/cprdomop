@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using DatabaseProcessor.postgres;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Reflection;
 using SystemLocalStore;
@@ -52,8 +53,36 @@ namespace UnitTestProject
         [TestMethod]
         public void TestDB()
         {
-            var loads = SysDB<ChunkTimer>.Column<int>("ChunkId", "Where WorkLoadId = @WorkLoadId AND Touched = @Touched AND Status <> @Status ORDER BY ChunkId ASC", new { WorkLoadId = 1, Touched = false, Status = Status.COMPLETED }); 
+            var loads = SysDB<ChunkTimer>.Column<int>("ChunkId", "Where WorkLoadId = @WorkLoadId AND Touched = @Touched AND Status <> @Status ORDER BY ChunkId ASC", new { WorkLoadId = 1, Touched = false, Status = Status.COMPLETED });
             foreach (var load in loads) Console.WriteLine(load.ToString());
+        }
+
+        [TestMethod]
+        public void TestCopy()
+        {
+            var dvdrental = new DBSchema
+            {
+                DBName = "dvdrental",
+                Password = "postgres",
+                Port = 5432,
+                SchemaName = "public",
+                Server = "localhost",
+                Username = "postgres"
+            };
+            var test = new DBSchema
+            {
+                DBName = "omopapp",
+                Password = "postgres",
+                Port = 5432,
+                SchemaName = "test",
+                Server = "localhost",
+                Username = "postgres"
+            };
+
+            string from = "COPY (select first_name||' '||last_name AS fname, last_update FROM public.actor) TO STDOUT (FORMAT BINARY)";
+            string to = "COPY test.actor(full_name, last_update) FROM STDIN (FORMAT BINARY)";
+
+            PostgreSql.BinaryCopy(dvdrental, test, from, to);
         }
     }
 }

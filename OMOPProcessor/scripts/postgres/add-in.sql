@@ -31,7 +31,7 @@ INSERT INTO {sc}.add_in
 	       cc.description, 
 	       cc.e_data1 as data,       
 	       case when cc.data1_lkup in ('Medical Dictionary', 'Product Dictionary') then null else cc.data1 end as value_as_number, 
-	       case when cc.data1_lkup = 'Medical Dictionary' then m.read_code when cc.data1_lkup = 'Product Dictionary' then p.gemscriptcode else lu.text end as value_as_string,
+	       case when cc.data1_lkup = 'Medical Dictionary' then m.read_code when cc.data1_lkup = 'Product Dictionary' then p.gemscriptcode else lt.text end as value_as_string,
 	       case when cc.data1_lkup = 'dd/mm/yyyy' then cc.data1 end as value_as_date,
 	       case when cc.enttype in (13,488) then 'kg' --enttype 13 is weight, enttype 488 is weight loss
 	        when cc.enttype = 476 then 'cm' --enttype 476 is waist circumference
