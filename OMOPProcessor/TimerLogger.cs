@@ -17,26 +17,28 @@ namespace OMOPProcessor
         Dictionary<string, CDMTimer> nonChunkTimers = new Dictionary<string, CDMTimer>();
         WorkLoad workLoad;
         Dictionary<int, Dictionary<string, CDMTimer>> chunkTimers = new Dictionary<int, Dictionary<string, CDMTimer>>();
-        string[] NonChunks = new string[] { "ChunkLoad", "CareSite", "CdmSource", "ChunkSetup", "CohortDefinition", "CreateTables", "Location", "Provider", "SourceToSource", "SourceToStandard", "VisitDetailUpdate", "VisitOccurrenceUpdate", };
+        readonly string[] NonChunks = new string[] { "ChunkLoad", "CareSite", "CdmSource", "ChunkSetup", "CohortDefinition", "CreateTables", "Location", "Provider", "SourceToSource", "SourceToStandard", "VisitDetailUpdate", "VisitOccurrenceUpdate", };
+        string[] methodNames;
 
-        public TimerLogger(WorkLoad wl) { workLoad = wl; loadNonChunks(); }
+        public TimerLogger(WorkLoad wl)
+        {
+            workLoad = wl;
+            methodNames = typeof(Script).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Select(m => m.Name).ToArray();
+            loadNonChunks();
+        }
 
         protected void loadNonChunks()
         {
-            loopMethods(name =>
+            Logger.Info("Loading Non Chunk Timers...");
+            loopMethods((name, cTimer) =>
             {
-                CDMTimer c;
-                if (null != (c = GetTimer(name))) nonChunkTimers.Add(name, c);
+                nonChunkTimers.Add(name, GetTimer(name, -1, cTimer));
             });
+            Logger.Info("DONE Loading Non Chunk Timers");
         }
 
         public void prepareCDMTimers(ChunkTimer chunkTimer) { loadForChunk(chunkTimer); }
 
-        public bool RunCDMTimer(string name, ChunkTimer chunk, Action<string> runFunc)
-        {
-            if (chunkTimers.Count <= 0) { loadForChunk(chunk); }
-            return RunCDMTimer(name, chunk.ChunkId, runFunc);
-        }
         public bool RunCDMTimer(string name, int ChunkId, Action<string> runFunc)
         {
 
@@ -56,32 +58,24 @@ namespace OMOPProcessor
             chunkTimers[chunkId][name].Status = status;
         }
 
-        public bool AllCompleted(int ChunkId)
-        {
-            return chunkTimers.ContainsKey(ChunkId) && 0 == (int)chunkTimers[ChunkId].Where(kv => kv.Value.Status != Status.COMPLETED).Count();
-        }
-
         protected void loadForChunk(ChunkTimer chunk)
         {
             Dictionary<string, CDMTimer> cHolder = new Dictionary<string, CDMTimer>();
-            loopMethods(name =>
+            loopMethods((name, cTimer) =>
             {
-                CDMTimer c;
-                if (null != (c = GetTimer(name, chunk))) cHolder.Add(name, c);
-            });
-            if (chunkTimers.ContainsKey(chunk.ChunkId))
-            {
-                chunkTimers[chunk.ChunkId] = cHolder;
-            }
-            else chunkTimers.Add(chunk.ChunkId, cHolder);
+                cHolder.Add(name, GetTimer(name, chunk.ChunkId, cTimer));
+            }, chunk.ChunkId);
+
+            chunkTimers[chunk.ChunkId] = cHolder;
         }
 
-        protected void loopMethods(Action<string> func)
+        protected void loopMethods(Action<string, CDMTimer> func, int chunkId = -1)
         {
-            MethodInfo[] methods = typeof(Script).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            foreach (MethodInfo method in methods)
+            List<CDMTimer> timers = SysDB<CDMTimer>.List($"Where WorkLoadId = @WLId AND ChunkId = @CId AND Name{(-1 != chunkId ? " !" : string.Empty)}= ANY(@Names)", new { WLId = workLoad.Id, CId = chunkId, Names = NonChunks });
+            foreach (string name in methodNames)
             {
-                func(method.Name);
+                if ((NonChunks.Contains(name) && -1 != chunkId) || (!NonChunks.Contains(name) && -1 == chunkId)) continue;
+                func(name, timers.Find(t => t.Name.Equals(name)));
             }
         }
 
@@ -100,16 +94,15 @@ namespace OMOPProcessor
             return $"clean-{name.ToKebabCase()}.sql";
         }
 
-        private CDMTimer GetTimer(string name, ChunkTimer chunk = null)
+        private CDMTimer GetTimer(string name, int chunkId = -1, CDMTimer c_timer = null)
         {
-            if ((chunk == null || !chunk.Exists()) && !NonChunks.Contains(name)) return null;
-            var t = SysDB<CDMTimer>.LoadOrNew("Where Name = @Name AND WorkLoadId = @WorkLoadId AND ChunkId = @ChunkId", new { Name = name, WorkLoadId = workLoad.Id, ChunkId = NonChunks.Contains(name) ? 0 : chunk.ChunkId });
-            if (!t.Exists() || Status.COMPLETED != t.Status)
+            if (c_timer == null) c_timer = new CDMTimer { Name = name, ChunkId = chunkId, WorkLoadId = (long)workLoad.Id };
+            if (!c_timer.Exists() || Status.COMPLETED != c_timer.Status)
             {
-                t.Status = Status.QUEUED;
-                t.UpSert();
+                c_timer.Status = Status.QUEUED;
+                c_timer.UpSert();
             }
-            return t;
+            return c_timer;
         }
     }
 }

@@ -65,6 +65,14 @@ namespace SystemLocalStore
             });
         }
 
+        public static int Query(string sql, object parameters = null)
+        {
+            return RunConnection(cnn =>
+            {
+                return cnn.Execute(sql, parameters);
+            });
+        }
+
         public static List<T> LoadList<T>(Object parameters = null)
         {
             return RunConnection(cnn =>
@@ -77,10 +85,8 @@ namespace SystemLocalStore
         {
             return RunConnection(cnn =>
             {
-                var _limit = (null != limit ? $" LIMIT {limit}" + (null != offset ? $"OFFSET {offset}" : string.Empty) : string.Empty);
-                var cond = condition + _limit;
-                // Console.WriteLine("Condition = " + (string.IsNullOrEmpty(cond) ? "EMPTY" : "NONEMPTY") + cond);
-                return string.IsNullOrEmpty(cond) ? cnn.GetList<T>().ToList() : cnn.GetList<T>(cond, parameters).ToList();
+                var cols = string.Join(", ", typeof(T).GetProperties().Select(p => p.Name).ToArray());
+                return cnn.Query<T>($"SELECT {cols} FROM {typeof(T).Name} {condition}", parameters).ToList();
             });
         }
 
@@ -239,6 +245,19 @@ namespace SystemLocalStore
         }));
                 default: return new SQLiteConnection("Data Source=" + Setting.DBFilePath + ";Version=3;");
             }
+        }
+
+        public static DBSchema DBSchema()
+        {
+            return new DBSchema
+            {
+                DBName = Setting.DBName,
+                Port = int.Parse(Setting.DBPort),
+                SchemaName = Setting.DBSchema,
+                Password = Setting.DBPassword,
+                Username = Setting.DBUsername,
+                Server = Setting.DBServer,
+            };
         }
     }
 

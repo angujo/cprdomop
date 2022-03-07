@@ -13,11 +13,11 @@ namespace OMOPProcessor
         protected int chunkId = -1;
         protected int limit = 0;
 
-        readonly DBSchema sourceSchema;
-        readonly DBSchema targetSchema;
-        readonly DBSchema vocSchema;
+        protected readonly DBSchema sourceSchema;
+        protected readonly DBSchema targetSchema;
+        protected readonly DBSchema vocSchema;
         TimerLogger _cdmLogger;
-        AbsDBMSystem dBMSystem;
+        public AbsDBMSystem dBMSystem;
 
         public TimerLogger CdmLogger { get { return _cdmLogger; } }
 
@@ -40,7 +40,7 @@ namespace OMOPProcessor
             : this(source, target, vocabulary)
         { _cdmLogger = logger; }
 
-        private string SQLScript(string name, bool undo = false)
+        public string SQLScript(string name, bool undo = false)
         {
             return SetPlaceHolders(FileScript($"{name.ToKebabCase()}.sql", undo));
         }
@@ -67,27 +67,41 @@ namespace OMOPProcessor
         {
             var query = SQLScript(name);
             if (query.Length <= 0) return;
-            if (null != _cdmLogger && !_cdmLogger.RunCDMTimer(name, chunkId, _name =>
-                {
-                    var uQuery = SQLScript(_name, true);
-                    Logger.Info($"Start Running CleanUp Query : {_name} Chunk ID #{chunkId}");
-                    Logger.Info($"CleanUp Query : {uQuery}");
-                    dBMSystem.RunQuery(uQuery);
-                    Logger.Info($"Done Running CleanUp Query : {_name} Chunk ID #{chunkId}");
-                })) return;
-            QueueTimer<CDMTimer>.Time(SysDB<CDMTimer>.LoadOrNew("Where WorkLoadId = @WId AND ChunkId = @CId AND Name = @Name",
+            var timer = SysDB<CDMTimer>.LoadOrNew("Where WorkLoadId = @WorkLoadId AND ChunkId = @ChunkId AND Name = @Name",
                 new
                 {
-                    WId = targetSchema.WorkLoadId,
-                    CId = chunkId,
+                    WorkLoadId = targetSchema.WorkLoadId,
+                    ChunkId = chunkId,
                     Name = name,
-                }), name, () =>
-                {
-                    Logger.Info($"Start Running Query : {name} Chunk ID #{chunkId}");
-                    dBMSystem.RunQuery(query);
-                    _cdmLogger.updateTimer(chunkId, name, Status.COMPLETED);
-                    Logger.Info($"Done Running Query : {name} Chunk ID #{chunkId}");
-                }, new { WorkLoadId = targetSchema.WorkLoadId, ChunkId = chunkId, Query = query, Name = name });
+                });
+            timer.Status = Status.STARTED;
+            timer.StartTime = DateTime.Now;
+            timer.Query = query;
+            timer.UpSert();
+            try
+            {
+                // QueueTimer<CDMTimer>.Time(, name, () =>                {
+                Logger.Info($"Start Running Query : {name} Chunk ID #{chunkId}");
+                dBMSystem.RunQuery(query);
+                //  _cdmLogger.updateTimer(chunkId, name, Status.COMPLETED);
+                Logger.Info($"Done Running Query : {name} Chunk ID #{chunkId}");
+                timer.Status = Status.COMPLETED;
+            }
+            catch (Exception ex)
+            {
+                timer.Status = Status.ERROR_EXIT;
+                timer.ErrorLog = ex.Message;
+                Logger.Exception(ex);
+                throw;
+            }
+            finally
+            {
+                timer.EndTime = DateTime.Now;
+                timer.UpSert();
+            }
+
+            //    }, new { WorkLoadId = targetSchema.WorkLoadId, ChunkId = chunkId, Query = query, Name = name });
+
         }
 
         protected List<object> RunData(string name)
@@ -108,10 +122,10 @@ namespace OMOPProcessor
         protected string SetPlaceHolders(string script)
         {
             return script
-                .Replace("{ch}", $"{chunkId}")
-                .Replace("{vs}", null != vocSchema ? vocSchema.SchemaName : String.Empty)
-                .Replace("{ss}", null != sourceSchema ? sourceSchema.SchemaName : String.Empty)
-                .Replace("{sc}", targetSchema.SchemaName) //We must always have target schema, otherwise kill everything
+                .Replace(@"{ch}", $"{chunkId}")
+                .Replace(@"{vs}", null != vocSchema ? vocSchema.SchemaName : String.Empty)
+                .Replace(@"{ss}", null != sourceSchema ? sourceSchema.SchemaName : String.Empty)
+                .Replace(@"{sc}", targetSchema.SchemaName) //We must always have target schema, otherwise kill everything
                 .Replace(@"{lmt}", $"{limit}");
         }
     }

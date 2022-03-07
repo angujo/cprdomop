@@ -18,7 +18,6 @@ namespace OMOPProcessor
 
         public void Run(ChunkTimer chunk)
         {
-            int reruns = 11;
             Logger.Info($"Started Preparing CDM Timer Logger ChunkID#{chunk.ChunkId} Load WL#{chunk.WorkLoadId}");
             script.CdmLogger.prepareCDMTimers(chunk);
             Logger.Info($"Ended Preparation of CDM Timer Logger ChunkID#{chunk.ChunkId} Load WL#{chunk.WorkLoadId}");
@@ -35,27 +34,9 @@ namespace OMOPProcessor
                 () => script.Observation(chunk.ChunkId),
                 () => script.Person(chunk.ChunkId),
             };
-        RunChunk:
             Logger.Info($"Start Chunk Series ChunkID#{chunk.ChunkId}");
             Parallel.ForEach(actions, action => action());
             Logger.Info($"Ended Chunk Series ChunkID#{chunk.ChunkId}");
-            if (SysDB<CDMTimer>.Exists("Where WorkLoadId = @WLId AND ChunkId = @CHId AND Status <> 8", new { WLId = chunk.WorkLoadId, CHId = chunk.ChunkId, }))
-            {
-                reruns--;
-                if (reruns <= 0)
-                {
-                    chunk.ErrorLog = $"Too Many Re-Runs for ChunkId#{chunk.ChunkId} WL#{chunk.WorkLoadId}";
-                    chunk.Status = Status.ERROR_EXIT;
-                    chunk.Save();
-                    return;
-                }
-                else
-                {
-                    Logger.Info($"ChunkID#{chunk.ChunkId} timers are still lagging. Starting Re-Run#{reruns}!");
-                Task.Delay(200);
-                    goto RunChunk;
-                }
-            }
         }
         protected void stemTableDependants(ChunkTimer chunk)
         {
@@ -82,6 +63,21 @@ namespace OMOPProcessor
         public static void Create(Script script) { script.ChunkSetup(); }
 
         public void Load(int limit) { script.ChunkLoad(limit); }
-    }
 
+        public void Clean(WorkLoad workLoad)
+        {
+            List<CDMTimer> timers = SysDB<CDMTimer>.List($"WHERE Status = 0 AND WorkLoadId = @WLId", new { WLId = workLoad.Id });
+            foreach (var timer in timers)
+            {
+                script.CdmLogger.RunCDMTimer(timer.Name, timer.ChunkId, _name =>
+                    {
+                        var uQuery = script.SQLScript(_name, true);
+                        Logger.Info($"Start Running CleanUp Query : {_name} Chunk ID #{timer.ChunkId}");
+                        Logger.Info($"CleanUp Query : {uQuery}");
+                        script.dBMSystem.RunQuery(uQuery);
+                        Logger.Info($"Done Running CleanUp Query : {_name} Chunk ID #{timer.ChunkId}");
+                    });
+            }
+        }
+    }
 }

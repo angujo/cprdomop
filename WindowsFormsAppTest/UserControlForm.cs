@@ -65,27 +65,37 @@ namespace WindowsFormsAppTest
             // Logger.Info("Timer check");
             // Console.WriteLine($"[{DateTime.Now}] Timer Check");
             // return;
-            if (null == sc)
+            try
             {
-                sc = new ServiceController(Setting.ServiceName);
-                changeLabel("Not Installed"); return;
+                if (null == sc)
+                {
+                    sc = new ServiceController(Setting.ServiceName);
+                    lblName.Invoke((Action)(() => lblName.Text = Setting.ServiceName));
+                    changeLabel("Not Installed"); return;
+                }
+                sc.Refresh();
+                switch (sc.Status)
+                {
+                    case ServiceControllerStatus.Running:
+                        changeLabel("Running"); break;
+                    case ServiceControllerStatus.Stopped:
+                        changeLabel("Stopped"); break;
+                    case ServiceControllerStatus.Paused:
+                        changeLabel("Paused"); break;
+                    case ServiceControllerStatus.StopPending:
+                        changeLabel("Stopping"); break;
+                    case ServiceControllerStatus.StartPending:
+                        changeLabel("Starting"); break;
+                    default:
+                        changeLabel("Status Changing"); break;
+                }
             }
-            sc.Refresh();
-            switch (sc.Status)
+            catch (Exception ex)
             {
-                case ServiceControllerStatus.Running:
-                    changeLabel("Running"); break;
-                case ServiceControllerStatus.Stopped:
-                    changeLabel("Stopped"); break;
-                case ServiceControllerStatus.Paused:
-                    changeLabel("Paused"); break;
-                case ServiceControllerStatus.StopPending:
-                    changeLabel("Stopping"); break;
-                case ServiceControllerStatus.StartPending:
-                    changeLabel("Starting"); break;
-                default:
-                    changeLabel("Status Changing"); break;
+                sc = null;
+                changeLabel("Not Setup");
             }
+
         }
         private void changeLabel(string stat)
         {

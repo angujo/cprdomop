@@ -48,6 +48,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
             this.loadTitle = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lblName = new System.Windows.Forms.Label();
             this.tabsHolder.SuspendLayout();
             this.tabSummary.SuspendLayout();
             this.tabConf.SuspendLayout();
@@ -235,6 +237,8 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.lblName);
             this.groupBox1.Controls.Add(this.lblTime);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label3);
@@ -251,7 +255,7 @@
             // 
             this.lblTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTime.Location = new System.Drawing.Point(103, 35);
+            this.lblTime.Location = new System.Drawing.Point(103, 51);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(124, 16);
             this.lblTime.TabIndex = 4;
@@ -263,7 +267,7 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(13, 39);
+            this.label1.Location = new System.Drawing.Point(13, 55);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(84, 13);
             this.label1.TabIndex = 3;
@@ -287,7 +291,7 @@
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(125, 14);
             this.lblStatus.TabIndex = 1;
-            this.lblStatus.Text = "Not Installed";
+            this.lblStatus.Text = "[Undetected]";
             this.lblStatus.TextAlign = System.Drawing.ContentAlignment.BottomRight;
             // 
             // loadTitle
@@ -301,6 +305,27 @@
             this.loadTitle.TabIndex = 0;
             this.loadTitle.Text = "This is the name of Loaded Entry";
             this.loadTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(15, 35);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(38, 13);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "Name";
+            // 
+            // lblName
+            // 
+            this.lblName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblName.Location = new System.Drawing.Point(108, 34);
+            this.lblName.Name = "lblName";
+            this.lblName.Size = new System.Drawing.Size(125, 14);
+            this.lblName.TabIndex = 5;
+            this.lblName.Text = "[UNKNOWN]";
+            this.lblName.TextAlign = System.Drawing.ContentAlignment.BottomRight;
             // 
             // UserControlForm
             // 
@@ -348,5 +373,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblName;
     }
 }

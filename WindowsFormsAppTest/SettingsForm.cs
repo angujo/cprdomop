@@ -217,22 +217,8 @@ namespace WindowsFormsAppTest
         public string DBPort { get { return getProperty<string>("DBPort"); } set { setProperty("DBPort", value); } }
         public string DBName { get { return getProperty<string>("DBName"); } set { setProperty("DBName", value); } }
         public string DBSchema { get { return getProperty<string>("DBSchema"); } set { setProperty("DBSchema", value); } }
-        public string DBUsername
-        {
-            get { return getProperty<string>("DBUsername"); }
-            set
-            {
-                setProperty("DBUsername", value);
-            }
-        }
-        public string DBPass
-        {
-            get { return getProperty<string>("DBPass"); }
-            set
-            {
-                setProperty("DBPass", value);
-            }
-        }
+        public string DBUsername { get { return getProperty<string>("DBUsername"); } set { setProperty("DBUsername", value); } }
+        public string DBPass { get { return getProperty<string>("DBPass"); } set { setProperty("DBPass", value); } }
     }
 
     internal enum PropType

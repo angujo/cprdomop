@@ -354,7 +354,7 @@ CREATE TABLE IF NOT EXISTS {sc}.drug_exposure (
 	drug_concept_id int4 NOT NULL,
 	drug_exposure_start_date date NOT NULL,
 	drug_exposure_start_datetime timestamp NULL,
-	drug_exposure_end_date date NOT NULL,
+	drug_exposure_end_date date NULL,
 	drug_exposure_end_datetime timestamp NULL,
 	verbatim_end_date date NULL,
 	drug_type_concept_id int4 NOT NULL,

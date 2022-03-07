@@ -50,7 +50,7 @@ namespace WindowsFormsAppTest
 
         private void loadChunkTimer(Action<ChunkTimer> setView)
         {
-            var chunks = SysDB<ChunkTimer>.List("Where WorkLoadId= @WorkLoadId", new { WorkLoadId = workLoad.Id });
+            var chunks = SysDB<ChunkTimer>.List("Where WorkLoadId= @WorkLoadId AND Status NOT IN (6,8)", new { WorkLoadId = workLoad.Id });
             foreach (var chunk in chunks)
             {
                 setView(chunk);
@@ -59,7 +59,7 @@ namespace WindowsFormsAppTest
 
         private void loadQueryTimer(Action<CDMTimer> setView)
         {
-            var timers = SysDB<CDMTimer>.List($"Where WorkLoadId = @WorkLoadId { (null != selectedOrdinal ? $"AND ChunkId = {(int)selectedOrdinal}" : string.Empty)}", new { WorkLoadId = workLoad.Id, });
+            var timers = SysDB<CDMTimer>.List($"Where WorkLoadId = @WorkLoadId AND EXISTS (SELECT 1 FROM ChunkTimer t WHERE t.WorkLoadId = WorkLoadId AND t.ChunkId = ChunkId AND t.Status NOT IN (6,8)) { (null != selectedOrdinal ? $"AND ChunkId = {(int)selectedOrdinal}" : string.Empty)}", new { WorkLoadId = workLoad.Id, });
             foreach (var timer in timers)
             {
                 setView(timer);
@@ -129,7 +129,8 @@ namespace WindowsFormsAppTest
                        {
                            if (!chunkRun)
                            {
-                               //lvChunks.Invoke(new Action(() => lvChunks.Items.Clear()));
+                               lvChunks.Invoke(new Action(() => lvChunks.Items.Clear()));
+                               chunkLoaded = false;
                                chunkRun = true;
                                pbChunks.Invoke(new Action(() => { pbChunks.Visible = true; }));
                                loadChunkTimer((chunk) =>

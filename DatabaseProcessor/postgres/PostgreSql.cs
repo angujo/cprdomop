@@ -138,7 +138,7 @@ namespace DatabaseProcessor.postgres
             }
         }
 
-        public static void BinaryCopy(DBSchema fromSchema, DBSchema toSchema, string fromQuery, string toQuery)
+        public static new void BinaryCopy(DBSchema fromSchema, DBSchema toSchema, string fromQuery, string toQuery)
         {
             var from = new PostgreSql(fromSchema);
             var to = new PostgreSql(toSchema);

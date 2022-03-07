@@ -20,6 +20,7 @@ namespace WindowsFormsAppTest
             nudChunkSize.DataBindings.Add("Value", workLoad, "ChunkSize");
             nudTestChunk.DataBindings.Add("Value", workLoad, "TestChunkCount");
             nudParallels.DataBindings.Add("Value", workLoad, "MaxParallels");
+            if (wl.ChunksSetup) nudChunkSize.Enabled = false;
         }
 
         private void btnSchedule_Click(object sender, EventArgs e)
@@ -41,7 +42,7 @@ namespace WindowsFormsAppTest
                 // EventLog.WriteEntry("OmopCPRDSystem", "Gettint started with EventLog Here!", EventLogEntryType.Error);
                 //   new CDMBuilder(SysDB<WorkLoad>.Load(new { Id = workLoad.Id })).RunAsync();
 
-                if (SysDB<WorkQueue>.Exists("Where WorkLoadId = @WorkLoadId AND QueueType= @QueueType AND Status IN (@Status, @QStatus)", new { WorkLoadId = workLoad.Id, QueueType = QAction.OMOP_MAP,Status = (int)Status.STARTED,QStatus =(int)Status.QUEUED } ))
+                if (SysDB<WorkQueue>.Exists("Where WorkLoadId = @WorkLoadId AND QueueType= @QueueType AND Status IN (@Status, @QStatus)", new { WorkLoadId = workLoad.Id, QueueType = QAction.OMOP_MAP, Status = (int)Status.STARTED, QStatus = (int)Status.QUEUED }))
                 {
                     MessageBox.Show(null, "Queue is already running or scheduled.\nCheck on the service status or Error Log!", "Scheduled", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;

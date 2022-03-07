@@ -4,7 +4,7 @@
 
 -- DROP TABLE public.cdmtimer;
 
-CREATE TABLE IF NOT EXISTS public.cdmtimer (
+CREATE TABLE public.cdmtimer (
 	id bigserial NOT NULL,
 	"name" varchar(250) NULL,
 	chunkid int4 NULL,
@@ -25,9 +25,9 @@ CREATE TABLE IF NOT EXISTS public.cdmtimer (
 
 -- DROP TABLE public.chunktimer;
 
-CREATE TABLE IF NOT EXISTS public.chunktimer (
+CREATE TABLE public.chunktimer (
 	id bigserial NOT NULL,
-	chunkid int4 NULL,
+	chunkid int8 NULL,
 	starttime timestamp NULL,
 	endtime timestamp NULL,
 	touched bool NULL DEFAULT false,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS public.chunktimer (
 
 -- DROP TABLE public.queue;
 
-CREATE TABLE IF NOT EXISTS public.queue (
+CREATE TABLE public.queue (
 	id bigserial NOT NULL,
 	workqueueid int4 NULL,
 	taskindex int4 NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS public.queue (
 
 -- DROP TABLE public.servicestatus;
 
-CREATE TABLE IF NOT EXISTS public.servicestatus (
+CREATE TABLE public.servicestatus (
 	id bigserial NOT NULL,
 	servicename varchar(250) NULL,
 	servicedescription varchar(450) NULL,
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS public.servicestatus (
 
 -- DROP TABLE public.sourcefile;
 
-CREATE TABLE IF NOT EXISTS public.sourcefile (
+CREATE TABLE public.sourcefile (
 	id bigserial NOT NULL,
 	workloadid int8 NOT NULL,
 	filename varchar(250) NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS public.sourcefile (
 
 -- DROP TABLE public.workload;
 
-CREATE TABLE IF NOT EXISTS public.workload (
+CREATE TABLE public.workload (
 	id bigserial NOT NULL,
 	"name" varchar(250) NOT NULL,
 	releasedate timestamp NULL,
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS public.workload (
 
 -- DROP TABLE public.dbschema;
 
-CREATE TABLE IF NOT EXISTS public.dbschema (
+CREATE TABLE public.dbschema (
 	id bigserial NOT NULL,
 	workloadid int8 NOT NULL,
 	schematype varchar(250) NULL,
@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS public.dbschema (
 
 -- DROP TABLE public.workqueue;
 
-CREATE TABLE IF NOT EXISTS public.workqueue (
+CREATE TABLE public.workqueue (
 	id bigserial NOT NULL,
 	workloadid int8 NOT NULL,
 	"name" varchar(250) NULL,
@@ -165,3 +165,50 @@ CREATE TABLE IF NOT EXISTS public.workqueue (
 	CONSTRAINT workqueue_unique UNIQUE (workloadid, queuetype),
 	CONSTRAINT workqueue_workloadid_fkey FOREIGN KEY (workloadid) REFERENCES public.workload(id)
 );
+
+
+-- public.active_queries source
+
+CREATE OR REPLACE VIEW public.active_queries
+AS SELECT c.chunkid,
+    c.starttime AS chunk_start,
+    c2.name,
+    c2.query,
+    c2.starttime,
+    c2.status
+   FROM chunktimer c
+     JOIN cdmtimer c2 ON c2.chunkid = c.chunkid AND c.workloadid = c2.workloadid
+  WHERE c.starttime IS NOT NULL AND c.touched = true AND (c2.status <> ALL (ARRAY[6, 8]));
+
+
+-- public.complete_queries source
+
+CREATE OR REPLACE VIEW public.complete_queries
+AS SELECT c.chunkid,
+    c.starttime AS chunk_start,
+    c2.name,
+    c2.starttime,
+    c2.endtime,
+    c2.endtime - c2.starttime AS duration,
+    c2.status
+   FROM chunktimer c
+     JOIN cdmtimer c2 ON c2.chunkid = c.chunkid AND c.workloadid = c2.workloadid
+  WHERE c.starttime IS NOT NULL AND c2.status = 8;
+
+
+-- public.completed_chunks source
+
+CREATE OR REPLACE VIEW public.completed_chunks
+AS SELECT c.chunkid,
+    c.starttime,
+    c.endtime,
+    c2.cdm_duration,
+    c.endtime - c.starttime AS duration
+   FROM chunktimer c
+     JOIN ( SELECT max(cdmtimer.endtime) - min(cdmtimer.starttime) AS cdm_duration,
+            cdmtimer.chunkid,
+            cdmtimer.workloadid
+           FROM cdmtimer
+          GROUP BY cdmtimer.workloadid, cdmtimer.chunkid) c2 ON c2.chunkid = c.chunkid AND c.workloadid = c2.workloadid
+  WHERE c.starttime IS NOT NULL AND c.status = 8
+  ORDER BY c.chunkid;

@@ -36,6 +36,7 @@
             this.tbDBPath = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.gbPgsql = new System.Windows.Forms.GroupBox();
+            this.btnPgSave = new System.Windows.Forms.Button();
             this.tbDBPassword = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.tbDBUsername = new System.Windows.Forms.TextBox();
@@ -55,7 +56,6 @@
             this.btnLogPath = new System.Windows.Forms.Button();
             this.tbLogPath = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.btnPgSave = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.gbPgsql.SuspendLayout();
@@ -90,6 +90,7 @@
             this.tbService.Name = "tbService";
             this.tbService.Size = new System.Drawing.Size(293, 20);
             this.tbService.TabIndex = 14;
+            this.tbService.TextChanged += new System.EventHandler(this.tbDBServer_TextChanged);
             // 
             // label10
             // 
@@ -160,6 +161,17 @@
             this.gbPgsql.TabIndex = 10;
             this.gbPgsql.TabStop = false;
             this.gbPgsql.Text = "PostgreSQL Connection";
+            // 
+            // btnPgSave
+            // 
+            this.btnPgSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPgSave.Location = new System.Drawing.Point(298, 94);
+            this.btnPgSave.Name = "btnPgSave";
+            this.btnPgSave.Size = new System.Drawing.Size(103, 23);
+            this.btnPgSave.TabIndex = 23;
+            this.btnPgSave.Text = "Test and Configure";
+            this.btnPgSave.UseVisualStyleBackColor = true;
+            this.btnPgSave.Click += new System.EventHandler(this.btnPgSave_Click);
             // 
             // tbDBPassword
             // 
@@ -338,17 +350,6 @@
             this.label2.Size = new System.Drawing.Size(88, 13);
             this.label2.TabIndex = 3;
             this.label2.Text = "Log File Location";
-            // 
-            // btnPgSave
-            // 
-            this.btnPgSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPgSave.Location = new System.Drawing.Point(298, 94);
-            this.btnPgSave.Name = "btnPgSave";
-            this.btnPgSave.Size = new System.Drawing.Size(103, 23);
-            this.btnPgSave.TabIndex = 23;
-            this.btnPgSave.Text = "Test and Configure";
-            this.btnPgSave.UseVisualStyleBackColor = true;
-            this.btnPgSave.Click += new System.EventHandler(this.btnPgSave_Click);
             // 
             // SettingsForm
             // 

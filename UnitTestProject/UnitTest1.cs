@@ -1,4 +1,5 @@
-﻿using DatabaseProcessor.postgres;
+﻿using DatabaseProcessor;
+using DatabaseProcessor.postgres;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Reflection;
@@ -53,13 +54,27 @@ namespace UnitTestProject
         [TestMethod]
         public void TestDB()
         {
-            var loads = SysDB<ChunkTimer>.Column<int>("ChunkId", "Where WorkLoadId = @WorkLoadId AND Touched = @Touched AND Status <> @Status ORDER BY ChunkId ASC", new { WorkLoadId = 1, Touched = false, Status = Status.COMPLETED });
-            foreach (var load in loads) Console.WriteLine(load.ToString());
+            //  var loads = SysDB<ChunkTimer>.Column<int>("ChunkId", "Where WorkLoadId = @WorkLoadId AND Touched = @Touched AND Status <> @Status ORDER BY ChunkId ASC", new { WorkLoadId = 1, Touched = false, Status = Status.COMPLETED });
+            //  foreach (var load in loads) Console.WriteLine(load.ToString());
+            Console.WriteLine(SysDB<ChunkTimer>.Exists("Where Status = 8 AND EXISTS (SELECT 1 FROM CdmTimer c WHERE c.ChunkId = ChunkId AND c.WorkLoadId = WorkLoadId AND Status <> 8)"));
         }
 
         [TestMethod]
         public void TestCopy()
         {
+            var targetSchema = SysDB<DBSchema>.Load("Where WorkLoadId= @WorkLoadId AND  SchemaType= @SchemaType ", new { WorkLoadId = 1, SchemaType = "target" });
+
+            string _from = $"COPY (select ordinal, 1 wlid, 6 Stats from {targetSchema.SchemaName}._chunk group by ordinal) TO STDOUT (FORMAT BINARY)";
+            string _to = $"COPY {Setting.DBSchema}.{typeof(ChunkTimer).Name} (ChunkId, WorkLoadId,Status) FROM STDIN (FORMAT BINARY)";
+
+            Console.WriteLine(_from);
+            Console.WriteLine(_to);
+
+            DBMSystem.GetDBMSystem(targetSchema).GetType().GetMethod("BinaryCopy").Invoke(null, new object[] { targetSchema, DataAccess.DBSchema(), _from, _to });
+
+            return;
+
+
             var dvdrental = new DBSchema
             {
                 DBName = "dvdrental",

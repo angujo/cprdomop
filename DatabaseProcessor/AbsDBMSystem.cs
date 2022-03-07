@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using SystemLocalStore.models;
 
@@ -18,6 +19,11 @@ namespace DatabaseProcessor
         public abstract List<T> RunColumn<T>(string sql, object parameters = null);
         public abstract List<object> RunDataSet(string sql, object parameters = null);
         public abstract void RunQueue(Queue queue);
+
+        public static void BinaryCopy(DBSchema fromSchema, DBSchema toSchema, string fromQuery, string toQuery)
+        {
+            throw new NotImplementedException();
+        }
 
         protected void prepareCommand(NpgsqlCommand cmd, object parameters = null)
         {

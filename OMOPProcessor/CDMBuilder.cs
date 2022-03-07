@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DatabaseProcessor;
+using DatabaseProcessor.postgres; //DO NOT REMOVE ; Called via Reflection
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -36,6 +38,7 @@ namespace OMOPProcessor
                 Console.WriteLine(ex.ToString());
                 throw;
             }
+            finally { Logger.Info("DONE With CDMBuilder"); }
         }
 
         public Task RunAsync()
@@ -115,9 +118,11 @@ namespace OMOPProcessor
             {
                 Logger.Info($"Started Chunk Setup WL#{workLoad.Id}");
                 ChunkBuilder.Create(script);
-                workLoad.ChunksSetup = true;
+                Logger.Info($"Started Cleanup of ChunkTimer Content Load WL#{workLoad.Id}");
                 SysDB<ChunkTimer>.Delete(new { WorkLoadId = workLoad.Id });
                 SysDB<CDMTimer>.Delete("Where WorkLoadId = @WorkLoadId AND ChunkId <> -1", new { WorkLoadId = workLoad.Id });
+                Logger.Info($"DONE Cleanup of ChunkTimer Content Load WL#{workLoad.Id}");
+                workLoad.ChunksSetup = true;
                 workLoad.ChunksLoaded = false;
                 workLoad.Save();
             }
@@ -126,25 +131,18 @@ namespace OMOPProcessor
             {
                 Logger.Info($"Started Chunk Content Load WL#{workLoad.Id}");
                 chunker.Load(workLoad.ChunkSize);
-                var ordinals = analyzer.ChunkOrdinals();
-                Logger.Info($"Started Cleanup of ChunkTimer Content Load WL#{workLoad.Id}");
-                ChunkTimer.Delete<ChunkTimer>(new { WorkLoadId = workLoad.Id });
-                Logger.Info($"DONE Cleanup of ChunkTimer Content Load WL#{workLoad.Id}");
                 Logger.Info($"Started Populating of ChunkTimer WL#{workLoad.Id}");
-                foreach (var ordinal in ordinals)
-                {
-                    (new ChunkTimer { WorkLoadId = (long)workLoad.Id, ChunkId = ordinal }).InsertOrUpdate();
-                }
+                chunkOrdinals();
                 workLoad.ChunksLoaded = true;
                 workLoad.Save();
                 Logger.Info($"Done Populating of ChunkTimer WL#{workLoad.Id}");
             }
+            else
+            {
+                chunker.Clean(workLoad);
+            }
             List<int> chunks = NextChunks();
-            // foreach (var chunk in chunks) Console.WriteLine(chunk); return false;
-            // var chunk = chunks.First();
             Logger.Info($"Called Chunks: {chunks.Count}");
-            // List<ChunkTimer> chunkQueues = (0 < workLoad.TestChunkCount) ? chunks.Take((int)workLoad.TestChunkCount).ToList() : chunks;
-            // Logger.Info($"Queued Chunks: {chunkQueues.Count} of {workLoad.TestChunkCount}");
             try
             {
                 Parallel.ForEach(chunks, ParallelOptions(), (chunkId) =>
@@ -178,10 +176,11 @@ namespace OMOPProcessor
                 chunk.StartTime = DateTime.Now;
                 chunk.ErrorLog = null;
                 chunk.Touched = true;
-                chunk.Save();
+                chunk.UpSert();
 
                 chunker.Run(chunk);
-                chunk.Status = Status.COMPLETED;
+
+                chunk.Status = Status.COMPLETED;// SysDB<CDMTimer>.Exists("Where WorkLoadId = @WLId AND ChunkId = @CHId AND Status <> 8", new { WLId = chunk.WorkLoadId, CHId = chunk.ChunkId, }) ? Status.COMPLETED : Status.QUEUED;
             }
             catch (Exception ex)
             {
@@ -193,7 +192,7 @@ namespace OMOPProcessor
             {
                 chunk.EndTime = DateTime.Now;
                 chunk.Touched = false;
-                chunk.Save();
+                chunk.UpSert();
             }
 
             /* chunk.StartTime = DateTime.Now;
@@ -216,6 +215,7 @@ namespace OMOPProcessor
             Logger.Info($"Started CDM Load WL#{workLoad.Id}");
             var loader = new LoadBuilder(script);
             Logger.Info($"Started CDM Load Table Create WL#{workLoad.Id}");
+            SysDB<CDMTimer>.Delete("Where WorkLoadId = @WorkLoadId AND ChunkId = -1", new { WorkLoadId = workLoad.Id });
             loader.Create();
             Logger.Info($"Started CDM Load Table Runs WL#{workLoad.Id}");
             loader.Run();
@@ -247,6 +247,14 @@ namespace OMOPProcessor
             parallelOptions.CancellationToken = cancelToken.Token;
             parallelOptions.MaxDegreeOfParallelism = workLoad.MaxParallels;
             return parallelOptions;
+        }
+
+        private void chunkOrdinals()
+        {
+            string from = $"COPY (select ordinal, {workLoad.Id} wlid, 6 Stats from {targetSchema.SchemaName}._chunk group by ordinal) TO STDOUT (FORMAT BINARY)";
+            string to = $"COPY {Setting.DBSchema}.{typeof(ChunkTimer).Name} (ChunkId, WorkLoadId,Status) FROM STDIN (FORMAT BINARY)";
+            //PostgreSql.BinaryCopy(targetSchema, DataAccess.DBSchema(), from, to);
+             DBMSystem.GetDBMSystem(targetSchema).GetType().GetMethod("BinaryCopy").Invoke(null, new object[] { targetSchema, DataAccess.DBSchema(), from, to });
         }
     }
 }

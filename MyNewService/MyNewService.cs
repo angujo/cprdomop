@@ -47,8 +47,13 @@ namespace OMOPService
         {
             Task.Run(() =>
             {
-                WorkQueue workQueue;
-                if (Current.IsRunning() || null == (workQueue = WorkQueue.NextAvailable())) return;
+                if (Current.IsRunning()) return;
+                WorkQueue workQueue = WorkQueue.NextAvailable();
+                if (null == workQueue)
+                {
+                    DoCleanUp();
+                    return;
+                }
                 ServiceWork.Process(workQueue);
             });
 
@@ -65,8 +70,20 @@ namespace OMOPService
             sStatus.LastRun = DateTime.Now;
             sStatus.Save();
 
-           // Logger.Info($"Monitoring the system at {DateTime.Now}");
+            // Logger.Info($"Monitoring the system at {DateTime.Now}");
             //  eventLog1.WriteEntry("Monitoring the System", EventLogEntryType.Information, eventId++);
+        }
+
+        private void DoCleanUp()
+        {
+            if (SysDB<ChunkTimer>.Exists("Where Status NOT IN (6, 8) AND EXISTS (SELECT 1 FROM CdmTimer c WHERE c.ChunkId = ChunkId AND c.WorkLoadId = WorkLoadId AND Status NOT IN (6,8))"))
+            {
+                Current.status = Status.RUNNING;
+                Logger.Info("Query CheckUp Discrepancies found...");
+                SysDB<AbsTable>.RunQuery("UPDATE WorkQueue SET Status = 8 FROM ChunkTimer t JOIN CdmTimer c ON c.ChunkId = t.ChunkId AND c.WorkLoadId = t.WorkLoadId AND c.Status <> 8 WHERE WorkQueue.WorkLoadId = t.WorkLoadId AND WorkQueue.QueueType = 1");
+                SysDB<AbsTable>.RunQuery("UPDATE ChunkTimer SET Status = 6 FROM CdmTimer c WHERE c.ChunkId = ChunkTimer.ChunkId AND c.WorkLoadId = ChunkTimer.WorkLoadId AND c.Status <> 8");
+                Current.status = Status.COMPLETED;
+            }
         }
 
         protected override void OnStop()

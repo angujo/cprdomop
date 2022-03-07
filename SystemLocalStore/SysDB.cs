@@ -28,6 +28,10 @@ namespace SystemLocalStore
         {
             return DataAccess.Exists(typeof(T).Name, conditions, parameters);
         }
+        public static int RunQuery(string sql, Object parameters = null)
+        {
+            return DataAccess.Query(sql, parameters);
+        }
 
         public static T LoadOrNew(string conditions = null, Object parameters = null)
         {

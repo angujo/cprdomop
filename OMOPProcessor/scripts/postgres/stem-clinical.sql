@@ -1,4 +1,4 @@
-/** StemClinical */
+/** StemClinical  #{ch}*/
 insert into {sc}.stem_table 
 (domain_id, person_id, visit_occurrence_id, provider_id, start_datetime, concept_id, source_value, source_concept_id, type_concept_id, 
 start_date, operator_concept_id, unit_concept_id, unit_source_value, end_date, sig, range_high, range_low, value_as_number, value_as_concept_id, 
@@ -12,7 +12,7 @@ NULL range_high, NULL range_low, NULL value_as_number, null value_as_concept_id,
 FROM {sc}._chunk JOIN {ss}.clinical c on patient_id = c.patid
 JOIN {ss}.medical m ON c.medcode = m.medcode
 JOIN {sc}.visit_occurrence vo ON vo.person_id = c.patid AND vo.visit_start_date = c.eventdate
-JOIN {vs}.concept cn ON cn.concept_code = m.read_code and cn.standard_concept = 'S' and cn.invalid_reason is NULL
+JOIN {sc}.source_to_standard st ON st.source_code = m.read_code AND st.source_vocabulary_id = 'Read' and st.target_invalid_reason is null and st.target_standard_concept='S'
+LEFT JOIN {vs}.concept cn ON cn.concept_code = m.read_code and cn.standard_concept = 'S' and cn.invalid_reason is NULL
 LEFT JOIN {sc}.source_to_source ss ON ss.source_code = m.read_code AND ss.source_vocabulary_id='Read'
-LEFT JOIN {sc}.source_to_standard st ON st.source_code = m.read_code AND st.source_vocabulary_id = 'Read' and st.target_invalid_reason is null and st.target_standard_concept='S'
 WHERE ordinal={ch}

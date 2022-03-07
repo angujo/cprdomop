@@ -6,11 +6,21 @@ namespace OMOPProcessor
     public class Script : AbsCDMQuery
     {
 
-        public Script(DBSchema source, DBSchema target, DBSchema vocabulary, TimerLogger logger) : base(source, target, vocabulary, logger)
+        public Script(DBSchema source, DBSchema target, DBSchema vocabulary, TimerLogger logger) : base(source, target, vocabulary, logger) { }
+
+        public void ChunkLoad(int lmt)
         {
+            limit = lmt;
+            RunLogTimer(MethodBase.GetCurrentMethod().Name);
+
+            string from = @"COPY (select row_number() over(order by patid) rid, patid  from {ss}.patient p) TO STDOUT (FORMAT BINARY)";
+            string to = @"COPY {sc}._chunk (ordinal, patient_id) FROM STDIN (FORMAT BINARY)";
+
+            dBMSystem.GetType().GetMethod("BinaryCopy").Invoke(null, new object[] { sourceSchema, targetSchema, SetPlaceHolders(from), SetPlaceHolders(to) });
+
+            dBMSystem.RunQuery(SetPlaceHolders("update {sc}._chunk set ordinal =q.ord from (select ceil((t.rid-1)/{lmt}) ord, t.patid  from (select row_number() over(order by p.patient_id) rid, patient_id patid from {sc}._chunk p) t) q where patient_id =q.patid "));
         }
 
-        public void ChunkLoad(int lmt) { limit = lmt; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void AddIn(int chunk) { chunkId = chunk; RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void CareSite() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
         public void CdmSource() { RunLogTimer(MethodBase.GetCurrentMethod().Name); }
