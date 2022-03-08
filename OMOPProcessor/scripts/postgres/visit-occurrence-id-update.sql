@@ -1,0 +1,8 @@
+-- Update all occurances of visit_occurrence_id
+WITH voccurrence AS (SELECT visit_occurrence_id, person_id, visit_start_date FROM {sc}.visit_occurrence),
+upd_device_exposure AS (UPDATE {sc}.device_exposure SET visit_occurrence_id=vo.visit_occurrence_id FROM voccurrence vo WHERE device_exposure.person_id=vo.person_id AND device_exposure.device_exposure_start_date=vo.visit_start_date AND device_exposure.visit_occurrence_id IS NULL),
+upd_drug_exposure AS (UPDATE {sc}.drug_exposure SET visit_occurrence_id=vo.visit_occurrence_id FROM voccurrence vo WHERE drug_exposure.person_id=vo.person_id AND drug_exposure.drug_exposure_start_date=vo.visit_start_date AND drug_exposure.visit_occurrence_id IS NULL),
+upd_measurement AS (UPDATE {sc}.measurement SET visit_occurrence_id=vo.visit_occurrence_id FROM voccurrence vo WHERE measurement.person_id=vo.person_id AND measurement.measurement_date=vo.visit_start_date AND measurement.visit_occurrence_id IS NULL),
+upd_condition AS (UPDATE {sc}.condition_occurrence SET visit_occurrence_id=vo.visit_occurrence_id FROM voccurrence vo WHERE condition_occurrence.person_id=vo.person_id AND condition_occurrence.condition_start_date=vo.visit_start_date AND condition_occurrence.visit_occurrence_id IS NULL),
+upd_observation AS (UPDATE {sc}.observation SET visit_occurrence_id=vo.visit_occurrence_id FROM voccurrence vo WHERE observation.person_id=vo.person_id AND observation.observation_date=vo.visit_start_date AND observation.visit_occurrence_id IS NULL)
+UPDATE {sc}.procedure_occurrence SET visit_occurrence_id=vo.visit_occurrence_id FROM voccurrence vo WHERE procedure_occurrence.person_id=vo.person_id AND procedure_occurrence.procedure_date=vo.visit_start_date AND procedure_occurrence.visit_occurrence_id IS NULL

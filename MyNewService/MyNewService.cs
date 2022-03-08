@@ -76,7 +76,7 @@ namespace OMOPService
 
         private void DoCleanUp()
         {
-            if (SysDB<ChunkTimer>.Exists("Where Status NOT IN (6, 8) AND EXISTS (SELECT 1 FROM CdmTimer c WHERE c.ChunkId = ChunkId AND c.WorkLoadId = WorkLoadId AND Status NOT IN (6,8))"))
+            if (SysDB<ChunkTimer>.Exists("Where Status = 8 AND EXISTS (SELECT 1 FROM CdmTimer c WHERE c.ChunkId = ChunkId AND c.WorkLoadId = WorkLoadId AND Status NOT IN (8))"))
             {
                 Current.status = Status.RUNNING;
                 Logger.Info("Query CheckUp Discrepancies found...");

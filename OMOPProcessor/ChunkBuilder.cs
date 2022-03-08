@@ -22,16 +22,20 @@ namespace OMOPProcessor
             script.CdmLogger.prepareCDMTimers(chunk);
             Logger.Info($"Ended Preparation of CDM Timer Logger ChunkID#{chunk.ChunkId} Load WL#{chunk.WorkLoadId}");
             List<Action> actions = new List<Action>
+            {
+                ()=>{
+                    Logger.Info($"Commencing With StemTables! ChunkID#{chunk.ChunkId}");
+                    new StemTableBuilder(chunk.ChunkId, script).Run();
+                    stemTableDependants(chunk);
+                    Logger.Info($"Done With StemTables! ChunkID#{chunk.ChunkId}");
+                },
+                () => // Populate visit_occurrence
                 {
-                     ()=>{
-                        Logger.Info($"Commencing With StemTables! ChunkID#{chunk.ChunkId}");
-                        new StemTableBuilder(chunk.ChunkId, script).Run();
-                        stemTableDependants(chunk);
-                        Logger.Info($"Done With StemTables! ChunkID#{chunk.ChunkId}");
-                    },
+                    script.VisitDetail(chunk.ChunkId);
+                    script.VisitOccurrence(chunk.ChunkId);
+                },
                 () => script.Death(chunk.ChunkId),
                 () => script.ObservationPeriod(chunk.ChunkId),
-                () => script.Observation(chunk.ChunkId),
                 () => script.Person(chunk.ChunkId),
             };
             Logger.Info($"Start Chunk Series ChunkID#{chunk.ChunkId}");
@@ -52,6 +56,7 @@ namespace OMOPProcessor
                         script.DrugExposure(chunk.ChunkId);
                         script.DrugEra(chunk.ChunkId);
                     },
+                    () => script.Observation(chunk.ChunkId),
                     () => script.Measurement(chunk.ChunkId),
                     () => script.ProcedureExposure(chunk.ChunkId),
                     () => script.Specimen(chunk.ChunkId)

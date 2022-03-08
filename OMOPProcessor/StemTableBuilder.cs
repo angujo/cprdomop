@@ -20,13 +20,11 @@ namespace OMOPProcessor
         {
             List<Action> tasks = new List<Action>
                 {
-                   () => // Populate visit_occurrence
+                  /* () => // Populate visit_occurrence
                     {
                         script.VisitDetail(chunkId);
                         script.VisitOccurrence(chunkId);
-                        /*script.VisitOccurrenceUpdate(chunkId);
-                        script.VisitDetailUpdate(chunkId);*/
-                    },
+                    },*/
                    () => script.AddIn(chunkId),
                    () => script.TestInt(chunkId),
                 };

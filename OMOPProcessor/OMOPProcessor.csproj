@@ -100,6 +100,7 @@
     <Content Include="scripts\postgres\stem-therapy.sql" />
     <Content Include="scripts\postgres\stem-clinical.sql" />
     <Content Include="scripts\postgres\stem-table.sql" />
+    <Content Include="scripts\postgres\stem-update.sql" />
     <Content Include="scripts\postgres\test-int.sql" />
     <Content Include="scripts\postgres\undo\add-in.sql" />
     <Content Include="scripts\postgres\undo\care-site.sql" />
@@ -140,6 +141,7 @@
     <Content Include="scripts\postgres\undo\visit-occurrence.sql" />
     <Content Include="scripts\postgres\visit-detail.sql" />
     <Content Include="scripts\postgres\visit-detail-update.sql" />
+    <Content Include="scripts\postgres\visit-occurrence-id-update.sql" />
     <Content Include="scripts\postgres\visit-occurrence-update.sql" />
     <Content Include="scripts\postgres\visit-occurrence.sql" />
   </ItemGroup>

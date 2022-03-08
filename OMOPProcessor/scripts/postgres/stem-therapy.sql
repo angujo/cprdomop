@@ -5,14 +5,13 @@ start_date, operator_concept_id, unit_concept_id, unit_source_value, end_date, s
 value_source_value, value_as_string)
 SELECT
 CASE WHEN cn.concept_id IS NULL OR 0 = cn.concept_id THEN 'Observation' else cn.domain_id END AS domain_id,  
-r.patid person_id, vo.visit_occurrence_id, r.staffid provider_id, r.eventdate::timestamp start_datetime, 
+r.patid person_id, null visit_occurrence_id, r.staffid provider_id, r.eventdate::timestamp start_datetime, 
 st.source_concept_id concept_id, m.gemscriptcode source_value, ss.source_concept_id, 32838 type_concept_id, r.eventdate start_date,
 NULL operator_concept_id,NULL unit_concept_id,NULL unit_source_value, 
 r.eventdate::date + coalesce(case when r.numdays = 0 or r.numdays > 365 then null else r.numdays end, dd.numdays, dm.numdays, 1) end_date, cd.dosage_text sig, 
 NULL range_high, NULL range_low, NULL value_as_number, null value_as_concept_id, null value_source_value, NULL value_as_string
 FROM {sc}._chunk JOIN {ss}.therapy r on patient_id = r.patid
 JOIN {ss}.product m ON r.prodcode = m.prodcode
-JOIN {sc}.visit_occurrence vo ON vo.person_id = r.patid AND vo.visit_start_date = r.eventdate
 JOIN {ss}.commondosages cd ON cd.dosageid = r.dosageid
 JOIN {sc}.source_to_standard st ON st.source_code = m.gemscriptcode AND st.source_vocabulary_id = 'gemscript' AND st.target_standard_concept = 'S' and st.target_invalid_reason is NULL
 LEFT JOIN {vs}.concept cn ON standard_concept = 'S' and invalid_reason is NULL and cn.concept_code = m.gemscriptcode
